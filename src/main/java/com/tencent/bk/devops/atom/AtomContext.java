@@ -1,12 +1,10 @@
 package com.tencent.bk.devops.atom;
 
 import com.tencent.bk.devops.atom.common.Constants;
-import com.tencent.bk.devops.atom.exception.AtomException;
 import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.pojo.AtomResult;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +30,24 @@ public class AtomContext<T extends AtomBaseParam> {
      * 原子定义的参数类
      *
      * @param paramClazz 参数类
-     * @throws IOException  如果环境问题导致读不到参数类
+     * @throws IOException 如果环境问题导致读不到参数类
      */
     AtomContext(Class<T> paramClazz) throws IOException {
-        dataDir = readEnv(Constants.DATA_DIR_ENV);
-        inputFile = readEnv(Constants.INPUT_FILE_ENV);
-        outputFile = readEnv(Constants.OUTPUT_FILE_ENV);
+        String value = System.getenv(Constants.DATA_DIR_ENV);
+        if (value == null || value.trim().length() == 0 || !(new File(value)).isDirectory()) {
+            value = System.getProperty("user.dir");
+        }
+        dataDir = value;
+        value = System.getenv(Constants.INPUT_FILE_ENV);
+        if (value == null || value.trim().length() == 0) {
+            value = "input.json";
+        }
+        inputFile = value;
+        value = System.getenv(Constants.OUTPUT_FILE_ENV);
+        if (value == null || value.trim().length() == 0) {
+            value = "output.json";
+        }
+        outputFile = value;
         param = readParam(paramClazz);
         result = new AtomResult();
     }
@@ -64,15 +74,6 @@ public class AtomContext<T extends AtomBaseParam> {
     private T readParam(Class<T> paramClazz) throws IOException {
         String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), Charset.defaultCharset());
         return JsonUtil.fromJson(json, paramClazz);
-    }
-
-    private String readEnv(String envName) {
-        String value = System.getenv(envName);
-        if (StringUtils.isBlank(value)) {
-            System.err.printf("environment [%s] is empty", envName);
-            throw new AtomException(String.format("environment [%s] is empty", envName));
-        }
-        return value;
     }
 
     void persistent() throws IOException {

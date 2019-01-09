@@ -9,8 +9,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -19,8 +17,6 @@ import java.io.IOException;
  */
 @SuppressWarnings("all")
 public class JsonMapper {
-
-    private static final Logger logger = LoggerFactory.getLogger(JsonMapper.class);
 
     private ObjectMapper mapper;
 
@@ -84,7 +80,6 @@ public class JsonMapper {
         try {
             return mapper.writeValueAsString(object);
         } catch (IOException e) {
-            logger.warn("write to json string error:" + object, e);
             return null;
         }
     }
@@ -103,7 +98,6 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, clazz);
         } catch (IOException e) {
-            logger.warn("parse json string error:" + jsonString, e);
             return null;
         }
     }
@@ -122,7 +116,6 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, typeReference);
         } catch (IOException e) {
-            logger.warn("parse json string error:" + typeReference, e);
             return null;
         }
     }

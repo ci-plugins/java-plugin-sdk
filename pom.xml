@@ -9,7 +9,7 @@
         <version>0.0.3</version>
     </parent>
     <artifactId>java-atom-sdk</artifactId>
-    <version>0.0.6</version>
+    <version>0.1.0</version>
 
     <inceptionYear>2018-2118</inceptionYear>
     <name>BK-ATOM-JAVA-SDK</name>
@@ -50,12 +50,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${lib.commons.lang3.version}</version>
-        </dependency>
-        <!-- 对象克隆工具 -->
-        <dependency>
-            <groupId>net.sf.dozer</groupId>
-            <artifactId>dozer</artifactId>
-            <version>${lib.dozer.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
