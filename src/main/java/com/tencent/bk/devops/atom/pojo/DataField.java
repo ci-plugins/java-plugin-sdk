@@ -10,6 +10,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
+@SuppressWarnings("all")
 public abstract class DataField {
 
     public DataField(DataType type) {

@@ -20,6 +20,7 @@ import java.util.Set;
 /**
  * Json工具类
  */
+@SuppressWarnings("all")
 public class JsonUtil {
 
     private static final Map<String, JsonMapper> jsonMappers = Maps.newConcurrentMap();
@@ -71,7 +72,7 @@ public class JsonUtil {
      * @param jsonString    Json字符串
      * @param typeReference 对象类
      * @param <T>           对象类型
-     * @return
+     * @return  对象
      */
     public static <T> T fromJson(String jsonString, TypeReference<T> typeReference) {
         return jsonMappers.computeIfAbsent("__all__", s -> JsonMapper.allOutPutMapper()).fromJson(jsonString, typeReference);

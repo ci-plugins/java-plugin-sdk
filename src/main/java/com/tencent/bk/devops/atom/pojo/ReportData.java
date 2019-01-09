@@ -16,6 +16,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@SuppressWarnings("all")
 public class ReportData extends DataField {
 
     private String label;

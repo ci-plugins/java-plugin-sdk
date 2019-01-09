@@ -16,6 +16,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@SuppressWarnings("all")
 public class ArtifactData extends DataField {
 
     private Set<String> value;

@@ -7,6 +7,7 @@ public final class ServiceLoader {
 
     private static final Map<String, Object> CACHE = new ConcurrentHashMap<>();
 
+    @SuppressWarnings("unused")
     public static void clear() {
         CACHE.clear();
     }
@@ -29,7 +30,7 @@ public final class ServiceLoader {
      * @return 接口 实现实例
      * 优先从缓存中获取，如有多线程调用，接口实现需要自己实现线程安全
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("all")
     public static <T> T load(Class<T> clazz, String name) {
         String key = clazz.getName();
         Object o = CACHE.get(key);
@@ -47,9 +48,9 @@ public final class ServiceLoader {
 
     /**
      * @param clazz service
-     * @param name
-     * @param <T>
-     * @return
+     * @param name 加载的类
+     * @param <T> 类型
+     * @return 类
      */
     private static <T> T load0(Class<T>  clazz, String name) {
         java.util.ServiceLoader<T> factories = java.util.ServiceLoader.load(clazz);
@@ -84,23 +85,8 @@ public final class ServiceLoader {
         return null;
     }
 
-
-    /**
-     * @param clazz 接口
-     * @param <T> 接口类型
-     * @return  接口实例列表，列表根据Spi注解的order排序，如没有spi 注解也可以使用，未做缓存
-     */
-    public static <T> List<T> findList(Class<T> clazz){
-        java.util.ServiceLoader<T> factories = java.util.ServiceLoader.load(clazz);
-        return findList(factories);
-    }
-
-    private static <T> List<T> findList(java.util.ServiceLoader<T> factories){
-        return findList(factories.iterator());
-    }
-
     private static <T> List<T> findList(Iterator<T> it){
-        List<T> list = new ArrayList<T>(2);
+        List<T> list = new ArrayList<>(2);
         while (it.hasNext()) {
             list.add(it.next());
         }

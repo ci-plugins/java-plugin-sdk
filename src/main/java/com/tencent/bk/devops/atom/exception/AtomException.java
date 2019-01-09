@@ -3,6 +3,7 @@ package com.tencent.bk.devops.atom.exception;
 /**
  * @version 1.0
  */
+@SuppressWarnings("unused")
 public class AtomException extends RuntimeException {
 
     public AtomException() {

@@ -11,6 +11,7 @@ import java.io.IOException;
 /**
  * @version 1.0
  */
+@SuppressWarnings("all")
 public class AtomRunner {
 
     public static void main(String[] args) throws IOException {

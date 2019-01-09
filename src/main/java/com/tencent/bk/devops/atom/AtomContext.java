@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
  *
  * @version 1.0
  */
+@SuppressWarnings({"unused"})
 public class AtomContext<T extends AtomBaseParam> {
 
     private final String dataDir;
@@ -27,6 +28,12 @@ public class AtomContext<T extends AtomBaseParam> {
 
     private AtomResult result;
 
+    /**
+     * 原子定义的参数类
+     *
+     * @param paramClazz 参数类
+     * @throws IOException  如果环境问题导致读不到参数类
+     */
     AtomContext(Class<T> paramClazz) throws IOException {
         dataDir = readEnv(Constants.DATA_DIR_ENV);
         inputFile = readEnv(Constants.INPUT_FILE_ENV);
@@ -35,10 +42,21 @@ public class AtomContext<T extends AtomBaseParam> {
         result = new AtomResult();
     }
 
+    /**
+     * 读取请求参数
+     *
+     * @return 请求参数
+     */
     public T getParam() {
         return param;
     }
 
+    /**
+     * 获取结果对象
+     *
+     * @return 结果对象
+     */
+    @SuppressWarnings({"all"})
     public AtomResult getResult() {
         return result;
     }

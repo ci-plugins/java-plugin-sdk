@@ -17,6 +17,7 @@ import java.io.IOException;
 /**
  * 封装不同的输出风格的Jackson 使用不同的builder函数创建实例.
  */
+@SuppressWarnings("all")
 public class JsonMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(JsonMapper.class);
@@ -35,7 +36,7 @@ public class JsonMapper {
     /**
      * Jackson Mapper实例
      *
-     * @return
+     * @return ObjectMapper
      */
     public ObjectMapper getMapper() {
         return mapper;
@@ -45,7 +46,7 @@ public class JsonMapper {
      * 创建只输出非Null的属性 并且非Empty的集合属性 到Json字符串的Mapper,建议在外部接口中使用.
      * 注意：如果参数值为空的话，则字段不会在JSON串中出现，所以对外部时也要注意使用。
      *
-     * @return
+     * @return JsonMapper
      */
     public static JsonMapper nonEmptyMapper() {
         return build(Include.NON_EMPTY);
@@ -54,7 +55,7 @@ public class JsonMapper {
     /**
      * 创建输出所有字段的Mapper，不管是默认值 还是 null empty的字段，最全的输出
      *
-     * @return
+     * @return JsonMapper
      */
     public static JsonMapper allOutPutMapper() {
         return build(Include.ALWAYS);
@@ -63,8 +64,8 @@ public class JsonMapper {
     /**
      * 构建出希望使用的Jackson
      *
-     * @param include
-     * @return
+     * @param include Include
+     * @return JsonMapper
      */
     public static JsonMapper build(Include include) {
         return new JsonMapper(include);
