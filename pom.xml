@@ -3,16 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.tencent.bk.devops.atom</groupId>
+    <parent>
+        <groupId>com.tencent.bk.devops.atom</groupId>
+        <artifactId>sdk-dependencies</artifactId>
+        <version>0.0.3</version>
+    </parent>
     <artifactId>java-atom-sdk</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.0.5</version>
 
     <inceptionYear>2018-2118</inceptionYear>
-    <modules>
-        <module>common</module>
-    </modules>
     <name>BK-ATOM-JAVA-SDK</name>
     <organization>
         <name>Tencent Blueking</name>
@@ -21,14 +20,12 @@
 
     <properties>
 
-        <mainClass>com.tencent.bk.devops.atom.AtomRunner</mainClass>
+        <sdk.version>0.0.3</sdk.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <!--项目版本 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- 依赖库/框架版本定义 -->
-        <lib.spring.boot.version>1.5.11.RELEASE</lib.spring.boot.version>
         <!-- 依赖库/框架版本定义 -->
         <lib.guava.version>19.0</lib.guava.version>
         <lib.commons.lang3.version>3.5</lib.commons.lang3.version>
@@ -36,46 +33,47 @@
         <lib.dozer.version>5.5.1</lib.dozer.version>
     </properties>
 
-    <!-- ############# 导入SpringBoot整合的依赖源 ########################## -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.tencent.bk.devops.atom</groupId>
-                <artifactId>common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <!-- ############# tool/help dependencies ########################## -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${lib.guava.version}</version>
-            </dependency>
-            <!-- Apache 通用工具集 -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${lib.commons.lang3.version}</version>
-            </dependency>
-            <!-- 对象克隆工具 -->
-            <dependency>
-                <groupId>net.sf.dozer</groupId>
-                <artifactId>dozer</artifactId>
-                <version>${lib.dozer.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+    <dependencies>
+        <!-- ############# tool/help dependencies ########################## -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${lib.guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <!-- Apache 通用工具集 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${lib.commons.lang3.version}</version>
+        </dependency>
+        <!-- 对象克隆工具 -->
+        <dependency>
+            <groupId>net.sf.dozer</groupId>
+            <artifactId>dozer</artifactId>
+            <version>${lib.dozer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.20</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 
-    <distributionManagement>
-        <repository>
-            <id>jfrog</id>
-            <name>artifactory release</name>
-            <url>http://sz.artifactory.oa.com/artifactory/maven-local-release</url>
-        </repository>
-        <snapshotRepository>
-            <id>jfrog</id>
-            <name>artifactory snapshots</name>
-            <url>http://sz.artifactory.oa.com/artifactory/maven-local-snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
