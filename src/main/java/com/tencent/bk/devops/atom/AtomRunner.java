@@ -22,9 +22,9 @@ public class AtomRunner {
         try {
             atom.execute(context);
         } catch (Throwable e) {
-            System.err.println("原子处理出现未处理的异常：" + e.getMessage());
+            System.err.println("Unknown Error：" + e.getMessage());
             context.getResult().setStatus(Status.error);
-            context.getResult().setMessage("原子处理出现未处理的异常：" + e.getMessage());
+            context.getResult().setMessage("Unknown Error：" + e.getMessage());
         } finally {
             context.persistent();
         }
