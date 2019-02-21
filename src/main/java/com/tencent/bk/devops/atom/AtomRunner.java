@@ -23,6 +23,7 @@ public class AtomRunner {
             atom.execute(context);
         } catch (Throwable e) {
             System.err.println("Unknown Error：" + e.getMessage());
+            e.printStackTrace();
             context.getResult().setStatus(Status.error);
             context.getResult().setMessage("Unknown Error：" + e.getMessage());
         } finally {
