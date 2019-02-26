@@ -20,15 +20,41 @@ public class AtomBaseParam {
     private String pipelineVersion;
 
     /**
+     * 项目名称
+     */
+    @JsonProperty("project.name")
+    private String projectName;
+
+    /**
+     * 项目中文名称
+     */
+    @JsonProperty("project.name.chinese")
+    private String projectNameCn;
+
+    /**
+     * 流水线Id
+     */
+    @JsonProperty("pipeline.id")
+    private String pipelineId;
+
+    /**
      * 流水线构建序号
      */
     @JsonProperty("pipeline.build.num")
     private String pipelineBuildNum;
+
+    /**
+     * 流水线构建Id
+     */
+    @JsonProperty("pipeline.build.id")
+    private String pipelineBuildId;
+
     /**
      * 流水线名称
      */
     @JsonProperty("pipeline.name")
     private String pipelineName;
+
     /**
      * 流水线启动时间：毫秒
      */
