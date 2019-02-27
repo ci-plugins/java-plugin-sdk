@@ -1,5 +1,6 @@
 package com.tencent.bk.devops.atom;
 
+import com.tencent.bk.devops.atom.api.SdkEnv;
 import com.tencent.bk.devops.atom.common.Status;
 import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.spi.AtomService;
@@ -18,6 +19,7 @@ public class AtomRunner {
         TaskAtom atom = ServiceLoader.load(TaskAtom.class);
         AtomService annotation = atom.getClass().getAnnotation(AtomService.class);
         Class<? extends AtomBaseParam> tClass = annotation.paramClass();
+        SdkEnv.init();
         AtomContext<? extends AtomBaseParam> context = getContext(tClass);
         try {
             atom.execute(context);
