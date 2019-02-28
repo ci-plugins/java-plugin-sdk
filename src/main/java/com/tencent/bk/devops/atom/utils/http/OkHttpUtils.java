@@ -29,9 +29,9 @@ public class OkHttpUtils {
             finalWriteTimeout = writeTimeout;
         if (readTimeout > 0)
             finalReadTimeout = readTimeout;
-        builder.writeTimeout(finalConnectTimeout, TimeUnit.MILLISECONDS);
-        builder.writeTimeout(finalWriteTimeout, TimeUnit.MILLISECONDS);
-        builder.readTimeout(finalReadTimeout, TimeUnit.MILLISECONDS);
+        builder.writeTimeout(finalConnectTimeout, TimeUnit.SECONDS);
+        builder.writeTimeout(finalWriteTimeout, TimeUnit.SECONDS);
+        builder.readTimeout(finalReadTimeout, TimeUnit.SECONDS);
         return builder.build();
     }
 
