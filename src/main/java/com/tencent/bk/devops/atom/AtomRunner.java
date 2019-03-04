@@ -6,6 +6,8 @@ import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.spi.AtomService;
 import com.tencent.bk.devops.atom.spi.ServiceLoader;
 import com.tencent.bk.devops.atom.spi.TaskAtom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -14,6 +16,8 @@ import java.io.IOException;
  */
 @SuppressWarnings("all")
 public class AtomRunner {
+
+    private final static Logger logger = LoggerFactory.getLogger(AtomRunner.class);
 
     public static void main(String[] args) throws IOException {
         TaskAtom atom = ServiceLoader.load(TaskAtom.class);
@@ -24,7 +28,7 @@ public class AtomRunner {
         try {
             atom.execute(context);
         } catch (Throwable e) {
-            System.err.println("Unknown Error：" + e.getMessage());
+            logger.error("Unknown Error：{}",e.getMessage());
             e.printStackTrace();
             context.getResult().setStatus(Status.error);
             context.getResult().setMessage("Unknown Error：" + e.getMessage());
