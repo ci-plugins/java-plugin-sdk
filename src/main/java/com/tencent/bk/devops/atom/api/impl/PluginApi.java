@@ -15,6 +15,11 @@ public class PluginApi extends BaseApi {
 
     private final static Logger logger = LoggerFactory.getLogger(PluginApi.class);
 
+    /**
+     * 获取ons名字信息
+     * @param domainName 域名
+     * @return
+     */
     @SuppressWarnings("all")
     public Result<OnsHostInfo> getOnsHostInfo(String domainName){
         Request request = super.buildGet("/plugin/api/build/ons/host/domains/" + domainName);

@@ -15,10 +15,16 @@ public class ArtifactoryApi extends BaseApi {
 
     private final static Logger logger = LoggerFactory.getLogger(ArtifactoryApi.class);
 
+    /**
+     * 获取构建文件下载路径
+     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param path 路径
+     * @return
+     */
     @SuppressWarnings("all")
-    public  Result<List<String>> getArtifactoryFileUrl(String projectCode,String pipelineId,String buildId,String artifactoryType,String path){
+    public  Result<List<String>> getArtifactoryFileUrl(String artifactoryType,String path){
         StringBuilder urlBuilder = new StringBuilder("/artifactory/api/build/artifactories/thirdPartyDownloadUrl?artifactoryType=");
-        urlBuilder.append(artifactoryType).append("&path=/").append(path).append("&ttl=").append(3600);
+        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600); //下载链接有效期设定为1小时
         String requestUrl = urlBuilder.toString();
         logger.info("the requestUrl is:{}",requestUrl);
         Request request = super.buildGet(urlBuilder.toString());
