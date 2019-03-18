@@ -17,9 +17,8 @@ public class ArtifactoryApi extends BaseApi {
 
     @SuppressWarnings("all")
     public  Result<List<String>> getArtifactoryFileUrl(String projectCode,String pipelineId,String buildId,String artifactoryType,String path){
-        StringBuilder urlBuilder = new StringBuilder("/artifactory/api/build/artifactories/project/");
-        urlBuilder.append(projectCode).append("/pipeline/").append(pipelineId).append("/buildId/").append(buildId).append("/getFileDownloadUrl?")
-                .append("artifactoryType=").append(artifactoryType).append("&path=").append(path);
+        StringBuilder urlBuilder = new StringBuilder("/artifactory/api/build/artifactories/thirdPartyDownloadUrl?artifactoryType=");
+        urlBuilder.append(artifactoryType).append("&path=/").append(path).append("&ttl=").append(3600);
         String requestUrl = urlBuilder.toString();
         logger.info("the requestUrl is:{}",requestUrl);
         Request request = super.buildGet(urlBuilder.toString());

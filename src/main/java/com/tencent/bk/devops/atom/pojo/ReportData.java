@@ -9,7 +9,7 @@ import lombok.Setter;
  * "type": "report",
  * "label": "",  # 报告别名，用于产出物报告界面标识当前报告
  * "path": "",   # 报告目录所在路径，相对于工作空间
- * "target": "", # 报告入口文件
+ * "target": ""  # 报告入口文件
  * }
  *
  * @version 1.0
