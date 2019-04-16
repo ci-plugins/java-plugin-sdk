@@ -17,6 +17,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * 本API作废，请使用新的API
+ * @see com.tencent.bk.devops.plugin.api.impl.ArtifactoryApi
+ */
+@Deprecated
 public class ArtifactoryApi extends BaseApi {
 
     private final static Logger logger = LoggerFactory.getLogger(ArtifactoryApi.class);

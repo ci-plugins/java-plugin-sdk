@@ -66,7 +66,7 @@ public class SdkEnv {
         instance = JsonUtil.fromJson(json, SdkEnv.class);
     }
 
-    static String genUrl(String path) {
+    public static String genUrl(String path) {
         if (path.startsWith("/")) {
             return "http://" + instance.gateway + "/" + path.substring(1).trim();
         } else {

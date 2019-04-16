@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 public class BaseApi {
 
+    protected static final MediaType JSON_CONTENT_TYPE = MediaType.parse("application/json; charset=utf-8");
+
     protected String request(Request request, String errorMessage) throws IOException {
         OkHttpClient httpClient = okHttpClient.newBuilder().build();
 
