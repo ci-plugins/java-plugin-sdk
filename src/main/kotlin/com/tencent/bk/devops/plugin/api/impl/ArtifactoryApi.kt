@@ -2,9 +2,13 @@ package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.BaseApi
+import com.tencent.bk.devops.atom.api.SdkEnv
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.pojo.Result
+import com.tencent.bk.devops.plugin.pojo.artifactory.JfrogFilesData
+import com.tencent.bk.devops.plugin.utils.OkhttpUtils
+import okhttp3.Request
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
 import java.io.*
@@ -101,6 +105,34 @@ class ArtifactoryApi : BaseApi() {
             }
         }
         return Result(saveFilePath)
+    }
+
+    /**
+     * 获取所有的文件和文件夹
+     */
+    fun getAllFiles(isCustom: Boolean): JfrogFilesData {
+
+        val cusListFilesUrl = SdkEnv.genUrl("/jfrog/api/buildAgent/custom/?list&deep=1&listFolders=1")
+        val listFilesUrl = SdkEnv.genUrl("/jfrog/api/buildAgent/archive/?list&deep=1&listFolders=1")
+
+        val url = if (!isCustom) listFilesUrl else cusListFilesUrl
+
+        val request = Request.Builder().url(url).get().build()
+
+        // 获取所有的文件和文件夹
+        OkhttpUtils.doHttp(request).use { response ->
+            val responseBody = response.body()!!.string()
+            if (!response.isSuccessful) {
+                logger.error("get jfrog files fail:\n $responseBody")
+                throw RuntimeException("构建分发获取文件失败")
+            }
+            try {
+                return JsonUtil.fromJson(responseBody, JfrogFilesData::class.java)
+            } catch (e: Exception) {
+                logger.error("get jfrog files fail\n$responseBody")
+                throw RuntimeException("构建分发获取文件失败")
+            }
+        }
     }
 
     companion object {
