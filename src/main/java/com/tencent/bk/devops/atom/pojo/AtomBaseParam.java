@@ -14,6 +14,12 @@ import lombok.Setter;
 public class AtomBaseParam {
 
     /**
+     * 工作空间
+     */
+    @JsonProperty("workspace")
+    private String workspace;
+
+    /**
      * 流水线版本号
      */
     @JsonProperty("pipeline.version")
