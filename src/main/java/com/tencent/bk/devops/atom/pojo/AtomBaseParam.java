@@ -16,8 +16,8 @@ public class AtomBaseParam {
     /**
      * 工作空间
      */
-    @JsonProperty("workspace")
-    private String workspace;
+    @JsonProperty("bkWorkspace")
+    private String bkWorkspace;
 
     /**
      * 流水线版本号
