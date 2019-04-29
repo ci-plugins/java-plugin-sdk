@@ -20,6 +20,12 @@ public class AtomBaseParam {
     private String bkWorkspace;
 
     /**
+     * 是否是测试版本 Y：是 N：否
+     */
+    @JsonProperty("testVersionFlag")
+    private String testVersionFlag;
+
+    /**
      * 流水线版本号
      */
     @JsonProperty("pipeline.version")
