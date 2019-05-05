@@ -9,7 +9,7 @@
         <version>1.0.0</version>
     </parent>
     <artifactId>java-atom-sdk</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <inceptionYear>2018-2118</inceptionYear>
     <name>BK-ATOM-JAVA-SDK</name>
@@ -32,6 +32,7 @@
         <lib.javasimon.version>3.5.2</lib.javasimon.version>
         <lib.dozer.version>5.5.1</lib.dozer.version>
         <lib.log.version>1.7.21</lib.log.version>
+        <lib.jackson.version>2.9.7</lib.jackson.version>
     </properties>
 
     <dependencies>
@@ -66,7 +67,22 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.2</version>
+            <version>${lib.jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${lib.jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${lib.jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+            <version>${lib.jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -87,6 +103,11 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
     </dependencies>
