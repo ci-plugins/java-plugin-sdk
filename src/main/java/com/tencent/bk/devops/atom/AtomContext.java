@@ -1,14 +1,17 @@
 package com.tencent.bk.devops.atom;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.bk.devops.atom.common.Constants;
 import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.pojo.AtomResult;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 
 /**
@@ -59,6 +62,21 @@ public class AtomContext<T extends AtomBaseParam> {
      */
     public T getParam() {
         return param;
+    }
+
+    /**
+     * 获取敏感信息参数
+     * @param filedName 字段名
+     * @return 敏感信息参数
+     */
+    public String getSensitiveConfParam(String filedName){
+        String bkSensitiveConfInfo = param.getBkSensitiveConfInfo();
+        if(StringUtils.isNotEmpty(bkSensitiveConfInfo)){
+            Map<String,String> bkSensitiveConfMap = JsonUtil.fromJson(bkSensitiveConfInfo, new TypeReference<Map<String, String>>() {});
+            return bkSensitiveConfMap.get(filedName);
+        }else{
+            return null;
+        }
     }
 
     /**
