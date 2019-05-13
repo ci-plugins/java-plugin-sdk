@@ -70,10 +70,9 @@ public class AtomContext<T extends AtomBaseParam> {
      * @return 敏感信息参数
      */
     public String getSensitiveConfParam(String filedName){
-        String bkSensitiveConfInfo = param.getBkSensitiveConfInfo();
-        if(StringUtils.isNotEmpty(bkSensitiveConfInfo)){
-            Map<String,String> bkSensitiveConfMap = JsonUtil.fromJson(bkSensitiveConfInfo, new TypeReference<Map<String, String>>() {});
-            return bkSensitiveConfMap.get(filedName);
+        Map<String,String> bkSensitiveConfInfo = param.getBkSensitiveConfInfo();
+        if(null != bkSensitiveConfInfo){
+            return bkSensitiveConfInfo.get(filedName);
         }else{
             return null;
         }

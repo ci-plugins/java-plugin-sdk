@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 /**
  * 流水线插件基础参数, 所有插件参数继承扩展他增加自己的定义
  *
@@ -83,6 +85,6 @@ public class AtomBaseParam {
      * 插件敏感信息
      */
     @JsonProperty("bkSensitiveConfInfo")
-    private String bkSensitiveConfInfo;
+    private Map<String,String> bkSensitiveConfInfo;
 
 }
