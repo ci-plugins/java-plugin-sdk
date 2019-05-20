@@ -87,4 +87,10 @@ public class AtomBaseParam {
     @JsonProperty("bkSensitiveConfInfo")
     private Map<String,String> bkSensitiveConfInfo;
 
+    /**
+     * 流水线当前插件id
+     */
+    @JsonProperty("pipeline.task.id")
+    private String pipelineTaskId;
+
 }
