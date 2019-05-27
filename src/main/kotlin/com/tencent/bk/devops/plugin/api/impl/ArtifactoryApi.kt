@@ -70,41 +70,51 @@ class ArtifactoryApi : BaseApi() {
         if (-1 != index) {
             fileName = fileName.substring(0, index)
         }
-        var inputStream: InputStream? = null
-        var outputStream: OutputStream? = null
         val dataDir = SdkUtils.getDataDir()
         logger.info("the dataDir is:{}", dataDir)
         val saveFilePath = "$dataDir/$fileName"
+        downloadFileToLocal(srcUrl!!, saveFilePath)
+        return Result(saveFilePath)
+    }
+
+    /**
+     * 下载多个构建文件到本地
+     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param path 路径
+     * @return 文件在本地的保存路径
+     */
+    fun downloadAllFileToLocal(artifactoryType: String, path: String): Result<List<File>> {
+        val getFileUrlResult = getArtifactoryFileUrl(artifactoryType, path)
+        logger.info("the getFileUrlResult is:{}", JsonUtil.toJson(getFileUrlResult))
+        if (0 != getFileUrlResult.status) {
+            return Result(getFileUrlResult.status, getFileUrlResult.message)
+        }
+        val dataDir = SdkUtils.getDataDir()
+        logger.info("the dataDir is:{}", dataDir)
+        return Result(getFileUrlResult.data!!.map {
+            val lastItem = it.split("/").last()
+            val fileName = lastItem.substring(0, lastItem.indexOf("?token="))
+            val saveFilePath = "$dataDir/$fileName"
+            downloadFileToLocal(it, saveFilePath)
+        })
+    }
+
+    private fun downloadFileToLocal(srcUrl: String, saveFilePath: String): File {
         try {
-            val netUrl = URL(srcUrl!!)
+            val netUrl = URL(srcUrl)
             val conn = netUrl.openConnection() as HttpURLConnection
             conn.requestMethod = "GET"
             conn.connectTimeout = 5 * 1000
-            inputStream = conn.inputStream
-            //把文件下载到dataDir目录下面
-            outputStream = BufferedOutputStream(FileOutputStream(saveFilePath), 8192)
-            IOUtils.copy(inputStream, outputStream, 8192)
-        } catch (e: IOException) {
-            logger.error("downloadArtifactoryFileToLocal error!", e)
-        } finally {
-            if (null != outputStream) {
-                try {
-                    outputStream.close()
-                } catch (e: IOException) {
-                    logger.error("outputStream close error!", e)
-                } finally {
-                    if (null != inputStream) {
-                        try {
-                            inputStream.close()
-                        } catch (e: IOException) {
-                            logger.error("inputStream close error!", e)
-                        }
-
-                    }
+            //把文件下载到saveFilePath目录下面
+            conn.inputStream.use { inputStream ->
+                BufferedOutputStream(FileOutputStream(saveFilePath), 8192).use {outputStream ->
+                    IOUtils.copy(inputStream, outputStream, 8192)
                 }
             }
+        } catch (e: Exception) {
+            logger.error("download all files to local error!", e)
         }
-        return Result(saveFilePath)
+        return File(saveFilePath)
     }
 
     /**
