@@ -1,6 +1,7 @@
 package com.tencent.bk.devops.atom.pojo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.tencent.bk.devops.atom.utils.json.annotation.SkipLogField;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -85,6 +86,7 @@ public class AtomBaseParam {
      * 插件敏感信息
      */
     @JsonProperty("bkSensitiveConfInfo")
+    @SkipLogField("bkSensitiveConfInfo")
     private Map<String,String> bkSensitiveConfInfo;
 
     /**
