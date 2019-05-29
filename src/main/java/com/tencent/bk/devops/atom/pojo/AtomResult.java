@@ -3,6 +3,7 @@ package com.tencent.bk.devops.atom.pojo;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Maps;
 import com.tencent.bk.devops.atom.common.Status;
+import com.tencent.bk.devops.atom.pojo.quality.QualityValue;
 import lombok.Data;
 
 import java.util.Map;
@@ -48,6 +49,7 @@ public class AtomResult {
      */
     @JsonProperty("message")
     private String message;
+
     /**
      * 类型，默认default
      */
@@ -59,5 +61,11 @@ public class AtomResult {
      */
     @JsonProperty("data")
     private Map<String, DataField> data = Maps.newHashMap();
+
+    /**
+     * 质量红线生成的数据
+     */
+    @JsonProperty("qualityData")
+    private Map<String, QualityValue> qualityData = Maps.newHashMap();
 
 }

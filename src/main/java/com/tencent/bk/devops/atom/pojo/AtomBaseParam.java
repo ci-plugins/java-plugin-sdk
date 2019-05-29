@@ -89,4 +89,10 @@ public class AtomBaseParam {
     @SkipLogField("bkSensitiveConfInfo")
     private Map<String,String> bkSensitiveConfInfo;
 
+    /**
+     * 流水线当前插件id
+     */
+    @JsonProperty("pipeline.task.id")
+    private String pipelineTaskId;
+
 }
