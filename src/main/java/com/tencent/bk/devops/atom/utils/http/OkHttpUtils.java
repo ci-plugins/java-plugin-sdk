@@ -255,7 +255,7 @@ public class OkHttpUtils {
         return doHttp(request, connectTimeout, writeTimeout, readTimeout);
     }
 
-    private static String doHttp(Request request, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doHttp(Request request, long connectTimeout, long writeTimeout, long readTimeout) {
         OkHttpClient httpClient = createClient(connectTimeout, writeTimeout, readTimeout);
         Response response = null;
         String responseContent = null;
