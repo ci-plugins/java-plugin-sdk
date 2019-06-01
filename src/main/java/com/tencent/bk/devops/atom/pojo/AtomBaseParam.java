@@ -85,8 +85,7 @@ public class AtomBaseParam {
     /**
      * 插件敏感信息
      */
-    @JsonProperty("bkSensitiveConfInfo")
-    @SkipLogField("bkSensitiveConfInfo")
+    @JsonProperty(value = "bkSensitiveConfInfo",access = JsonProperty.Access.WRITE_ONLY)
     private Map<String,String> bkSensitiveConfInfo;
 
     /**
