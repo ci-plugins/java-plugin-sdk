@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.ArrayList
+import java.util.regex.Pattern
 
 class ArtifactoryApi : BaseApi() {
 
@@ -36,12 +38,22 @@ class ArtifactoryApi : BaseApi() {
             logger.error("get artifactoryFileUrl throw Exception", e)
         }
 
-        logger.info("getArtifactoryFileUrl responseContent is:{}", responseContent)
         return if (null != responseContent) {
-            JsonUtil.fromJson(responseContent, object : TypeReference<Result<List<String>>>() {
+            val srcUrlResult = JsonUtil.fromJson(responseContent, object : TypeReference<Result<List<String>>>() {
 
             })
+            val srcUrlList = srcUrlResult.data
+            val finalSrcUrlList = ArrayList<String>()
+            if (srcUrlList != null) {
+                for (srcUrl in srcUrlList) {
+                    val finalSrcUrl = srcUrl.replace(getUrlHost(srcUrl), SdkEnv.getGatewayHost())
+                    finalSrcUrlList.add(finalSrcUrl)
+                }
+            }
+            logger.info("getArtifactoryFileUrl responseContent is:{}", JsonUtil.toJson(finalSrcUrlList))
+             Result(finalSrcUrlList)
         } else {
+            logger.info("getArtifactoryFileUrl responseContent is null")
             Result(emptyList())
         }
     }
@@ -52,29 +64,29 @@ class ArtifactoryApi : BaseApi() {
      * @param path 路径
      * @return 文件在本地的保存路径
      */
-    fun downloadArtifactoryFileToLocal(artifactoryType: String, path: String): Result<String> {
+    fun downloadArtifactoryFileToLocal(artifactoryType: String, path: String): Result<List<String>> {
         val getFileUrlResult = getArtifactoryFileUrl(artifactoryType, path)
         logger.info("the getFileUrlResult is:{}", JsonUtil.toJson(getFileUrlResult))
-        var srcUrl: String? = null
+        val srcUrlList: List<String>?
         if (0 != getFileUrlResult.status) {
             return Result(getFileUrlResult.status, getFileUrlResult.message)
         } else {
-            val data = getFileUrlResult.data
-            if (null != data && data.isNotEmpty()) {
-                srcUrl = data[0]
+            srcUrlList = getFileUrlResult.data
+        }
+        val saveFilePathList = ArrayList<String>()
+        if (null != srcUrlList) {
+            for (srcUrl in srcUrlList) {
+                val lastItem = srcUrl.split("/").last()
+                val fileName = lastItem.substring(0, lastItem.indexOf("?"))
+                val dataDir = SdkUtils.getDataDir()
+                logger.info("the dataDir is:{}", dataDir)
+                val saveFilePath = "$dataDir/$fileName"
+                downloadFileToLocal(srcUrl, saveFilePath)
+                saveFilePathList.add(saveFilePath)
             }
         }
-        val arrays = path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        var fileName = arrays[arrays.size - 1]
-        val index = fileName.indexOf("?")
-        if (-1 != index) {
-            fileName = fileName.substring(0, index)
-        }
-        val dataDir = SdkUtils.getDataDir()
-        logger.info("the dataDir is:{}", dataDir)
-        val saveFilePath = "$dataDir/$fileName"
-        downloadFileToLocal(srcUrl!!, saveFilePath)
-        return Result(saveFilePath)
+        logger.info("downloadArtifactoryFileToLocal saveFilePathList is:{}", JsonUtil.toJson(saveFilePathList))
+        return Result(saveFilePathList)
     }
 
     /**
@@ -143,6 +155,16 @@ class ArtifactoryApi : BaseApi() {
                 throw RuntimeException("构建分发获取文件失败")
             }
         }
+    }
+
+    private fun getUrlHost(url: String): String {
+        val p = Pattern.compile("(?<=//|)((\\w)+\\.)+\\w+(:[0-9]{1,5})?")
+        val matcher = p.matcher(url)
+        var host = ""
+        if (matcher.find()) {
+            host = matcher.group()
+        }
+        return host
     }
 
     companion object {

@@ -73,4 +73,9 @@ public class SdkEnv {
             return "http://" + instance.gateway + "/" + path.trim();
         }
     }
+
+    public static String getGatewayHost(){
+        return instance.gateway;
+    }
+
 }
