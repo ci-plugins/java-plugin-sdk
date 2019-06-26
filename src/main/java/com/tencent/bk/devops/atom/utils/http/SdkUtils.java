@@ -10,8 +10,8 @@ import java.io.File;
 public class SdkUtils {
 
     /**
-     * 获取原子文件路径前缀
-     * @return 原子文件路径前缀
+     * 获取插件文件路径前缀
+     * @return 插件文件路径前缀
      */
     public static String getDataDir() {
         String dataDir = System.getenv(Constants.DATA_DIR_ENV);

@@ -1,12 +1,10 @@
 package com.tencent.bk.devops.atom;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.bk.devops.atom.common.Constants;
 import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.pojo.AtomResult;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +13,7 @@ import java.util.Map;
 
 
 /**
- * 原子上下文
+ * 插件上下文
  *
  * @version 1.0
  */
@@ -30,7 +28,7 @@ public class AtomContext<T extends AtomBaseParam> {
     private AtomResult result;
 
     /**
-     * 原子定义的参数类
+     * 插件定义的参数类
      *
      * @param paramClazz 参数类
      * @throws IOException 如果环境问题导致读不到参数类
