@@ -9,11 +9,11 @@ import lombok.Data;
 import java.util.Map;
 
 /**
- * 流水线插件输出结果
+ * 流水线原子输出结果
  * <p>
  * {
- * "status": "",     # 插件执行结果，值可以为success、failure、error
- * "message": "",    # 插件执行结果说明，支持markdown格式
+ * "status": "",     # 原子执行结果，值可以为success、failure、error
+ * "message": "",    # 原子执行结果说明，支持markdown格式
  * "type": "default",# 模板类型，目前仅支持default,用于规定data的解析入库方式
  * "data":{          # default模板的数据格式如下：
  * "out_var_1": {

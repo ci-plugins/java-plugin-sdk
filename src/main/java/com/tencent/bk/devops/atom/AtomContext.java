@@ -13,7 +13,7 @@ import java.util.Map;
 
 
 /**
- * 插件上下文
+ * 原子上下文
  *
  * @version 1.0
  */
@@ -28,7 +28,7 @@ public class AtomContext<T extends AtomBaseParam> {
     private AtomResult result;
 
     /**
-     * 插件定义的参数类
+     * 原子定义的参数类
      *
      * @param paramClazz 参数类
      * @throws IOException 如果环境问题导致读不到参数类
