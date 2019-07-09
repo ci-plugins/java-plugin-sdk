@@ -83,6 +83,18 @@ public class AtomBaseParam {
     private String pipelineStartUserName;
 
     /**
+     * 流水线创建人
+     */
+    @JsonProperty("BK_CI_PIPELINE_CREATE_USER")
+    private String pipelineCreateUserName;
+
+    /**
+     * 流水线修改人
+     */
+    @JsonProperty("BK_CI_PIPELINE_UPDATE_USER")
+    private String pipelineUpdateUserName;
+
+    /**
      * 插件敏感信息
      */
     @JsonProperty(value = "bkSensitiveConfInfo",access = JsonProperty.Access.WRITE_ONLY)
