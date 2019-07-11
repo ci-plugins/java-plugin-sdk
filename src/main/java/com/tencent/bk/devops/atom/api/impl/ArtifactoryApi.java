@@ -10,6 +10,7 @@ import okhttp3.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,6 +74,18 @@ public class ArtifactoryApi extends BaseApi {
      */
     @SuppressWarnings("all")
     public  Result<List<String>>  downloadArtifactoryFileToLocal(String artifactoryType,String path){
+        return downloadArtifactoryFileToLocal(artifactoryType, path, SdkUtils.getDataDir());
+    }
+
+    /**
+     * 下载构建文件到本地指定目录
+     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param path 路径
+     * @param saveDir 文件保存目录
+     * @return 文件在本地的保存路径
+     */
+    @SuppressWarnings("all")
+    public  Result<List<String>>  downloadArtifactoryFileToLocal(String artifactoryType,String path,String saveDir){
         Result<List<String>> getFileUrlResult = getArtifactoryFileUrl(artifactoryType,path);
         logger.info("the getFileUrlResult is:{}", JsonUtil.toJson(getFileUrlResult));
         List<String> srcUrlList = null;
@@ -83,6 +96,10 @@ public class ArtifactoryApi extends BaseApi {
         }
         List<String> saveFilePathList = new ArrayList<String>();
         if(null != srcUrlList){
+            File saveDirFile = new File(saveDir);
+            if(!saveDirFile.exists()){
+                saveDirFile.mkdirs();
+            }
             for(String srcUrl : srcUrlList){
                 String[] arrays = srcUrl.split("/");
                 String lastItem = arrays[arrays.length-1];
@@ -96,16 +113,16 @@ public class ArtifactoryApi extends BaseApi {
                     conn.setRequestMethod("GET");
                     conn.setConnectTimeout(5*1000);
                     inputStream = conn.getInputStream();
-                    String dataDir = SdkUtils.getDataDir();
-                    logger.info("the dataDir is:{}", dataDir);
-                    saveFilePath = dataDir+"/"+fileName;
-                    outputStream = new FileOutputStream(saveFilePath); //把文件下载到dataDir目录下面
+                    saveFilePath = saveDir+"/"+fileName;
+                    logger.info("the saveFilePath is:{}", saveFilePath);
+                    outputStream = new FileOutputStream(saveFilePath); //把文件下载到指定目录下面
                     byte[] buffer = new byte[1024];
                     int len = 0;
                     while ((len = inputStream.read(buffer)) != -1){
                         outputStream.write(buffer,0,len);
                     }
                     saveFilePathList.add(saveFilePath);
+                    logger.info("the saveFilePathList is:{}", JsonUtil.toJson(saveFilePathList));
                 } catch (IOException e) {
                     logger.error("downloadArtifactoryFileToLocal error!", e);
                 } finally {

@@ -65,6 +65,17 @@ class ArtifactoryApi : BaseApi() {
      * @return 文件在本地的保存路径
      */
     fun downloadArtifactoryFileToLocal(artifactoryType: String, path: String): Result<List<String>> {
+        return downloadArtifactoryFileToLocal(artifactoryType, path, SdkUtils.getDataDir())
+    }
+
+    /**
+     * 下载构建文件到本地
+     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param path 路径
+     * @param saveDir 文件保存目录
+     * @return 文件在本地的保存路径
+     */
+    fun downloadArtifactoryFileToLocal(artifactoryType: String, path: String, saveDir: String): Result<List<String>> {
         val getFileUrlResult = getArtifactoryFileUrl(artifactoryType, path)
         logger.info("the getFileUrlResult is:{}", JsonUtil.toJson(getFileUrlResult))
         val srcUrlList: List<String>?
@@ -75,12 +86,15 @@ class ArtifactoryApi : BaseApi() {
         }
         val saveFilePathList = ArrayList<String>()
         if (null != srcUrlList) {
+            val saveDirFile = File(saveDir)
+            if(!saveDirFile.exists()){
+                saveDirFile.mkdirs()
+            }
             for (srcUrl in srcUrlList) {
                 val lastItem = srcUrl.split("/").last()
                 val fileName = lastItem.substring(0, lastItem.indexOf("?"))
-                val dataDir = SdkUtils.getDataDir()
-                logger.info("the dataDir is:{}", dataDir)
-                val saveFilePath = "$dataDir/$fileName"
+                val saveFilePath = "$saveDir/$fileName"
+                logger.info("the saveFilePath is:{}", saveFilePath)
                 downloadFileToLocal(srcUrl, saveFilePath)
                 saveFilePathList.add(saveFilePath)
             }
@@ -96,17 +110,31 @@ class ArtifactoryApi : BaseApi() {
      * @return 文件在本地的保存路径
      */
     fun downloadAllFileToLocal(artifactoryType: String, path: String): Result<List<File>> {
+        return downloadAllFileToLocal(artifactoryType, path, SdkUtils.getDataDir())
+    }
+
+    /**
+     * 下载多个构建文件到本地
+     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param path 路径
+     * @param saveDir 文件保存目录
+     * @return 文件在本地的保存路径
+     */
+    fun downloadAllFileToLocal(artifactoryType: String, path: String, saveDir: String): Result<List<File>> {
         val getFileUrlResult = getArtifactoryFileUrl(artifactoryType, path)
         logger.info("the getFileUrlResult is:{}", JsonUtil.toJson(getFileUrlResult))
         if (0 != getFileUrlResult.status) {
             return Result(getFileUrlResult.status, getFileUrlResult.message)
         }
-        val dataDir = SdkUtils.getDataDir()
-        logger.info("the dataDir is:{}", dataDir)
+        val saveDirFile = File(saveDir)
+        if(!saveDirFile.exists()){
+            saveDirFile.mkdirs()
+        }
         return Result(getFileUrlResult.data!!.map {
             val lastItem = it.split("/").last()
             val fileName = lastItem.substring(0, lastItem.indexOf("?token="))
-            val saveFilePath = "$dataDir/$fileName"
+            val saveFilePath = "$saveDir/$fileName"
+            logger.info("the saveFilePath is:{}", saveFilePath)
             downloadFileToLocal(it, saveFilePath)
         })
     }
