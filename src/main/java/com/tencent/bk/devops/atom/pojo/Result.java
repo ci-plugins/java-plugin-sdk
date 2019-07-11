@@ -18,6 +18,15 @@ public class Result<T> {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return "Result{" +
+                "status=" + status +
+                ", message='" + message + '\'' +
+                ", data=" + data +
+                '}';
+    }
+
     public Result(int status, String message) {
         this.status = status;
         this.message = message;
