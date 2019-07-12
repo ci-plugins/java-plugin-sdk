@@ -79,6 +79,11 @@ public class BaseApi {
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).delete().build();
     }
 
+    public Request buildDelete(String path, RequestBody requestBody, Map<String, String> headers) {
+        String url = buildUrl(path);
+        return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).delete(requestBody).build();
+    }
+
     public RequestBody getJsonRequest(Object data) {
         return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), JsonUtil.toJson(data));
     }
