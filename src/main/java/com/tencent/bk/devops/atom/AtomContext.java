@@ -3,6 +3,7 @@ package com.tencent.bk.devops.atom;
 import com.tencent.bk.devops.atom.common.Constants;
 import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.pojo.AtomResult;
+import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import org.apache.commons.io.FileUtils;
 
@@ -34,21 +35,9 @@ public class AtomContext<T extends AtomBaseParam> {
      * @throws IOException 如果环境问题导致读不到参数类
      */
     AtomContext(Class<T> paramClazz) throws IOException {
-        String value = System.getenv(Constants.DATA_DIR_ENV);
-        if (value == null || value.trim().length() == 0 || !(new File(value)).isDirectory()) {
-            value = System.getProperty("user.dir");
-        }
-        dataDir = value;
-        value = System.getenv(Constants.INPUT_FILE_ENV);
-        if (value == null || value.trim().length() == 0) {
-            value = "input.json";
-        }
-        inputFile = value;
-        value = System.getenv(Constants.OUTPUT_FILE_ENV);
-        if (value == null || value.trim().length() == 0) {
-            value = "output.json";
-        }
-        outputFile = value;
+        dataDir = SdkUtils.getDataDir();
+        inputFile = SdkUtils.getInputFile();
+        outputFile = SdkUtils.getOutputFile();
         param = readParam(paramClazz);
         result = new AtomResult();
     }
