@@ -1,7 +1,7 @@
 package com.tencent.bk.devops.plugin.pojo.notify
 
-import com.tencent.bk.devops.atom.notify.EnumNotifyPriority
-import com.tencent.bk.devops.atom.notify.EnumNotifySource
+import com.tencent.bk.devops.atom.pojo.notify.EnumNotifyPriority
+import com.tencent.bk.devops.atom.pojo.notify.EnumNotifySource
 
 
 open class EmailNotifyMessage : BaseMessage() {

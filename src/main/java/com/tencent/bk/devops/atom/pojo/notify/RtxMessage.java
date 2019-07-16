@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.atom.notify;
+package com.tencent.bk.devops.atom.pojo.notify;
 
 import com.tencent.bk.devops.plugin.pojo.notify.BaseMessage;
 import lombok.Data;

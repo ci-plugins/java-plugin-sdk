@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.atom.notify;
+package com.tencent.bk.devops.atom.pojo.notify;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

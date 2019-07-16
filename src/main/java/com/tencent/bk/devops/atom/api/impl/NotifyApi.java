@@ -1,9 +1,9 @@
 package com.tencent.bk.devops.atom.api.impl;
 
 import com.tencent.bk.devops.atom.api.BaseApi;
-import com.tencent.bk.devops.atom.notify.EnumNotifyPriority;
-import com.tencent.bk.devops.atom.notify.EnumNotifySource;
-import com.tencent.bk.devops.atom.notify.RtxMessage;
+import com.tencent.bk.devops.atom.pojo.notify.EnumNotifyPriority;
+import com.tencent.bk.devops.atom.pojo.notify.EnumNotifySource;
+import com.tencent.bk.devops.atom.pojo.notify.RtxMessage;
 import com.tencent.bk.devops.atom.pojo.Result;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import com.tencent.bk.devops.plugin.pojo.notify.EmailNotifyMessage;
@@ -27,7 +27,7 @@ public class NotifyApi extends BaseApi {
     private static Map<String, String> headers=new HashMap<>();
     /**
      *  发送邮件
-     * @param receivers 接收人（多个接收人用,号或;号间隔组成字符串）
+     * @param receivers 接收人（多个接收人用英文,号或;号间隔组成字符串）
      * @param ccs       抄送人
      * @param title     邮件的标题
      * @param body      邮件内容
