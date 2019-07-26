@@ -2,12 +2,9 @@ package com.tencent.bk.devops.plugin.api.impl
 
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.plugin.pojo.artifactory.JfrogFilesData
-import com.tencent.bk.devops.plugin.utils.JsonUtil
-import org.slf4j.LoggerFactory
+import com.tencent.devops.common.api.util.JsonUtil
 
 class JfrogResourceApi : BaseApi() {
-    private val logger = LoggerFactory.getLogger(JfrogResourceApi::class.java)
-
     private val cusListFilesUrl = "/jfrog/api/build/custom/?list&deep=1&listFolders=1"
     private val listFilesUrl = "/jfrog/api/build/archive"
 

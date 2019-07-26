@@ -2,11 +2,10 @@ package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.tencent.bk.devops.atom.api.BaseApi
-import com.tencent.bk.devops.atom.pojo.plugin.BuildHistory
-import com.tencent.bk.devops.atom.pojo.plugin.ChannelCode
-import com.tencent.bk.devops.plugin.utils.JsonUtil
-import com.tencent.bk.devops.plugin.pojo.Result
-
+import com.tencent.devops.common.api.util.JsonUtil
+import com.tencent.devops.common.api.pojo.Result
+import com.tencent.devops.common.pipeline.enums.ChannelCode
+import com.tencent.devops.process.pojo.BuildHistory
 
 class BuildResourceApi :BaseApi(){
 
