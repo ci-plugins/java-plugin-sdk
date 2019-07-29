@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.atom.pojo.plugin;
+package com.tencent.bk.devops.atom.pojo.artifactory;
 
 
 import com.tencent.bk.devops.atom.common.ArtifactoryType;

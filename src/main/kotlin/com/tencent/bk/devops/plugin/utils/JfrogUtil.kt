@@ -23,7 +23,7 @@ class JfrogUtil {
 
         val matcher = FileSystems.getDefault()
                 .getPathMatcher("glob:" + srcPath)
-        data.files.forEach { jfrogFile ->
+        data.data?.files?.forEach { jfrogFile ->
             if (matcher.matches(Paths.get(jfrogFile.uri.removePrefix("/")))) {
                 result.add(jfrogFile)
             }

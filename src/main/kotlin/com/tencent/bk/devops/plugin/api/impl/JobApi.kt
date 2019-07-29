@@ -10,7 +10,7 @@ import okhttp3.RequestBody
 class JobApi : BaseApi() {
 
     fun fastPushfile(fastPushFileRequest: FastPushFileRequest): Result<Void> {
-        val path = "/plugin/api/build/bs/pushfile"
+        val path = "/artifactory/api/build/bs/pushfile"
         val requestBody = RequestBody.create(JSON_CONTENT_TYPE, JsonUtil.toJson(fastPushFileRequest))
         val request = buildPost(path, requestBody, mutableMapOf())
         val responseContent = request(request, "执行快速分发文件失败：$fastPushFileRequest")

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.NetworkInterface
+import kotlin.collections.HashMap
 
 object CommonUtils {
 
@@ -60,7 +61,6 @@ object CommonUtils {
         } catch (e: Exception) {
             logger.error("获取网卡失败", e)
         }
-
         return allIp
     }
 }

@@ -13,7 +13,7 @@ class ArchiveGetResourceApi : BaseApi() {
      * @param destPath 要下载到的文件地址
      * @return
      */
-    fun downloadCustomizeFile(uri: String, destPath: File) {
+    fun downloadCustomizeFile(uri: String, destPath: File){
         val url = "/jfrog/storage/build/custom$uri"
         val request = buildGet(url)
         archiveApi.download(request, destPath)
@@ -22,7 +22,7 @@ class ArchiveGetResourceApi : BaseApi() {
     /**
      * 根据jfrogFile中的uri下载流水线仓库文件到指定目录
      * @param pipelineId  要下载流水线的pipelineId
-     * @param buildId  要下载流水线对应的构建历史号buildId
+     * @param buildId  要下载流水线对应的构建idbuildId
      * @param uri  对应JfrogFile文件中的uri
      * @param destPath 要下载到的文件地址
      * @return
