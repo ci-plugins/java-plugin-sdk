@@ -30,6 +30,7 @@ class UploadFileToCosApiImpl constructor(
     override fun uploadCdn(projectId: String, pipelineId: String, buildId: String, elementId: String, executeCount: Int, cdnUploadFileInfo: CdnUploadFileInfo, mapOperation: MutableMap<String, String>): Result<SpmFile> {
         // 根据ticketid从ticketService获取凭证信息
         val ticketsMap =credentialApi.getCredential(cdnUploadFileInfo.ticketId).data
+        logger.info("ticketsMap is :"+ticketsMap)
         // 根据spm的appId以及secretKey，调用spm接口，获取cos系统的appid，bucket，root_path以及业务外网CDN域名
         val spmAppId = ticketsMap["v1"].toString()
         val spmSecretKey = ticketsMap["v2"].toString()
