@@ -30,13 +30,12 @@ class UploadFileToCosApiImpl constructor(
     override fun uploadCdn(projectId: String, pipelineId: String, buildId: String, elementId: String, executeCount: Int, cdnUploadFileInfo: CdnUploadFileInfo, mapOperation: MutableMap<String, String>): Result<SpmFile> {
         // 根据ticketid从ticketService获取凭证信息
         val ticketsMap =credentialApi.getCredential(cdnUploadFileInfo.ticketId).data
-        logger.info("ticketsMap is :"+ticketsMap)
+        logger.info("ticketsMap is :$ticketsMap")
         // 根据spm的appId以及secretKey，调用spm接口，获取cos系统的appid，bucket，root_path以及业务外网CDN域名
         val spmAppId = ticketsMap["v1"].toString()
         val spmSecretKey = ticketsMap["v2"].toString()
         val cosAppInfo = getCosAppInfoFromSpm(spmAppId, spmSecretKey)
         val cosClientConfig = COSClientConfig(cosAppInfo.cosAppId, spmAppId, spmSecretKey)
-
         var cdnPath = if (cdnUploadFileInfo.cdnPathPrefix.startsWith("/")) {
             "/" + cosAppInfo.rootPath + cdnUploadFileInfo.cdnPathPrefix
         } else {
@@ -80,14 +79,12 @@ class UploadFileToCosApiImpl constructor(
                 val code = responseJson["code"].asInt
                 if (0 != code) {
                     val msg = responseJson.asJsonObject["msg"]
-                    logger.error("Get cos app info from spm failed, msg:$msg")
                     throw RuntimeException("请求SPM失败, msg:$msg")
                 }
                 val rootPath = responseJson["root_path"].asString
                 val domain = responseJson["domain"].asString
                 val bucket = responseJson["bucket"].asString
                 val appid = responseJson["appid"].asString
-
                 return CosAppInfo(rootPath, domain, bucket, appid.toLong())
             }
         } catch (e: Exception) {
