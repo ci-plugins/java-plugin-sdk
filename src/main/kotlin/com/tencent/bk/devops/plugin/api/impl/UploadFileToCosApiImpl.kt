@@ -32,8 +32,10 @@ class UploadFileToCosApiImpl constructor(
         val ticketsMap =credentialApi.getCredential(cdnUploadFileInfo.ticketId).data
         logger.info("ticketsMap is :$ticketsMap")
         // 根据spm的appId以及secretKey，调用spm接口，获取cos系统的appid，bucket，root_path以及业务外网CDN域名
-        val spmAppId = ticketsMap["v1"].toString()
-        val spmSecretKey = ticketsMap["v2"].toString()
+        val spmAppId = ticketsMap["appId"].toString()
+        logger.info("spmAppId is : $spmAppId")
+        val spmSecretKey = ticketsMap["secretKey"].toString()
+        logger.info("spmSecretKey is :$spmSecretKey")
         val cosAppInfo = getCosAppInfoFromSpm(spmAppId, spmSecretKey)
         val cosClientConfig = COSClientConfig(cosAppInfo.cosAppId, spmAppId, spmSecretKey)
         var cdnPath = if (cdnUploadFileInfo.cdnPathPrefix.startsWith("/")) {
