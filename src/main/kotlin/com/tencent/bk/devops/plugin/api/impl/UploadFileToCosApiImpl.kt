@@ -8,7 +8,7 @@ import com.tencent.bk.devops.atom.api.impl.CredentialApi
 import com.tencent.bk.devops.plugin.api.UploadFileToCosApi
 import com.tencent.bk.devops.plugin.api.cos.CosService
 import com.tencent.bk.devops.plugin.api.cos.UploadCosCdnParam
-import com.tencent.bk.devops.plugin.api.cos.UploadCosCdnThread
+import com.tencent.bk.devops.plugin.api.cos.UploadCosCdn
 import com.tencent.bk.devops.plugin.pojo.cos.CdnUploadFileInfo
 import com.tencent.bk.devops.plugin.pojo.cos.SpmFile
 import com.tencent.bk.devops.plugin.pojo.Result
@@ -27,15 +27,12 @@ class UploadFileToCosApiImpl constructor(
     private val parser = JsonParser()
     private val credentialApi=CredentialApi()
 
-    override fun uploadCdn(projectId: String, pipelineId: String, buildId: String, elementId: String, executeCount: Int, cdnUploadFileInfo: CdnUploadFileInfo, mapOperation: MutableMap<String, String>): Result<SpmFile> {
+    override fun uploadCdn(projectId: String, pipelineId: String, buildId: String, elementId: String, executeCount: Int, cdnUploadFileInfo: CdnUploadFileInfo): Result<SpmFile> {
         // 根据ticketid从ticketService获取凭证信息
         val ticketsMap =credentialApi.getCredential(cdnUploadFileInfo.ticketId).data
-        logger.info("ticketsMap is :$ticketsMap")
         // 根据spm的appId以及secretKey，调用spm接口，获取cos系统的appid，bucket，root_path以及业务外网CDN域名
-        val spmAppId = ticketsMap["appId"].toString()
-        logger.info("spmAppId is : $spmAppId")
-        val spmSecretKey = ticketsMap["secretKey"].toString()
-        logger.info("spmSecretKey is :$spmSecretKey")
+        val spmAppId = ticketsMap.get("appId").toString()
+        val spmSecretKey = ticketsMap.get("secretKey").toString()
         val cosAppInfo = getCosAppInfoFromSpm(spmAppId, spmSecretKey)
         val cosClientConfig = COSClientConfig(cosAppInfo.cosAppId, spmAppId, spmSecretKey)
         var cdnPath = if (cdnUploadFileInfo.cdnPathPrefix.startsWith("/")) {
@@ -51,13 +48,11 @@ class UploadFileToCosApiImpl constructor(
             projectId, pipelineId, buildId, elementId, cdnUploadFileInfo.regexPaths,
             cdnUploadFileInfo.customize, cosAppInfo.bucket, cdnPath, cosAppInfo.domain, cosClientConfig
         )
-        val uploadCosCdnThread =
-            UploadCosCdnThread(cosService, mapOperation, uploadCosCdnParam)
-        val uploadThread = Thread(uploadCosCdnThread, uploadTaskKey)
         logger.info("开始上传CDN...")
-        uploadThread.start()
+        val uploadCosCdn = UploadCosCdn(cosService, uploadCosCdnParam)
+        val downloadUrlList=uploadCosCdn.upload()
         cdnPath = cosAppInfo.domain + cdnPath
-        val spmFile = SpmFile(uploadTaskKey, cdnPath)
+        val spmFile = SpmFile(uploadTaskKey, cdnPath,downloadUrlList)
         return Result(spmFile)
     }
 

@@ -19,7 +19,6 @@ interface UploadFileToCosApi {
             buildId: String,
             elementId: String,
             executeCount: Int,
-            cdnUploadFileInfo: CdnUploadFileInfo,
-            mapOperation:MutableMap<String,String>
+            cdnUploadFileInfo: CdnUploadFileInfo
     ): Result<SpmFile>
 }

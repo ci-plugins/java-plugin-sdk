@@ -6,5 +6,6 @@ data class SpmFile(
     //("uploadTaskKey", required = true)
     val uploadTaskKey: String,
     //("cdnPath", required = true)
-    val cdnPath: String
+    val cdnPath: String,
+    val downloadUrlList:MutableList<Map<String,String>>
 )
