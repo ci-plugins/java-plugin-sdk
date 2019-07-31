@@ -2,6 +2,7 @@ package com.tencent.bk.devops.plugin.api.cos
 
 import com.google.common.io.Files
 import com.google.gson.JsonParser
+import com.tencent.bk.devops.atom.utils.md5.MD5Util
 import com.tencent.bk.devops.plugin.api.impl.ArtifactoryApi
 import com.tencent.bk.devops.plugin.pojo.Result
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
@@ -15,7 +16,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.util.Arrays
 
-class UploadCosCdn  {
+class UploadCosCdn {
     private var count = 0
     private val parser = JsonParser()
     private val trunkSize = 4 * 1024 * 1024
@@ -23,7 +24,7 @@ class UploadCosCdn  {
     private val refreshToken = "2c224976-04ef-11e9-ba56-60def3767b57"
     private val refreshPlatIds = "200042,200002,170,166,161,200004,200005,200001,200437,90"
     private val refreshUrl = "http://refresh.api.hycdn.oa.com:27591/refresh?type=url&plat_ids=$refreshPlatIds&format=plain"
-    private val artifactoryApi=ArtifactoryApi()
+    private val artifactoryApi = ArtifactoryApi()
     var cosService: CosService? = null
     var uploadCosCdnParam: UploadCosCdnParam? = null
     var projectId: String = ""
@@ -46,14 +47,14 @@ class UploadCosCdn  {
         this.elementId = uploadCosCdnParam.elementId
     }
 
-    public fun upload():MutableList<Map<String, String>> {
+    public fun upload(): MutableList<Map<String, String>> {
         try {
             return uploadFileToCos(uploadCosCdnParam!!.regexPaths, uploadCosCdnParam!!.customize, uploadCosCdnParam!!.bucket,
                     uploadCosCdnParam!!.cdnPath, uploadCosCdnParam!!.domain, uploadCosCdnParam!!.cosClientConfig)
         } catch (ex: Exception) {
             logger.error("Execute Upload to cos cdn exception: ${ex.message}", ex)
         }
-        return mutableListOf<Map<String,String>>()
+        return mutableListOf<Map<String, String>>()
     }
 
     private fun uploadFileToCos(
@@ -71,24 +72,25 @@ class UploadCosCdn  {
         val workspace = Files.createTempDir()
         try {
             count = 0
-            var result= Result<List<String>>()
-            if(customize==false){
-                 result=artifactoryApi.getArtifactoryFileUrl("PIPELINE",regexPaths)
-            }else{
-                 result=artifactoryApi.getArtifactoryFileUrl("CUSTOM_DIR",regexPaths)
+            var result = Result<List<String>>()
+            if (customize == false) {
+                result = artifactoryApi.getArtifactoryFileUrl("PIPELINE", regexPaths)
+            } else {
+                result = artifactoryApi.getArtifactoryFileUrl("CUSTOM_DIR", regexPaths)
             }
-            result.data?.forEach{ url->
-                val filename=url.substring(url.lastIndexOf("/"),url.indexOf("?"))
-                val file = File(workspace,filename)
+            result.data?.forEach { url ->
+                val filename = url.substring(url.lastIndexOf("/"), url.indexOf("?"))
+                val file = File(workspace, filename)
                 val cdnFileName = cdnPath + file.name
                 OkhttpUtils.downloadFile(url, file)
+                val md5 = MD5Util().getMD5(file)
                 val downloadUrl = uploadToCosImpl(cdnFileName, domain, file, cosClientConfig, bucket)
-                downloadUrlList.add(mapOf("fileName" to file.name, "fileDownloadUrl" to downloadUrl))
+                downloadUrlList.add(mapOf("fileName" to file.name, "fileDownloadUrl" to downloadUrl, "md5" to md5))
             }
         } catch (ex: IOException) {
             val msg = String.format("Upload file failed because of IOException(%s)", ex.message)
             logger.error(msg, ex)
-        }  catch (ex: Exception) {
+        } catch (ex: Exception) {
             val msg = String.format("Upload file failed because of Exception(%s)", ex.message)
             logger.error(msg, ex)
         } finally {
