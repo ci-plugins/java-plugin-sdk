@@ -78,4 +78,8 @@ public class SdkEnv {
         return instance.gateway;
     }
 
+    public static String getVmSeqId(){
+        return instance.vmSeqId;
+    }
+
 }
