@@ -21,6 +21,7 @@ class ArchiveApi {
 
     public fun download(uri: String, request: Request, destPath: File, size: Long,bkWorkSpace:String) {
         okHttpClient.newBuilder().build().newCall(request).execute().use { response ->
+            if(!response.isSuccessful)throw RuntimeException("get $request failured......,please check your input")
             download(uri, response, destPath, size,bkWorkSpace)
         }
     }
