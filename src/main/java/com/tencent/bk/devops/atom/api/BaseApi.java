@@ -4,6 +4,8 @@ package com.tencent.bk.devops.atom.api;
 import com.google.common.collect.Maps;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class BaseApi {
 
     protected static final MediaType JSON_CONTENT_TYPE = MediaType.parse("application/json; charset=utf-8");
+    private static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
 
     protected String request(Request request, String errorMessage) throws IOException {
         OkHttpClient httpClient = okHttpClient.newBuilder().build();
@@ -25,6 +28,7 @@ public class BaseApi {
         if (!response.isSuccessful()) {
             System.err.println("Fail to request(" + request + ") with code " + response.code()
                     + " , message " + response.message() + " and response" + responseContent);
+            logger.info("excep>>>>>>>>>>>>"+response);
             throw new RuntimeException(errorMessage);
         }
         return responseContent;
@@ -100,5 +104,6 @@ public class BaseApi {
         headers.putAll(SdkEnv.getSdkHeader());
         return headers;
     }
+
 
 }

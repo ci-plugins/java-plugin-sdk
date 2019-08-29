@@ -1,9 +1,10 @@
 package com.tencent.bk.devops.plugin.api.impl
 
 import com.tencent.bk.devops.atom.api.BaseApi
-import com.tencent.bk.devops.plugin.pojo.artifactory.JfrogFilesData
-import com.tencent.bk.devops.plugin.utils.JacksonUtil
+import com.tencent.bk.devops.atom.pojo.jfrog.JfrogFilesData
+import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.pojo.Result
+import org.slf4j.LoggerFactory
 
 class JfrogResourceApi : BaseApi() {
     private val cusListFilesUrl = "/jfrog/api/build/custom/?list&deep=1&listFolders=1"
@@ -24,9 +25,14 @@ class JfrogResourceApi : BaseApi() {
         val request = buildGet(listFilesUrl)
         val responseContent = request(request, "获取仓库文件失败")
         return try {
-            Result(JacksonUtil.createObjectMapper().readValue(responseContent, JfrogFilesData::class.java))
+            Result(JsonUtil.fromJson(responseContent, JfrogFilesData::class.java))
         } catch (e: Exception) {
             Result(-1,"获取仓库文件异常")
         }
+    }
+
+    companion object {
+
+        private val logger = LoggerFactory.getLogger(JfrogResourceApi::class.java)
     }
 }

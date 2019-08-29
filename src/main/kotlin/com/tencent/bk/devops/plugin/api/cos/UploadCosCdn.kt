@@ -54,7 +54,7 @@ class UploadCosCdn {
         } catch (ex: Exception) {
             logger.error("Execute Upload to cos cdn exception: ${ex.message}", ex)
         }
-        return mutableListOf<Map<String, String>>()
+        return mutableListOf()
     }
 
     private fun uploadFileToCos(
@@ -72,7 +72,7 @@ class UploadCosCdn {
         val workspace = Files.createTempDir()
         try {
             count = 0
-            var result = Result<List<String>>()
+            var result: Result<List<String>>
             if (customize == false) {
                 result = artifactoryApi.getArtifactoryFileUrl("PIPELINE", regexPaths)
             } else {
@@ -108,7 +108,7 @@ class UploadCosCdn {
         val tmpContent = ByteArray(trunkSize)
         var readSize: Int
 
-        FileInputStream(file).use({ fis ->
+        FileInputStream(file).use { fis ->
             readSize = fis.read(tmpContent)
             currentPos = 0
             while (readSize != -1) {
@@ -125,7 +125,7 @@ class UploadCosCdn {
                 currentPos = nextPos
                 readSize = fis.read(tmpContent)
             }
-        })
+        }
         logger.info("Upload to cos success, fileName: $cdnFileName")
         val downloadUrl = domain + cdnFileName // download url from cdn
         logger.info("Download url: $downloadUrl")

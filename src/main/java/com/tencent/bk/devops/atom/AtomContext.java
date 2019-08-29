@@ -1,5 +1,6 @@
 package com.tencent.bk.devops.atom;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.bk.devops.atom.common.Constants;
 import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.pojo.AtomResult;
@@ -78,6 +79,11 @@ public class AtomContext<T extends AtomBaseParam> {
     private T readParam(Class<T> paramClazz) throws IOException {
         String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), Charset.defaultCharset());
         return JsonUtil.fromJson(json, paramClazz);
+    }
+
+    public Map<String,String>  getAllParameters() throws IOException {
+        String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), Charset.defaultCharset());
+        return JsonUtil.fromJson(json, new TypeReference<Map<String, String>>(){});
     }
 
     void persistent() throws IOException {
