@@ -19,14 +19,14 @@ class ArchiveApi {
             .writeTimeout(60L, TimeUnit.SECONDS)
             .build()
 
-    public fun download(uri: String, request: Request, destPath: File, size: Long,bkWorkSpace:String) {
+    public fun download(uri: String, request: Request, destPath: File, size: Long, bkWorkSpace: String) {
         okHttpClient.newBuilder().build().newCall(request).execute().use { response ->
-            if(!response.isSuccessful)throw RuntimeException("get $request failured......,please check your input")
-            download(uri, response, destPath, size,bkWorkSpace)
+            if (!response.isSuccessful) throw RuntimeException("get $request failured......,please check your input")
+            download(uri, response, destPath, size, bkWorkSpace)
         }
     }
 
-    private fun download(uri: String, response: Response, destPath: File, size: Long,bkWorkSpace:String) {
+    private fun download(uri: String, response: Response, destPath: File, size: Long, bkWorkSpace: String) {
         if (response.code() == 404) {
             throw RuntimeException("文件不存在")
         }
@@ -41,27 +41,29 @@ class ArchiveApi {
         response.body()!!.byteStream().use { bs ->
             val buf = ByteArray(4096)
             var len = bs.read(buf)
-            process=writeStateToTxt(process,size,bkWorkSpace,uri,len)
+            process = writeStateToTxt(process, size, bkWorkSpace, uri, len,true)
             FileOutputStream(destPath).use { fos ->
                 while (len != -1) {
                     fos.write(buf, 0, len)
                     len = bs.read(buf)
-                    process=writeStateToTxt(process,size,bkWorkSpace,uri,len)
+                    process = writeStateToTxt(process, size, bkWorkSpace, uri, len,false)
                 }
             }
         }
     }
 
-    private fun writeStateToTxt(process:Long,size:Long,bkWorkSpace: String,uri: String,len:Int):Long{
-        val l=process + len
-        val log="$uri :${ceil(((process/size)*100).toDouble())}%\n"
+    private fun writeStateToTxt(process: Long, size: Long, bkWorkSpace: String, uri: String, len: Int, isFirst: Boolean): Long {
+        val l = process + len
+        val log = "$uri :${ceil(((process / size) * 100).toDouble())}%\n"
         logger.info(log)
-        var txtFile=File("$bkWorkSpace${File.separator}BKCIArchiveDownLoadState.txt")
-        if(txtFile.exists()){
-            txtFile.delete()
+        var txtFile = File("$bkWorkSpace${File.separator}BKCIArchiveDownLoadState.txt")
+        if (isFirst) {
+            if (txtFile.exists()) {
+                txtFile.delete()
+            }
+            txtFile.createNewFile()
         }
-        txtFile.createNewFile()
-        FileUtils.write(txtFile,log,"UTF-8",true)
+        FileUtils.write(txtFile, log, "UTF-8", true)
         return l
     }
 
