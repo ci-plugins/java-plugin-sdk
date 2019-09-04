@@ -69,16 +69,21 @@ class UploadCosCdn {
 //        logger.info("the search url is :$searchUrl")
         val downloadUrlList = mutableListOf<Map<String, String>>()
         // 下载文件到临时目录，然后上传到COS
-        val workspace = Files.createTempDir()
+        var workspace = Files.createTempDir()
         try {
-            count = 0
             var result: Result<List<String>>
             if (customize == false) {
                 result = artifactoryApi.getArtifactoryFileUrl("PIPELINE", regexPaths)
             } else {
                 result = artifactoryApi.getArtifactoryFileUrl("CUSTOM_DIR", regexPaths)
             }
+            var count = 0
             result.data?.forEach { url ->
+                if(count>10){
+                    logger.info("-----------------------------------")
+                    workspace.deleteRecursively()
+                    workspace=Files.createTempDir()
+                }
                 val filename = url.substring(url.lastIndexOf("/"), url.indexOf("?"))
                 val file = File(workspace, filename)
                 val cdnFileName = cdnPath + file.name
@@ -86,6 +91,7 @@ class UploadCosCdn {
                 val md5 = MD5Util().getMD5(file)
                 val downloadUrl = uploadToCosImpl(cdnFileName, domain, file, cosClientConfig, bucket)
                 downloadUrlList.add(mapOf("fileName" to file.name, "fileDownloadUrl" to downloadUrl, "md5" to md5))
+                count+=1
             }
         } catch (ex: IOException) {
             val msg = String.format("Upload file failed because of IOException(%s)", ex.message)
