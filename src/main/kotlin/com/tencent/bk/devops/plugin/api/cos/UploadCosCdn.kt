@@ -83,6 +83,7 @@ class UploadCosCdn {
                     logger.info("-----------------------------------")
                     workspace.deleteRecursively()
                     workspace=Files.createTempDir()
+                    count=0
                 }
                 val filename = url.substring(url.lastIndexOf("/"), url.indexOf("?"))
                 val file = File(workspace, filename)
