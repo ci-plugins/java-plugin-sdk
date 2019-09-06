@@ -2,7 +2,6 @@ package com.tencent.bk.devops.plugin.api.cos
 
 import com.google.common.io.Files
 import com.google.gson.JsonParser
-import com.tencent.bk.devops.atom.utils.md5.MD5Util
 import com.tencent.bk.devops.plugin.api.impl.ArtifactoryApi
 import com.tencent.bk.devops.plugin.pojo.Result
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
@@ -10,11 +9,12 @@ import com.tencent.devops.common.cos.COSClientConfig
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
+import org.apache.commons.codec.digest.DigestUtils
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.util.Arrays
+import java.util.*
 
 class UploadCosCdn {
     private var count = 0
@@ -89,7 +89,8 @@ class UploadCosCdn {
                 val file = File(workspace, filename)
                 val cdnFileName = cdnPath + file.name
                 OkhttpUtils.downloadFile(url, file)
-                val md5 = MD5Util().getMD5(file)
+                val fileInputStream = FileInputStream(file)
+                val md5 = DigestUtils.md5Hex(fileInputStream)
                 val downloadUrl = uploadToCosImpl(cdnFileName, domain, file, cosClientConfig, bucket)
                 downloadUrlList.add(mapOf("fileName" to file.name, "fileDownloadUrl" to downloadUrl, "md5" to md5))
                 count+=1
@@ -169,4 +170,7 @@ class UploadCosCdn {
     companion object {
         private val logger = LoggerFactory.getLogger(UploadCosCdn::class.java)
     }
+
+
+
 }
