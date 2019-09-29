@@ -64,16 +64,10 @@ public class AtomResult {
     private Map<String, DataField> data = Maps.newHashMap();
 
     /**
-     * 质量红线生成的数据
+     * 质量红线生成的数据s
      */
     @JsonProperty("qualityData")
     private Map<String, QualityValue> qualityData = Maps.newHashMap();
-
-    /**
-     * 区分平台错误和业务错误的类型
-     */
-    @JsonProperty("errorType")
-    private ErrorType errorType;
 
     /**
      * 用于后台度量的错误码
