@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Maps;
 import com.tencent.bk.devops.atom.common.Status;
 import com.tencent.bk.devops.atom.pojo.quality.QualityValue;
-import com.tencent.bk.devops.plugin.pojo.ErrorType;
 import lombok.Data;
 
 import java.util.Map;
