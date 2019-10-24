@@ -54,7 +54,8 @@ class ArchiveApi {
 
     private fun writeStateToTxt(process: Long, size: Long, bkWorkSpace: String, uri: String, len: Int, isFirst: Boolean): Long {
         val l = process + len
-        val log = "$uri :${ceil(((process / size) * 100).toDouble())}%\n"
+        val countResult = if (size != 0L) ceil(((process / size) * 100).toDouble()) else 0
+        val log = "$uri :$countResult%\n"
         logger.info(log)
         var txtFile = File("$bkWorkSpace${File.separator}BKCIArchiveDownLoadState.txt")
         if (isFirst) {
