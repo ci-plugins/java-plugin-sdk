@@ -36,8 +36,8 @@ class UploadCosCdn {
     constructor()
 
     constructor(
-            cosService: CosService,
-            uploadCosCdnParam: UploadCosCdnParam
+        cosService: CosService,
+        uploadCosCdnParam: UploadCosCdnParam
     ) : this() {
         this.cosService = cosService
         this.uploadCosCdnParam = uploadCosCdnParam
@@ -58,12 +58,12 @@ class UploadCosCdn {
     }
 
     private fun uploadFileToCos(
-            regexPaths: String,
-            customize: Boolean,
-            bucket: String,
-            cdnPath: String,
-            domain: String,
-            cosClientConfig: COSClientConfig
+        regexPaths: String,
+        customize: Boolean,
+        bucket: String,
+        cdnPath: String,
+        domain: String,
+        cosClientConfig: COSClientConfig
     ): MutableList<Map<String, String>> {
 //        val searchUrl = SdkEnv.genUrl("/jfrog/api/build/search/aql")
 //        logger.info("the search url is :$searchUrl")
@@ -79,11 +79,11 @@ class UploadCosCdn {
             }
             var count = 0
             result.data?.forEach { url ->
-                if(count>10){
+                if (count>10) {
                     logger.info("-----------------------------------")
                     workspace.deleteRecursively()
-                    workspace=Files.createTempDir()
-                    count=0
+                    workspace = Files.createTempDir()
+                    count = 0
                 }
                 val filename = url.substring(url.lastIndexOf("/"), url.indexOf("?"))
                 val file = File(workspace, filename)
@@ -93,7 +93,7 @@ class UploadCosCdn {
                 val md5 = DigestUtils.md5Hex(fileInputStream)
                 val downloadUrl = uploadToCosImpl(cdnFileName, domain, file, cosClientConfig, bucket)
                 downloadUrlList.add(mapOf("fileName" to file.name, "fileDownloadUrl" to downloadUrl, "md5" to md5))
-                count+=1
+                count += 1
             }
         } catch (ex: IOException) {
             val msg = String.format("Upload file failed because of IOException(%s)", ex.message)
@@ -170,7 +170,4 @@ class UploadCosCdn {
     companion object {
         private val logger = LoggerFactory.getLogger(UploadCosCdn::class.java)
     }
-
-
-
 }

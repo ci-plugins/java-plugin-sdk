@@ -10,15 +10,14 @@ class JfrogResourceApi : BaseApi() {
     private val cusListFilesUrl = "/jfrog/api/build/custom/?list&deep=1&listFolders=1"
     private val listFilesUrl = "/jfrog/api/build/archive"
 
-
     /**
      *  查询指定流水线对应构建历史或自定义仓库下所有的文件和文件夹
-     *  @param runningBuildId  运行环境对应的运行流水线pipelineBuildId
-     *  @param pipelineId      需要查询的流水线id
-     *  @param buildId         需要查询的流水线构建id
+     *  @param runningBuildId 运行环境对应的运行流水线pipelineBuildId
+     *  @param pipelineId 需要查询的流水线id
+     *  @param buildId 需要查询的流水线构建id
      *  @return 查询的文件类JfrogFilesData
      */
-    fun getAllFiles(runningBuildId: String, pipelineId: String, buildId: String): Result<JfrogFilesData>{
+    fun getAllFiles(runningBuildId: String, pipelineId: String, buildId: String): Result<JfrogFilesData> {
 
         val listFilesUrl = if (pipelineId.isNotEmpty() && buildId.isNotEmpty()) "$listFilesUrl/$pipelineId/$buildId?list&deep=1&listFolders=1"
         else cusListFilesUrl
@@ -27,7 +26,7 @@ class JfrogResourceApi : BaseApi() {
         return try {
             Result(JsonUtil.fromJson(responseContent, JfrogFilesData::class.java))
         } catch (e: Exception) {
-            Result(-1,"获取仓库文件异常")
+            Result(-1, "获取仓库文件异常")
         }
     }
 

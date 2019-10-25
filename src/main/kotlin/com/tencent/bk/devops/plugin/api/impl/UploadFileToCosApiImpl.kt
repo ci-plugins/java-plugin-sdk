@@ -1,7 +1,5 @@
 package com.tencent.bk.devops.plugin.api.impl
 
-
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.gson.JsonParser
 import com.tencent.bk.devops.atom.api.impl.CredentialApi
@@ -19,17 +17,16 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import org.slf4j.LoggerFactory
 
-
 class UploadFileToCosApiImpl constructor(
-        private val cosService: CosService
-        ) : UploadFileToCosApi {
+    private val cosService: CosService
+) : UploadFileToCosApi {
 
     private val parser = JsonParser()
-    private val credentialApi=CredentialApi()
+    private val credentialApi = CredentialApi()
 
     override fun uploadCdn(projectId: String, pipelineId: String, buildId: String, elementId: String, executeCount: Int, cdnUploadFileInfo: CdnUploadFileInfo): Result<SpmFile> {
         // 根据ticketid从ticketService获取凭证信息
-        val ticketsMap =credentialApi.getCredential(cdnUploadFileInfo.ticketId).data
+        val ticketsMap = credentialApi.getCredential(cdnUploadFileInfo.ticketId).data
         // 根据spm的appId以及secretKey，调用spm接口，获取cos系统的appid，bucket，root_path以及业务外网CDN域名
         val spmAppId = ticketsMap.get("appId").toString()
         val spmSecretKey = ticketsMap.get("secretKey").toString()
@@ -50,9 +47,9 @@ class UploadFileToCosApiImpl constructor(
         )
         logger.info("开始上传CDN...")
         val uploadCosCdn = UploadCosCdn(cosService, uploadCosCdnParam)
-        val downloadUrlList=uploadCosCdn.upload()
+        val downloadUrlList = uploadCosCdn.upload()
         cdnPath = cosAppInfo.domain + cdnPath
-        val spmFile = SpmFile(uploadTaskKey, cdnPath,downloadUrlList)
+        val spmFile = SpmFile(uploadTaskKey, cdnPath, downloadUrlList)
         return Result(spmFile)
     }
 

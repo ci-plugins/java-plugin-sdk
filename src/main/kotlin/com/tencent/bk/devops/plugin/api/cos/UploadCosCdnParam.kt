@@ -2,7 +2,6 @@ package com.tencent.bk.devops.plugin.api.cos
 
 import com.tencent.devops.common.cos.COSClientConfig
 
-
 data class UploadCosCdnParam(
     var projectId: String,
     var pipelineId: String,

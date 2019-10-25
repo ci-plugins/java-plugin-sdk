@@ -3,12 +3,10 @@ package com.tencent.bk.devops.plugin.pojo.notify
 import com.tencent.bk.devops.atom.pojo.notify.EnumNotifyPriority
 import com.tencent.bk.devops.atom.pojo.notify.EnumNotifySource
 
-
 open class EmailNotifyMessage : BaseMessage() {
 
-
     var format: EnumEmailFormat = EnumEmailFormat.PLAIN_TEXT
-    var type:   EnumEmailType     = EnumEmailType.OUTER_MAIL
+    var type: EnumEmailType = EnumEmailType.OUTER_MAIL
     private val receivers: MutableSet<String> = mutableSetOf()
     private val cc: MutableSet<String> = mutableSetOf()
     private val bcc: MutableSet<String> = mutableSetOf()

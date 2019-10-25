@@ -1,29 +1,28 @@
 package com.tencent.bk.devops.plugin.pojo.artifactory
 
-
-//("版本仓库-文件信息")
+// ("版本仓库-文件信息")
 data class FileInfo(
-    //("文件名", required = true)
+    // ("文件名", required = true)
     val name: String,
-    //("文件全名", required = true)
+    // ("文件全名", required = true)
     val fullName: String,
-    //("文件路径", required = true)
+    // ("文件路径", required = true)
     val path: String,
-    //("文件全路径", required = true)
+    // ("文件全路径", required = true)
     val fullPath: String,
-    //("文件大小(byte)", required = true)
+    // ("文件大小(byte)", required = true)
     val size: Long,
-    //("是否文件夹", required = true)
+    // ("是否文件夹", required = true)
     val folder: Boolean,
-    //("更新时间", required = true)
+    // ("更新时间", required = true)
     val modifiedTime: Long,
-    //("仓库类型", required = true)
+    // ("仓库类型", required = true)
     val artifactoryType: ArtifactoryType,
-    //("元数据", required = true)
+    // ("元数据", required = true)
     val properties: List<Property>?,
-    //("app版本", required = true)
+    // ("app版本", required = true)
     val appVersion: String? = null,
-    //("下载短链接", required = true)
+    // ("下载短链接", required = true)
     val shortUrl: String? = null
 ) : Comparable<FileInfo> {
     constructor(name: String, fullName: String, path: String, fullPath: String, size: Long, folder: Boolean, modifiedTime: Long, artifactoryType: ArtifactoryType) :

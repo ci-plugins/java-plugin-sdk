@@ -10,7 +10,6 @@ import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
-
 class ArchiveApi {
 
     private val okHttpClient: OkHttpClient = okhttp3.OkHttpClient.Builder()
@@ -41,12 +40,12 @@ class ArchiveApi {
         response.body()!!.byteStream().use { bs ->
             val buf = ByteArray(4096)
             var len = bs.read(buf)
-            process = writeStateToTxt(process, size, bkWorkSpace, uri, len,true)
+            process = writeStateToTxt(process, size, bkWorkSpace, uri, len, true)
             FileOutputStream(destPath).use { fos ->
                 while (len != -1) {
                     fos.write(buf, 0, len)
                     len = bs.read(buf)
-                    process = writeStateToTxt(process, size, bkWorkSpace, uri, len,false)
+                    process = writeStateToTxt(process, size, bkWorkSpace, uri, len, false)
                 }
             }
         }
