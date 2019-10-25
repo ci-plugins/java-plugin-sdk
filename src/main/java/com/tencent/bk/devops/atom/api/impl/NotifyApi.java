@@ -35,8 +35,8 @@ public class NotifyApi extends BaseApi {
      * @throws IOException
      */
     public Result sendMail(String receivers, String ccs, String title, String body) throws IOException {
-        Set<String> Receivers = StringToSet(receivers);
-        Set<String> ccsSet=StringToSet(ccs);
+        Set<String> Receivers = stringToSet(receivers);
+        Set<String> ccsSet = stringToSet(ccs);
         EmailNotifyMessage emailNotifyMessage=new EmailNotifyMessage();
         emailNotifyMessage.addAllReceivers(Receivers);
         emailNotifyMessage.addAllCcs(ccsSet);
@@ -59,7 +59,7 @@ public class NotifyApi extends BaseApi {
      * @throws IOException
      */
     public Result sendMessage(String receivers, String body) throws IOException {
-        Set<String> Receivers = StringToSet(receivers);
+        Set<String> Receivers = stringToSet(receivers);
         SmsNotifyMessage smsNotifyMessage = new SmsNotifyMessage();
         smsNotifyMessage.addAllReceivers(Receivers);
         smsNotifyMessage.setBody(body);
@@ -81,7 +81,7 @@ public class NotifyApi extends BaseApi {
      * @throws IOException
      */
     public Result sendEnterPriseWechat(String receivers, String title,String body) throws IOException {
-        Set<String> Receivers = StringToSet(receivers);
+        Set<String> Receivers = stringToSet(receivers);
         RtxMessage rtxMessage = new RtxMessage();
         rtxMessage.setSender("");
         rtxMessage.setPriority(EnumNotifyPriority.LOW);
@@ -106,7 +106,7 @@ public class NotifyApi extends BaseApi {
      * @throws IOException
      */
     public Result sendWechat(String receivers,String body) throws IOException {
-        Set<String> Receivers = StringToSet(receivers);
+        Set<String> Receivers = stringToSet(receivers);
         WechatNotifyMessage wechatNotifyMessage = new WechatNotifyMessage();
         wechatNotifyMessage.addAllReceivers(Receivers);
         wechatNotifyMessage.setBody(body);
@@ -133,7 +133,7 @@ public class NotifyApi extends BaseApi {
         return  call.execute();
     }
 
-    private Set<String> StringToSet(String receivers) {
+    private Set<String> stringToSet(String receivers) {
         if(receivers!=null){
             receivers = receivers.replaceAll("\\[|\\]|\\s+|\"", "");
             String[] rs = receivers.split(",");
