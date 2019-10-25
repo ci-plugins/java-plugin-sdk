@@ -1,11 +1,10 @@
 package com.tencent.bk.devops.plugin.pojo.cos
 
-
-//("Spm上传文件对应的下载地址")
+// ("Spm上传文件对应的下载地址")
 data class SpmFile(
-    //("uploadTaskKey", required = true)
+    // ("uploadTaskKey", required = true)
     val uploadTaskKey: String,
-    //("cdnPath", required = true)
+    // ("cdnPath", required = true)
     val cdnPath: String,
-    val downloadUrlList:MutableList<Map<String,String>>
+    val downloadUrlList: MutableList<Map<String, String>>
 )

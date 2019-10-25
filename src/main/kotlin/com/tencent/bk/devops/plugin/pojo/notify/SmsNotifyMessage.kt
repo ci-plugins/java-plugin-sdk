@@ -3,7 +3,6 @@ package com.tencent.bk.devops.plugin.pojo.notify
 import com.tencent.bk.devops.atom.pojo.notify.EnumNotifyPriority
 import com.tencent.bk.devops.atom.pojo.notify.EnumNotifySource
 
-
 open class SmsNotifyMessage : BaseMessage() {
 
     private val receivers: MutableSet<String> = mutableSetOf()

@@ -7,13 +7,13 @@ import com.tencent.bk.devops.plugin.pojo.artifactory.ChannelCode
 import com.tencent.bk.devops.plugin.utils.JacksonUtil
 import com.tencent.bk.devops.plugin.pojo.Result
 
-class BuildResourceApi :BaseApi(){
+class BuildResourceApi : BaseApi() {
 
     /**
      * 获取构建任务详情
-     * @param projectId   流水线对应的项目名
-     * @param pipelineId  流水线id
-     * @param buildNum    流水线构建号
+     * @param projectId 流水线对应的项目名
+     * @param pipelineId 流水线id
+     * @param buildNum 流水线构建号
      * @param channelCode 流水线类型
      * @return
      */
