@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Maps;
 import com.tencent.bk.devops.atom.common.Status;
 import com.tencent.bk.devops.atom.pojo.quality.QualityValue;
+import com.tencent.bk.devops.plugin.pojo.ErrorType;
 import lombok.Data;
 
 import java.util.Map;
@@ -63,7 +64,7 @@ public class AtomResult {
     private Map<String, DataField> data = Maps.newHashMap();
 
     /**
-     * 质量红线生成的数据s
+     * 质量红线生成的数据
      */
     @JsonProperty("qualityData")
     private Map<String, QualityValue> qualityData = Maps.newHashMap();

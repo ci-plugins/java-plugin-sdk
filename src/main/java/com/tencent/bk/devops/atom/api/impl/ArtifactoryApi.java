@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.tencent.bk.devops.atom.api.BaseApi;
 import com.tencent.bk.devops.atom.api.SdkEnv;
 import com.tencent.bk.devops.atom.pojo.Result;
+import com.tencent.bk.devops.atom.pojo.artifactory.FileDetail;
 import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import okhttp3.Request;
@@ -132,6 +133,36 @@ public class ArtifactoryApi extends BaseApi {
         }
         logger.info("downloadArtifactoryFileToLocal saveFilePathList is:{}", JsonUtil.toJson(saveFilePathList));
         return new Result(saveFilePathList);
+    }
+
+    /**
+     * 获取仓库的构件元数据
+     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param path 文件路径 多路径使用","或者";"分割
+     * @return 文件下载路径数组
+     */
+    @SuppressWarnings("all")
+    public  Result<List<FileDetail>> getArtifactsProperties(String artifactoryType, String path){
+        StringBuilder urlBuilder = new StringBuilder("/artifactory/api/build/artifactories/getPropertiesByRegex?artifactoryType=");
+        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600); //下载链接有效期设定为1小时
+        String requestUrl = urlBuilder.toString();
+        logger.info("the requestUrl is:{}",requestUrl);
+        Request request = super.buildGet(urlBuilder.toString());
+        String responseContent = null;
+        try {
+            responseContent = super.request(request,"获取包路径失败");
+        } catch (IOException e) {
+            logger.error("get artifactoryProperties throw Exception", e);
+        }
+        if(null != responseContent){
+            Result<List<FileDetail>> srcUrlResult = JsonUtil.fromJson(responseContent,new TypeReference<Result<List<FileDetail>>>(){});
+            List<FileDetail> fileDetailList = srcUrlResult.getData();
+            logger.info("getArtifactoryProperties responseContent is:{}", JsonUtil.toJson(fileDetailList));
+            return new Result(fileDetailList);
+        }else{
+            logger.info("getArtifactoryProperties responseContent is null");
+            return new Result(null);
+        }
     }
 
     private void closeStream(InputStream inputStream, OutputStream outputStream) {

@@ -3,6 +3,7 @@ package com.tencent.bk.devops.plugin.api.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.api.SdkEnv
+import com.tencent.bk.devops.atom.pojo.artifactory.FileDetail
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.pojo.Result
@@ -55,6 +56,38 @@ class ArtifactoryApi : BaseApi() {
         } else {
             logger.info("getArtifactoryFileUrl responseContent is null")
             Result(emptyList())
+        }
+    }
+
+    /**
+     * 获取仓库的构件元数据
+     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param path 文件路径 多路径使用","或者";"分割
+     * @return 文件下载路径数组
+     */
+    fun getArtifactsProperties(artifactoryType: String, path: String): Result<List<FileDetail>?> {
+        val urlBuilder = StringBuilder("/artifactory/api/build/artifactories/getPropertiesByRegex?artifactoryType=")
+        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600) //下载链接有效期设定为1小时
+        val requestUrl = urlBuilder.toString()
+        logger.info("the requestUrl is:{}", requestUrl)
+        val request = super.buildGet(urlBuilder.toString())
+        var responseContent: String? = null
+        try {
+            responseContent = super.request(request, "获取包路径失败")
+        } catch (e: IOException) {
+            logger.error("get artifactoryProperties throw Exception", e)
+        }
+
+        if (null != responseContent) {
+            val srcUrlResult = JsonUtil.fromJson(responseContent, object : TypeReference<Result<List<FileDetail>>>() {
+
+            })
+            val fileDetailList = srcUrlResult.data
+            logger.info("getArtifactoryProperties responseContent is:{}", JsonUtil.toJson(fileDetailList))
+            return Result(fileDetailList)
+        } else {
+            logger.info("getArtifactoryProperties responseContent is null")
+            return Result(data = null)
         }
     }
 
