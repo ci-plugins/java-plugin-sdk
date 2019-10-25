@@ -11,5 +11,4 @@ data class PipelineBuildMaterial(
     val newCommitComment: String?,
     val commitTimes: Int?
 )
-
     

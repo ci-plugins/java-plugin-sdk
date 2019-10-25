@@ -144,7 +144,7 @@ public class ArtifactoryApi extends BaseApi {
     @SuppressWarnings("all")
     public  Result<List<FileDetail>> getArtifactsProperties(String artifactoryType, String path){
         StringBuilder urlBuilder = new StringBuilder("/artifactory/api/build/artifactories/getPropertiesByRegex?artifactoryType=");
-        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600); //下载链接有效期设定为1小时
+        urlBuilder.append(artifactoryType).append("&path=").append(path);
         String requestUrl = urlBuilder.toString();
         logger.info("the requestUrl is:{}",requestUrl);
         Request request = super.buildGet(urlBuilder.toString());

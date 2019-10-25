@@ -66,7 +66,7 @@ class ArtifactoryApi : BaseApi() {
      */
     fun getArtifactsProperties(artifactoryType: String, path: String): Result<List<FileDetail>?> {
         val urlBuilder = StringBuilder("/artifactory/api/build/artifactories/getPropertiesByRegex?artifactoryType=")
-        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600) // 下载链接有效期设定为1小时
+        urlBuilder.append(artifactoryType).append("&path=").append(path)
         val requestUrl = urlBuilder.toString()
         logger.info("the requestUrl is:{}", requestUrl)
         val request = super.buildGet(urlBuilder.toString())
@@ -77,15 +77,15 @@ class ArtifactoryApi : BaseApi() {
             logger.error("get artifactoryProperties throw Exception", e)
         }
 
-        if (null != responseContent) {
+        return if (null != responseContent) {
             val srcUrlResult = JsonUtil.fromJson(responseContent, object : TypeReference<Result<List<FileDetail>>>() {
             })
             val fileDetailList = srcUrlResult.data
             logger.info("getArtifactoryProperties responseContent is:{}", JsonUtil.toJson(fileDetailList))
-            return Result(fileDetailList)
+            Result(fileDetailList)
         } else {
             logger.info("getArtifactoryProperties responseContent is null")
-            return Result(data = null)
+            Result(data = null)
         }
     }
 
