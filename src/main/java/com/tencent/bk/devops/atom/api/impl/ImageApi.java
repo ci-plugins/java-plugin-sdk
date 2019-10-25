@@ -40,6 +40,10 @@ public class ImageApi extends BaseApi {
             logger.error("parse inputJson throw Exception", e);
         }
         Map<String, String> inputMap = JsonUtil.fromJson(inputJson, Map.class);
+        if (inputMap == null){
+            logger.info("input loading error");
+            return new Result(null);
+        }
         parmMap.put("projectId", inputMap.get("project.name"));
         parmMap.put("buildId", inputMap.get("pipeline.build.id"));
         parmMap.put("pipelineId", inputMap.get("pipeline.id"));

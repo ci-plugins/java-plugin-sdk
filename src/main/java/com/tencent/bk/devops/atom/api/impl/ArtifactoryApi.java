@@ -52,7 +52,11 @@ public class ArtifactoryApi extends BaseApi {
             logger.error("get artifactoryFileUrl throw Exception", e);
         }
         if(null != responseContent){
-            Result<List<String>> srcUrlResult = JsonUtil.fromJson(responseContent,new TypeReference<Result<List<String>>>(){});
+            Result<List<String>> srcUrlResult = JsonUtil.fromJson(responseContent, new TypeReference<Result<List<String>>>(){});
+            if(srcUrlResult == null) {
+                logger.info("no ArtifactoryFileUrl is found");
+                return new Result(null);
+            }
             List<String> srcUrlList = srcUrlResult.getData();
             List<String> finalSrcUrlList = new ArrayList<String>();
             for(String srcUrl : srcUrlList){
