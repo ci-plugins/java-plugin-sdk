@@ -1,15 +1,14 @@
 package com.tencent.bk.devops.plugin.pojo.artifactory
 
-
-//("渠道代码")
+// ("渠道代码")
 enum class ChannelCode {
-    //("蓝盾")
+    // ("蓝盾")
     BS,
-    //("原子市场")
+    // ("原子市场")
     AM,
-    //("CodeCC")
+    // ("CodeCC")
     CODECC,
-    //("GCloud")
+    // ("GCloud")
     GCLOUD;
 
     companion object {

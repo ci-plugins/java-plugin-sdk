@@ -16,5 +16,4 @@ class JobApi : BaseApi() {
         val responseContent = request(request, "执行快速分发文件失败：$fastPushFileRequest")
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<Void>>() {})
     }
-
 }

@@ -1,7 +1,6 @@
 package com.tencent.bk.devops.plugin.pojo.notify
 
-
-//@ApiModel("基础消息类型")
+// @ApiModel("基础消息类型")
 open class BaseMessage {
 
 //    @ApiModelProperty("频率限制，单位分钟，即 frequencyLimit 分钟内限制不重发相同内容的消息")

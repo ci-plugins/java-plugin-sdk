@@ -22,13 +22,13 @@ class ArtifactoryApi : BaseApi() {
 
     /**
      * 获取构建文件下载路径
-     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param artifactoryType 版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
      * @param path 路径 多路径使用","或者";"分割
      * @return 文件下载路径数组
      */
     fun getArtifactoryFileUrl(artifactoryType: String, path: String): Result<List<String>> {
         val urlBuilder = StringBuilder("/artifactory/api/build/artifactories/thirdPartyDownloadUrl?artifactoryType=")
-        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600) //下载链接有效期设定为1小时
+        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600) // 下载链接有效期设定为1小时
         val requestUrl = urlBuilder.toString()
         logger.info("the requestUrl is:{}", requestUrl)
         val request = super.buildGet(urlBuilder.toString())
@@ -41,7 +41,6 @@ class ArtifactoryApi : BaseApi() {
 
         return if (null != responseContent) {
             val srcUrlResult = JsonUtil.fromJson(responseContent, object : TypeReference<Result<List<String>>>() {
-
             })
             val srcUrlList = srcUrlResult.data
             val finalSrcUrlList = ArrayList<String>()
@@ -61,13 +60,13 @@ class ArtifactoryApi : BaseApi() {
 
     /**
      * 获取仓库的构件元数据
-     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param artifactoryType 版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
      * @param path 文件路径 多路径使用","或者";"分割
      * @return 文件下载路径数组
      */
     fun getArtifactsProperties(artifactoryType: String, path: String): Result<List<FileDetail>?> {
         val urlBuilder = StringBuilder("/artifactory/api/build/artifactories/getPropertiesByRegex?artifactoryType=")
-        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600) //下载链接有效期设定为1小时
+        urlBuilder.append(artifactoryType).append("&path=").append(path).append("&ttl=").append(3600) // 下载链接有效期设定为1小时
         val requestUrl = urlBuilder.toString()
         logger.info("the requestUrl is:{}", requestUrl)
         val request = super.buildGet(urlBuilder.toString())
@@ -80,7 +79,6 @@ class ArtifactoryApi : BaseApi() {
 
         if (null != responseContent) {
             val srcUrlResult = JsonUtil.fromJson(responseContent, object : TypeReference<Result<List<FileDetail>>>() {
-
             })
             val fileDetailList = srcUrlResult.data
             logger.info("getArtifactoryProperties responseContent is:{}", JsonUtil.toJson(fileDetailList))
@@ -93,7 +91,7 @@ class ArtifactoryApi : BaseApi() {
 
     /**
      * 下载构建文件到本地
-     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param artifactoryType 版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
      * @param path 路径
      * @return 文件在本地的保存路径
      */
@@ -103,7 +101,7 @@ class ArtifactoryApi : BaseApi() {
 
     /**
      * 下载构建文件到本地
-     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param artifactoryType 版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
      * @param path 路径
      * @param saveDir 文件保存目录
      * @return 文件在本地的保存路径
@@ -120,7 +118,7 @@ class ArtifactoryApi : BaseApi() {
         val saveFilePathList = ArrayList<String>()
         if (null != srcUrlList) {
             val saveDirFile = File(saveDir)
-            if(!saveDirFile.exists()){
+            if (!saveDirFile.exists()) {
                 saveDirFile.mkdirs()
             }
             for (srcUrl in srcUrlList) {
@@ -138,7 +136,7 @@ class ArtifactoryApi : BaseApi() {
 
     /**
      * 下载多个构建文件到本地
-     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param artifactoryType 版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
      * @param path 路径
      * @return 文件在本地的保存路径
      */
@@ -148,7 +146,7 @@ class ArtifactoryApi : BaseApi() {
 
     /**
      * 下载多个构建文件到本地
-     * @param artifactoryType  版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
+     * @param artifactoryType 版本仓库类型 PIPELINE：流水线，CUSTOM_DIR：自定义
      * @param path 路径
      * @param saveDir 文件保存目录
      * @return 文件在本地的保存路径
@@ -160,7 +158,7 @@ class ArtifactoryApi : BaseApi() {
             return Result(getFileUrlResult.status, getFileUrlResult.message)
         }
         val saveDirFile = File(saveDir)
-        if(!saveDirFile.exists()){
+        if (!saveDirFile.exists()) {
             saveDirFile.mkdirs()
         }
         return Result(getFileUrlResult.data!!.map {
@@ -178,9 +176,9 @@ class ArtifactoryApi : BaseApi() {
             val conn = netUrl.openConnection() as HttpURLConnection
             conn.requestMethod = "GET"
             conn.connectTimeout = 5 * 1000
-            //把文件下载到saveFilePath目录下面
+            // 把文件下载到saveFilePath目录下面
             conn.inputStream.use { inputStream ->
-                BufferedOutputStream(FileOutputStream(saveFilePath), 8192).use {outputStream ->
+                BufferedOutputStream(FileOutputStream(saveFilePath), 8192).use { outputStream ->
                     IOUtils.copy(inputStream, outputStream, 8192)
                 }
             }
@@ -232,6 +230,4 @@ class ArtifactoryApi : BaseApi() {
 
         private val logger = LoggerFactory.getLogger(ArtifactoryApi::class.java)
     }
-
-
 }
