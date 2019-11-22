@@ -1,12 +1,13 @@
 package com.tencent.bk.devops.atom;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.tencent.bk.devops.atom.common.Constants;
 import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.pojo.AtomResult;
 import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,10 @@ public class AtomContext<T extends AtomBaseParam> {
     private T param;
 
     private AtomResult result;
+
+    private final static String ATOM_FILE_ENCODING = "UTF-8";
+
+    private final static Logger logger = LoggerFactory.getLogger(AtomContext.class);
 
     /**
      * 原子定义的参数类
@@ -77,17 +82,17 @@ public class AtomContext<T extends AtomBaseParam> {
     }
 
     private T readParam(Class<T> paramClazz) throws IOException {
-        String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), Charset.defaultCharset());
+        String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
         return JsonUtil.fromJson(json, paramClazz);
     }
 
     public Map<String,String>  getAllParameters() throws IOException {
-        String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), Charset.defaultCharset());
+        String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
         return JsonUtil.fromJson(json, new TypeReference<Map<String, String>>(){});
     }
 
     void persistent() throws IOException {
         String json = JsonUtil.toJson(result);
-        FileUtils.write(new File(dataDir + "/" + outputFile), json, Charset.defaultCharset());
+        FileUtils.write(new File(dataDir + "/" + outputFile), json, ATOM_FILE_ENCODING);
     }
 }
