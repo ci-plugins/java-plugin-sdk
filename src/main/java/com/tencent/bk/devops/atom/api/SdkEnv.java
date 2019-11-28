@@ -53,6 +53,7 @@ public class SdkEnv {
         return map;
     }
 
+    @SuppressWarnings("all")
     public static void init() throws IOException {
         String dataDir = System.getenv(Constants.DATA_DIR_ENV);
         if (dataDir == null || dataDir.trim().length() == 0 || !(new File(dataDir)).isDirectory()) {
@@ -61,8 +62,7 @@ public class SdkEnv {
         String sdkFile = ".sdk.json";
         File file = new File(dataDir + "/" + sdkFile);
         String json = FileUtils.readFileToString(file, Charset.defaultCharset());
-        boolean flag = file.delete(); //读取完后删除文件
-        logger.info("delete file result is:{}",flag);
+        file.delete(); //读取完后删除文件
         instance = JsonUtil.fromJson(json, SdkEnv.class);
     }
 
