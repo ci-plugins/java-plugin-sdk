@@ -1,6 +1,12 @@
 package com.tencent.bk.devops.atom.utils.http;
 
-import okhttp3.*;
+
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,13 +273,12 @@ public class OkHttpUtils {
             logger.error("http send  throw Exception", e);
         } finally {
             if (response != null) {
-                assert response.body() != null;
-                response.body().close();
+                response.close();
             }
         }
         if (response != null && !response.isSuccessful()) {
             logger.error("Fail to request(" + request + ") with code " + response.code()
-                    + " , message " + response.message() + " and response" + responseContent);
+                + " , message " + response.message() + " and response" + responseContent);
         }
         return responseContent;
     }

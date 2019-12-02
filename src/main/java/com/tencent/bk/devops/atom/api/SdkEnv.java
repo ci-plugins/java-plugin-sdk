@@ -61,9 +61,12 @@ public class SdkEnv {
         }
         String sdkFile = ".sdk.json";
         File file = new File(dataDir + "/" + sdkFile);
-        String json = FileUtils.readFileToString(file, Charset.defaultCharset());
-        file.delete(); //读取完后删除文件
-        instance = JsonUtil.fromJson(json, SdkEnv.class);
+        try {
+            String json = FileUtils.readFileToString(file, Charset.defaultCharset());
+            instance = JsonUtil.fromJson(json, SdkEnv.class);
+        } finally {
+            file.delete(); //读取完后删除文件
+        }
     }
 
     public static String genUrl(String path) {
@@ -74,11 +77,11 @@ public class SdkEnv {
         }
     }
 
-    public static String getGatewayHost(){
+    public static String getGatewayHost() {
         return instance.gateway;
     }
 
-    public static String getVmSeqId(){
+    public static String getVmSeqId() {
         return instance.vmSeqId;
     }
 
