@@ -32,6 +32,8 @@ public class SimpleLogger extends MarkerIgnoringBase {
     private static final int LOG_LEVEL_INFO = 20;
     private static final int LOG_LEVEL_WARN = 30;
     private static final int LOG_LEVEL_ERROR = 40;
+    private static final int LOG_LEVEL_GROUP_START = 50;
+    private static final int LOG_LEVEL_GROUP_END = 51;
     private static boolean INITIALIZED = false;
     private static int DEFAULT_LOG_LEVEL = 20;
     private static boolean SHOW_DATE_TIME = false;
@@ -208,22 +210,32 @@ public class SimpleLogger extends MarkerIgnoringBase {
                     break;
                 case 10:
                     buf.append("##[");
-                    buf.append("DEBUG");
+                    buf.append("debug");
                     buf.append("] ");
                     break;
                 case 20:
                     buf.append("##[");
-                    buf.append("INFO");
+                    buf.append("info");
                     buf.append("] ");
                     break;
                 case 30:
                     buf.append("##[");
-                    buf.append(WARN_LEVEL_STRING);
+                    buf.append("warning");
                     buf.append("] ");
                     break;
                 case 40:
                     buf.append("##[");
-                    buf.append("ERROR");
+                    buf.append("error");
+                    buf.append("] ");
+                    break;
+                case 50:
+                    buf.append("##[");
+                    buf.append("group");
+                    buf.append("] ");
+                    break;
+                case 51:
+                    buf.append("##[");
+                    buf.append("endgroup");
                     buf.append("] ");
             }
 
@@ -403,6 +415,14 @@ public class SimpleLogger extends MarkerIgnoringBase {
 
     public void error(String msg, Throwable t) {
         this.log(40, msg, t);
+    }
+
+    public void groupStart(String startTitle){
+        this.log(50, startTitle, (Throwable)null);
+    }
+
+    public void groupEnd(String endTitle){
+        this.log(51, endTitle, (Throwable)null);
     }
 
     public void log(LoggingEvent event) {

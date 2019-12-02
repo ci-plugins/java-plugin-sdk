@@ -16,5 +16,7 @@ class LoggerTest {
         logger.warn("wwwwww")
         logger.error("eeeee")
         logger.trace("1111")
+        logger.groupStart("Group Start Title")
+        logger.groupEnd("Group End Title")
     }
 }
