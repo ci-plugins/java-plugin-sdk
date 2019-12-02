@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class ImageApi extends BaseApi {
 
-    private final static Logger logger = LoggerFactory.getLogger(ImageApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImageApi.class);
 
     /**
      * 推送镜像

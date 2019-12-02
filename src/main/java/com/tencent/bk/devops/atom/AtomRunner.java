@@ -17,7 +17,7 @@ import java.io.IOException;
 @SuppressWarnings("all")
 public class AtomRunner {
 
-    private final static Logger logger = LoggerFactory.getLogger(AtomRunner.class);
+    private static final Logger logger = LoggerFactory.getLogger(AtomRunner.class);
 
     public static void main(String[] args) throws IOException {
         TaskAtom atom = ServiceLoader.load(TaskAtom.class);

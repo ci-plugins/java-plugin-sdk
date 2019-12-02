@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 @Deprecated
 public class ArtifactoryApi extends BaseApi {
 
-    private final static Logger logger = LoggerFactory.getLogger(ArtifactoryApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(ArtifactoryApi.class);
 
     /**
      * 获取构建文件下载路径
@@ -140,7 +140,21 @@ public class ArtifactoryApi extends BaseApi {
                 } catch (IOException e) {
                     logger.error("downloadArtifactoryFileToLocal error!", e);
                 } finally {
-                    closeStream(inputStream, outputStream);
+                    if (null != outputStream) {
+                        try {
+                            outputStream.close();
+                        } catch (IOException e) {
+                            logger.error("outputStream close error!", e);
+                        } finally {
+                            if (null != inputStream) {
+                                try {
+                                    inputStream.close();
+                                } catch (IOException e) {
+                                    logger.error("inputStream close error!", e);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -181,24 +195,6 @@ public class ArtifactoryApi extends BaseApi {
         } else {
             logger.info("getArtifactoryProperties responseContent is null");
             return new Result(null);
-        }
-    }
-
-    private void closeStream(InputStream inputStream, OutputStream outputStream) {
-        if (null != outputStream) {
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                logger.error("outputStream close error!", e);
-            } finally {
-                if (null != inputStream) {
-                    try {
-                        inputStream.close();
-                    } catch (IOException e) {
-                        logger.error("inputStream close error!", e);
-                    }
-                }
-            }
         }
     }
 

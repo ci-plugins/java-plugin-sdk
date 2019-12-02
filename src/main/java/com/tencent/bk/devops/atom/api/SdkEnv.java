@@ -22,7 +22,7 @@ import java.util.Map;
 @Getter
 public class SdkEnv {
 
-    private final static Logger logger = LoggerFactory.getLogger(SdkEnv.class);
+    private static final Logger logger = LoggerFactory.getLogger(SdkEnv.class);
 
     private BuildType buildType;
     private String projectId;
@@ -65,7 +65,8 @@ public class SdkEnv {
             String json = FileUtils.readFileToString(file, Charset.defaultCharset());
             instance = JsonUtil.fromJson(json, SdkEnv.class);
         } finally {
-            file.delete(); //读取完后删除文件
+            boolean flag = file.delete(); //读取完后删除文件
+            logger.info("delete sdkFile result is:{}", flag);
         }
     }
 

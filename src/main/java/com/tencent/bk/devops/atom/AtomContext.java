@@ -30,9 +30,9 @@ public class AtomContext<T extends AtomBaseParam> {
 
     private AtomResult result;
 
-    private final static String ATOM_FILE_ENCODING = "UTF-8";
+    private static final String ATOM_FILE_ENCODING = "UTF-8";
 
-    private final static Logger logger = LoggerFactory.getLogger(AtomContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(AtomContext.class);
 
     /**
      * 原子定义的参数类
