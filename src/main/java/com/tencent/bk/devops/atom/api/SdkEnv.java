@@ -81,9 +81,4 @@ public class SdkEnv {
     public static String getGatewayHost() {
         return instance.gateway;
     }
-
-    public static String getVmSeqId() {
-        return instance.vmSeqId;
-    }
-
 }
