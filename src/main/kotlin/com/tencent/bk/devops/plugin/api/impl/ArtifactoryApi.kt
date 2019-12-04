@@ -12,7 +12,10 @@ import com.tencent.bk.devops.plugin.utils.OkhttpUtils
 import okhttp3.Request
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
-import java.io.*
+import java.io.BufferedOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.ArrayList
@@ -51,7 +54,7 @@ class ArtifactoryApi : BaseApi() {
                 }
             }
             logger.info("getArtifactoryFileUrl responseContent is:{}", JsonUtil.toJson(finalSrcUrlList))
-             Result(finalSrcUrlList)
+            Result(finalSrcUrlList)
         } else {
             logger.info("getArtifactoryFileUrl responseContent is null")
             Result(emptyList())
