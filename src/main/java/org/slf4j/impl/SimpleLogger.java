@@ -40,7 +40,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
     private static String DATE_TIME_FORMAT_STR = null;
     private static DateFormat DATE_FORMATTER = null;
     private static boolean SHOW_THREAD_NAME = false;
-    private static boolean SHOW_LOG_NAME = true;
+    private static boolean SHOW_LOG_NAME = false;
     private static boolean SHOW_SHORT_LOG_NAME = false;
     private static String LOG_FILE = "System.err";
     private static PrintStream TARGET_STREAM = null;
