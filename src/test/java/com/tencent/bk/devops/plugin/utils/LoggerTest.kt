@@ -12,10 +12,10 @@ class LoggerTest {
 
     @Test
     fun printLog() {
-        logger.info("hhhhhh")
-        logger.warn("wwwwww")
-        logger.error("eeeee")
-        logger.trace("1111")
+        logger.info("This is an info log")
+        logger.warn("This is a warn log")
+        logger.error("This is an error log")
+        logger.trace("This is a trace log")
         logger.groupStart("Group Start Title")
         logger.groupEnd("Group End Title")
     }
