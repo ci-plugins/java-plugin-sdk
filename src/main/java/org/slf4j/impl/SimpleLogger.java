@@ -364,7 +364,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
         }
         if (LEVEL_IN_BRACKETS)
             buf.append(']');
-        buf.append(' ');
+//        buf.append(' ');
 
         // Append the name of the log instance if so configured
         if (SHOW_SHORT_LOG_NAME) {
