@@ -6,6 +6,7 @@ import com.tencent.bk.devops.plugin.pojo.artifactory.BuildHistory
 import com.tencent.bk.devops.plugin.pojo.artifactory.ChannelCode
 import com.tencent.bk.devops.plugin.utils.JacksonUtil
 import com.tencent.bk.devops.plugin.pojo.Result
+import com.tencent.bk.devops.plugin.utils.JsonUtil
 
 class BuildResourceApi : BaseApi() {
 
@@ -23,7 +24,6 @@ class BuildResourceApi : BaseApi() {
         val path = sb.toString()
         val request = buildGet(path)
         val responseContent = request(request, "获取构建任务详情失败")
-        val objectMapper = JacksonUtil.createObjectMapper()
-        return objectMapper.readValue(responseContent)
+        return JsonUtil.getObjectMapper().readValue(responseContent)
     }
 }

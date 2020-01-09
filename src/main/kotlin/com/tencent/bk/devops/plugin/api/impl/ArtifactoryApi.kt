@@ -54,7 +54,7 @@ class ArtifactoryApi : BaseApi() {
                 }
             }
             logger.info("getArtifactoryFileUrl responseContent is:{}", JsonUtil.toJson(finalSrcUrlList))
-             Result(finalSrcUrlList)
+            Result(finalSrcUrlList)
         } else {
             logger.info("getArtifactoryFileUrl responseContent is null")
             Result(emptyList())

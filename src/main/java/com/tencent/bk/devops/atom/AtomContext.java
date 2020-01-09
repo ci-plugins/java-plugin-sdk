@@ -86,9 +86,9 @@ public class AtomContext<T extends AtomBaseParam> {
         return JsonUtil.fromJson(json, paramClazz);
     }
 
-    public Map<String,String>  getAllParameters() throws IOException {
+    public Map<String,Object>  getAllParameters() throws IOException {
         String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
-        return JsonUtil.fromJson(json, new TypeReference<Map<String, String>>(){});
+        return JsonUtil.fromJson(json, new TypeReference<Map<String, Object>>(){});
     }
 
     void persistent() throws IOException {
