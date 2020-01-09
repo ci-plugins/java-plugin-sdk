@@ -85,5 +85,4 @@ public class SdkEnv {
         return instance.vmSeqId;
     }
 
-
 }
