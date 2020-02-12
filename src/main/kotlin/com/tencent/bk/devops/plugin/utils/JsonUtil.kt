@@ -1,12 +1,19 @@
 package com.tencent.bk.devops.plugin.utils
 
+import com.fasterxml.jackson.annotation.JsonFilter
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.ser.FilterProvider
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.google.common.collect.Maps
+import com.tencent.bk.devops.atom.utils.json.JsonMapper
+import com.tencent.bk.devops.atom.utils.json.annotation.SkipLogField
 
 /**
  * Created by liangyuzhou on 2017/9/21.
@@ -35,6 +42,45 @@ object JsonUtil {
 
     fun getObjectMapper() = objectMapper
 
+
+    private val jsonMappers: MutableMap<String, ObjectMapper> = Maps.newConcurrentMap()
+
+    /**
+     * 序列化时忽略bean中的某些字段,字段需要用注解SkipLogFields包括
+     *
+     * @param bean 对象
+     * @param <T>  对象类型
+     * @return Json字符串
+     * @see SkipLogField
+    </T> */
+    fun <T : Any> skipLogFields(bean: T): String? {
+        return jsonMappers.computeIfAbsent("__skipLogFields__" + bean.javaClass.name) { s: String? ->
+            val nonEmptyMapper = ObjectMapper()
+            var aClass: Class<*>? = bean.javaClass
+            val skipFields: MutableSet<String> = HashSet()
+            while (aClass != null) {
+                val fields = aClass.declaredFields
+                for (field in fields) {
+                    val fieldAnnotation = field.getAnnotation(SkipLogField::class.java) ?: continue
+                    if (fieldAnnotation.value.trim().isNotEmpty()) {
+                        skipFields.add(fieldAnnotation.value)
+                    } else {
+                        skipFields.add(field.name)
+                    }
+                }
+                aClass = aClass.superclass
+            }
+            if (skipFields.isNotEmpty()) {
+                nonEmptyMapper.addMixIn(bean.javaClass, SkipLogField::class.java)
+                // 仅包含
+                val filterProvider: FilterProvider = SimpleFilterProvider()
+                        .addFilter(SkipLogField::class.java.getAnnotation(JsonFilter::class.java).value,
+                                SimpleBeanPropertyFilter.serializeAllExcept(skipFields))
+                nonEmptyMapper.setFilterProvider(filterProvider)
+            }
+            nonEmptyMapper
+        }.writeValueAsString(bean)
+    }
     /**
      * 转成Json
      */
