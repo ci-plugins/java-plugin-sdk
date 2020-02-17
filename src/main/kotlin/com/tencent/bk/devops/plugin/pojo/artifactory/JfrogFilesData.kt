@@ -3,9 +3,9 @@ package com.tencent.bk.devops.plugin.pojo.artifactory
 import com.tencent.bk.devops.plugin.utils.JacksonUtil
 
 data class JfrogFilesData(
-    val uri: String,
-    val created: String,
-    val files: List<JfrogFile>
+    val uri: String = "",
+    val created: String = "",
+    val files: List<JfrogFile> = listOf()
 )
 
 fun main() {
