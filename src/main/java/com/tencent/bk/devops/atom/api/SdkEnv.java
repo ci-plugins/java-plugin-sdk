@@ -65,7 +65,7 @@ public class SdkEnv {
             instance = JsonUtil.fromJson(json, SdkEnv.class);
         } finally {
             boolean flag = file.delete(); //读取完后删除文件
-            logger.info("delete sdkFile result is:{}", flag);
+            logger.info("[java-atom-sdk] delete sdkFile result is:{}", flag);
         }
     }
 
