@@ -55,7 +55,7 @@ class ArchiveApi {
                 logger.info("$target >>> 100%\n")
             }
         }
-        logger.info("file transfer time: ${String.format("%.2f", (System.currentTimeMillis() - startTime) / 1000.0)} seconds")
+        logger.info("file transfer time: ${String.format("%.2f", (System.currentTimeMillis() - startTime) / 1000.0)} second(s)")
     }
 
     companion object {
