@@ -32,7 +32,7 @@ class ArchiveApi {
         }
         if (!destPath.parentFile.exists()) destPath.parentFile.mkdirs()
         val target = destPath.canonicalPath
-        logger.info("save file to: $target")
+        logger.info("save file to: $target, size $size byte(s)")
         var readBytes = 0L
         var doubleSize = size.toDouble()
         var startTime = System.currentTimeMillis()
@@ -41,18 +41,18 @@ class ArchiveApi {
             var logTime = System.currentTimeMillis()
             var len = bs.read(buf)
             FileOutputStream(destPath).use { fos ->
-                logger.info("$target > 0.0%\n")
+                logger.info("$target >>> 0.0%\n")
                 while (len != -1) {
                     fos.write(buf, 0, len)
                     len = bs.read(buf)
                     readBytes += len
                     val now = System.currentTimeMillis()
                     if ((now - logTime) > 3000) {
-                        logger.info("$target > ${String.format("%.1f", readBytes / doubleSize)}%\n")
+                        logger.info("$target >>> ${String.format("%.1f", readBytes / doubleSize * 100)}%\n")
                         logTime = now
                     }
                 }
-                logger.info("$target > 100%\n")
+                logger.info("$target >>> 100%\n")
             }
         }
         logger.info("file transfer time: ${String.format("%.2f", (System.currentTimeMillis() - startTime) / 1000.0)} seconds")
