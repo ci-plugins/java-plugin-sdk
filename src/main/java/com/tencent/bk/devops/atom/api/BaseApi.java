@@ -32,7 +32,6 @@ public class BaseApi {
         }
     }
 
-
     private OkHttpClient okHttpClient = new okhttp3.OkHttpClient.Builder()
             .connectTimeout(5L, TimeUnit.SECONDS)
             .readTimeout(300 * 5L, TimeUnit.SECONDS) // Set to 15 minutes
