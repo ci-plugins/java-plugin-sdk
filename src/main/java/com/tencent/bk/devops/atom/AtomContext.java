@@ -35,7 +35,7 @@ public class AtomContext<T extends AtomBaseParam> {
      * @param paramClazz 参数类
      * @throws IOException 如果环境问题导致读不到参数类
      */
-    AtomContext(Class<T> paramClazz) throws IOException {
+    public AtomContext(Class<T> paramClazz) throws IOException {
         dataDir = SdkUtils.getDataDir();
         inputFile = SdkUtils.getInputFile();
         outputFile = SdkUtils.getOutputFile();

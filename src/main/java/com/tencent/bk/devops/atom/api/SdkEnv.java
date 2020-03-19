@@ -35,7 +35,7 @@ public class SdkEnv {
     private static SdkEnv instance;
 
 
-    static Map<String, String> getSdkHeader() {
+    public static Map<String, String> getSdkHeader() {
         Map<String, String> map = Maps.newHashMap();
         map.put(Header.AUTH_HEADER_DEVOPS_BUILD_TYPE, instance.buildType.name());
 
@@ -61,8 +61,8 @@ public class SdkEnv {
         String sdkFile = ".sdk.json";
         File file = new File(dataDir + "/" + sdkFile);
         String json = FileUtils.readFileToString(file, Charset.defaultCharset());
-        boolean flag = file.delete(); //读取完后删除文件
-        logger.info("delete file result is:{}",flag);
+//        boolean flag = file.delete(); //读取完后删除文件
+//        logger.info("delete file result is:{}",flag);
         instance = JsonUtil.fromJson(json, SdkEnv.class);
     }
 
