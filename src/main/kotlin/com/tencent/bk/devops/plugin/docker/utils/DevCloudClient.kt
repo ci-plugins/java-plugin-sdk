@@ -13,6 +13,7 @@ import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import org.apache.commons.beanutils.BeanUtils
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.commons.lang3.StringUtils
@@ -45,10 +46,10 @@ class DevCloudClient(
     fun createJob(
         jobReq: JobRequest
     ): DevCloudTask {
+        println("start to create job: ${jobReq.alias}, ${jobReq.clusterType}, ${jobReq.regionId}, ${jobReq.params}, ${jobReq.podNameSelector}")
+
         val url = "$devCloudUrl/api/v2.1/job"
         val body = JsonUtil.toJson(jobReq)
-        println("[create job] $url")
-        println("[create job] $body")
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser)))
             .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body)).build()
@@ -72,10 +73,9 @@ class DevCloudClient(
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
         val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
-        println("[task status] $responseBody")
         val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
         if (responseMap["actionCode"] as? Int != 200) {
-            throw RuntimeException("get task status fail")
+            throw RuntimeException("get task status fail: $responseBody")
         }
         val data = responseMap["data"] as Map<String, Any>
         return TaskStatus(data["status"] as String?, data["result"])

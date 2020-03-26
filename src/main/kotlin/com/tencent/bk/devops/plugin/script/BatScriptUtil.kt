@@ -28,19 +28,17 @@ object BatScriptUtil {
         runtimeVariables: Map<String, String>,
         dir: File,
         prefix: String = "",
-        printErrorLog: Boolean = true
+        printLog: Boolean = true
     ): String {
         val file = getCommandFile(script, dir, runtimeVariables)
         try {
             return CommandLineUtils.execute(
                 command = "cmd.exe /C \"${file.canonicalPath}\"",
                 workspace = dir,
-                print2Logger = true,
-                prefix = prefix,
-                printException = printErrorLog
+                print2Logger = printLog,
+                prefix = prefix
             )
         } catch (e: Throwable) {
-            if (printErrorLog) logger.warn("Fail to execute bat script", e)
             throw e
         }
     }

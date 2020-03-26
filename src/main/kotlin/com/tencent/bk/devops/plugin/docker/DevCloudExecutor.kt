@@ -23,6 +23,7 @@ object DevCloudExecutor {
     private val VOLUME_MOUNT_PATH = "volume_mount_path"
 
     fun execute(request: DockerRunRequest): DockerRunResponse {
+        val startTimeStamp = System.currentTimeMillis()
         val jobRequest = getJobRequest(request)
         val devCloudClient = DevCloudClient(
             executeUser = request.userId,
@@ -35,7 +36,8 @@ object DevCloudExecutor {
         return DockerRunResponse(
             extraOptions = request.extraOptions.plus(mapOf(
                 "devCloudTaskId" to task.taskId.toString(),
-                "devCloudJobName" to task.jobName
+                "devCloudJobName" to task.jobName,
+                "startTimeStamp" to startTimeStamp.toString()
             ))
         )
     }
@@ -95,7 +97,7 @@ object DevCloudExecutor {
 
         // only if not blank then add start time
         val isNotBlank = logResult.first
-        if (isNotBlank) extraOptions["extraOptions"] = (startTimeStamp + 6000).toString()
+        if (isNotBlank) extraOptions["startTimeStamp"] = (startTimeStamp + param.timeGap).toString()
 
         // add logs
         logs.add(logResult.second)

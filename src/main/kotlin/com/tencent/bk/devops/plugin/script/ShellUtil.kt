@@ -74,12 +74,14 @@ object ShellUtil {
         script: String,
         dir: File,
         runtimeVariables: Map<String, String>,
-        prefix: String = ""
+        prefix: String = "",
+        printLog: Boolean
     ): String {
         return executeUnixCommand(
             command = getCommandFile(script, dir, runtimeVariables).canonicalPath,
             sourceDir = dir,
-            prefix = prefix
+            prefix = prefix,
+            printLog = printLog
         )
     }
 
@@ -100,8 +102,8 @@ object ShellUtil {
         command.append("export $WORKSPACE_ENV=${dir.absolutePath}\n")
             .append("export DEVOPS_BUILD_SCRIPT_FILE=${file.absolutePath}\n")
         val commonEnv = runtimeVariables.filter {
-                !specialEnv(it.key, it.value)
-            }
+            !specialEnv(it.key, it.value)
+        }
         if (commonEnv.isNotEmpty()) {
             commonEnv.forEach { (name, value) ->
                 // --bug=75509999 Agent环境变量中替换掉破坏性字符
@@ -120,9 +122,9 @@ object ShellUtil {
         return file
     }
 
-    private fun executeUnixCommand(command: String, sourceDir: File, prefix: String = ""): String {
+    private fun executeUnixCommand(command: String, sourceDir: File, prefix: String = "", printLog: Boolean = true): String {
         try {
-            return CommandLineUtils.execute(command, sourceDir, true, prefix)
+            return CommandLineUtils.execute(command, sourceDir, printLog, prefix)
         } catch (ignored: Throwable) {
             println("Fail to run the command $command because of error(${ignored.message})")
             throw ignored

@@ -12,7 +12,6 @@ import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils
 import com.tencent.bk.devops.plugin.utils.JsonUtil
 import org.apache.tools.ant.types.Commandline
-import java.lang.RuntimeException
 
 object CommonExecutor {
 
@@ -45,13 +44,13 @@ object CommonExecutor {
     ): DockerRunLogResponse {
         val containerId = request.extraOptions.getValue("containerId")
         val startTimeStamp = request.extraOptions.getValue("startTimeStamp")
-        val dockerHostIP = request.extraOptions["dockerHostIP"] ?: throw RuntimeException("dockerHostIP is null")
-        val vmSeqId = request.extraOptions["vmSeqId"] ?: throw RuntimeException("vmSeqId is null")
+        val dockerHostIP = System.getenv("docker_host_ip")
+        val vmSeqId = SdkEnv.getVmSeqId()
         val dockerGetLogUrl =
             "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
 
         val logResponse = OkHttpUtils.doGet(dockerGetLogUrl)
-        val logResult = JsonUtil.to<Result<LogParam?>>(logResponse).data
+        val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
                 status = Status.error,
                 message = "the log data is null......",
@@ -80,7 +79,7 @@ object CommonExecutor {
                 status = Status.running,
                 message = "get log...",
                 extraOptions = request.extraOptions.plus(mapOf(
-                    "startTimeStamp" to (startTimeStamp.toLong() + 1).toString()
+                    "startTimeStamp" to (startTimeStamp.toLong() + request.timeGap / 1000).toString()
                 ))
             )
         }

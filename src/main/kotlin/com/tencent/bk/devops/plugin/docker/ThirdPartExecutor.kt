@@ -15,13 +15,22 @@ import java.lang.StringBuilder
 object ThirdPartExecutor {
     fun execute(param: DockerRunRequest): DockerRunResponse {
         with(param) {
-            val userPassPair = ParamUtils.getUserPassPair(ticketId)
-            val command = "docker run -d ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" && ")}"
-            val containerId = ScriptUtils.execute(command, workspace)
-            return DockerRunResponse(
-                extraOptions = mapOf("startTimestamp" to System.currentTimeMillis().toString(),
-                    "dockerContainerId" to containerId)
-            )
+            try {
+                dockerLogin(this)
+
+                val pullCmd = "docker pull ${param.imageName}"
+                ScriptUtils.execute(pullCmd, workspace)
+
+                val command = "docker run -d -v $workspace:$workspace ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" && ")}"
+                println("execute command: $command")
+                val containerId = ScriptUtils.execute(command, workspace)
+                return DockerRunResponse(
+                    extraOptions = mapOf("startTimestamp" to System.currentTimeMillis().toString(),
+                        "dockerContainerId" to containerId)
+                )
+            } finally {
+                dockerLogout(this)
+            }
         }
     }
 
@@ -36,29 +45,36 @@ object ThirdPartExecutor {
     fun getLogs(param: DockerRunLogRequest): DockerRunLogResponse {
         val startTimestamp = param.extraOptions["startTimestamp"]?.toLong() ?: throw RuntimeException("startTimestamp is null")
         val containerId = param.extraOptions["dockerContainerId"] ?: throw RuntimeException("dockerContainerId is null")
-        val startTime = beiJ2UTC(startTimestamp)
-        val command = "docker logs --until=\"$startTime\" $containerId"
-        val log = ScriptUtils.execute(command, param.workspace)
+
+        val statusPair = getContainerStatus(containerId, param.workspace)
+        val startTime = if (statusPair.first == Status.running) beiJ2UTC(startTimestamp) else statusPair.second
+        val preStartTime = beiJ2UTC(startTimestamp - param.timeGap)
+        val command = "docker logs --until=\"$startTime\" --since=\"$preStartTime\" $containerId"
+        val log = ScriptUtils.execute(command, param.workspace, printLog = false)
+
         return DockerRunLogResponse(
             log = listOf(log),
-            status = getContainerStatus(containerId, param.workspace),
+            status = statusPair.first,
             message = "get log...",
             extraOptions = param.extraOptions.plus(mapOf(
-                "startTimestamp" to (startTimestamp + 6000).toString()
+                "startTimestamp" to (startTimestamp + param.timeGap).toString()
             ))
         )
     }
 
-    private fun getContainerStatus(containerId: String, workspace: File): Status {
-        val inspectResult = ScriptUtils.execute("docker inspect $containerId", workspace)
+    private fun getContainerStatus(containerId: String, workspace: File): Pair<Status, String> {
+        val inspectResult = ScriptUtils.execute(script = "docker inspect $containerId", dir = workspace, printLog = false)
         val inspectMap = JsonUtil.to<List<Map<String, Any>>>(inspectResult).first()
         val state = inspectMap["State"] as Map<String, Any>
         val status = state["Status"] as String
-        if (status == "running") return Status.running
+        if (status == "running") return Pair(Status.running, "")
 
         val exitCode = state["ExitCode"] as Int
-        return if (exitCode != 0) Status.failure
-        else Status.success
+
+        val finishedAt = state["FinishedAt"] as String
+
+        return if (exitCode != 0) Pair(Status.failure, finishedAt)
+        else Pair(Status.success, finishedAt)
     }
 
     private fun dockerLogin(param: DockerRunRequest) {
@@ -75,6 +91,8 @@ object ThirdPartExecutor {
     }
 
     private fun dockerLogout(param: DockerRunRequest) {
+        if (param.ticketId.isNullOrBlank()) return
+
         val loginHost = param.imageName.split("/").first()
         val commandStr = "docker logout $loginHost"
         println("[execute script]: $commandStr")
