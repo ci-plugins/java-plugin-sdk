@@ -47,14 +47,19 @@ object ThirdPartExecutor {
         val containerId = param.extraOptions["dockerContainerId"] ?: throw RuntimeException("dockerContainerId is null")
 
         val statusPair = getContainerStatus(containerId, param.workspace)
-        val startTime = if (statusPair.first == Status.running) beiJ2UTC(startTimestamp) else statusPair.second
+        val status = statusPair.first
+        val startTime = if (status == Status.running) beiJ2UTC(startTimestamp) else statusPair.second
         val preStartTime = beiJ2UTC(startTimestamp - param.timeGap)
         val command = "docker logs --until=\"$startTime\" --since=\"$preStartTime\" $containerId"
         val log = ScriptUtils.execute(command, param.workspace, printLog = false)
 
+        if (status != Status.running) {
+            dockerRm(containerId, param.workspace)
+        }
+
         return DockerRunLogResponse(
             log = listOf(log),
-            status = statusPair.first,
+            status = status,
             message = "get log...",
             extraOptions = param.extraOptions.plus(mapOf(
                 "startTimestamp" to (startTimestamp + param.timeGap).toString()
@@ -69,8 +74,6 @@ object ThirdPartExecutor {
         val status = state["Status"] as String
         if (status == "running") return Pair(Status.running, "")
 
-        dockerRm(containerId, workspace)
-
         val exitCode = state["ExitCode"] as Int
 
         val finishedAt = state["FinishedAt"] as String
@@ -80,7 +83,9 @@ object ThirdPartExecutor {
     }
 
     private fun dockerRm(containerId: String, workspace: File) {
-        ScriptUtils.execute(script = "docker rm $containerId", dir = workspace, failExit = false)
+        val cmd = "docker rm $containerId"
+        println("[execute script]: $cmd")
+        ScriptUtils.execute(script = cmd, dir = workspace, failExit = false)
     }
 
     private fun dockerLogin(param: DockerRunRequest) {
