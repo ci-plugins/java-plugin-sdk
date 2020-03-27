@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class CredentialApi extends BaseApi {
 
-    private final static Logger logger = LoggerFactory.getLogger(CredentialApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(CredentialApi.class);
 
     /**
      * 获取凭证信息

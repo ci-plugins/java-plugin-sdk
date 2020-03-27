@@ -5,10 +5,10 @@ import lombok.Data
 
 @Data
 data class JfrogFile(
-        val uri: String,
-        val size: Long,
-        val lastModified: String,
-        val folder: Boolean,
-        @JsonProperty(required = false)
-        val sha1: String = ""
+    val uri: String = "",
+    val size: Long = 0,
+    val lastModified: String = "",
+    val folder: Boolean = false,
+    @JsonProperty(required = false)
+    val sha1: String = ""
 )

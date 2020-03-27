@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class PluginApi extends BaseApi {
 
-    private final static Logger logger = LoggerFactory.getLogger(PluginApi.class);
+    private static final Logger logger = LoggerFactory.getLogger(PluginApi.class);
 
     /**
      * 获取ons名字信息
@@ -22,7 +22,7 @@ public class PluginApi extends BaseApi {
      */
     @SuppressWarnings("all")
     public Result<OnsHostInfo> getOnsHostInfo(String domainName){
-        Request request = super.buildGet("/artifactory/api/build/ons/host/domains/" + domainName);
+        Request request = super.buildGet("/plugin/api/build/ons/host/domains/" + domainName);
         String responseContent = null;
         try {
             responseContent = super.request(request,"获取请求IP地址信息失败");

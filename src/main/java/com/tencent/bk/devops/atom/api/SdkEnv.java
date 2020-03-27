@@ -1,7 +1,6 @@
 package com.tencent.bk.devops.atom.api;
 
 import com.google.common.collect.Maps;
-import com.tencent.bk.devops.atom.common.BuildType;
 import com.tencent.bk.devops.atom.common.Constants;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import lombok.Getter;
@@ -22,9 +21,9 @@ import java.util.Map;
 @Getter
 public class SdkEnv {
 
-    private final static Logger logger = LoggerFactory.getLogger(SdkEnv.class);
+    private static final Logger logger = LoggerFactory.getLogger(SdkEnv.class);
 
-    private BuildType buildType;
+    private String buildType;
     private String projectId;
     private String agentId;
     private String secretKey;
@@ -37,7 +36,7 @@ public class SdkEnv {
 
     public static Map<String, String> getSdkHeader() {
         Map<String, String> map = Maps.newHashMap();
-        map.put(Header.AUTH_HEADER_DEVOPS_BUILD_TYPE, instance.buildType.name());
+        map.put(Header.AUTH_HEADER_DEVOPS_BUILD_TYPE, instance.buildType);
 
         map.put(Header.AUTH_HEADER_DEVOPS_PROJECT_ID, instance.projectId);
         map.put(Header.AUTH_HEADER_PROJECT_ID, instance.projectId);
@@ -74,11 +73,11 @@ public class SdkEnv {
         }
     }
 
-    public static String getGatewayHost(){
+    public static String getGatewayHost() {
         return instance.gateway;
     }
 
-    public static String getVmSeqId(){
+    public static String getVmSeqId() {
         return instance.vmSeqId;
     }
 

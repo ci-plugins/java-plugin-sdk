@@ -20,20 +20,17 @@ public class BaseApi {
 
     protected String request(Request request, String errorMessage) throws IOException {
         OkHttpClient httpClient = okHttpClient.newBuilder().build();
-
-        Response response = httpClient.newCall(request).execute();
-
-        assert response.body() != null;
-        String responseContent = response.body().string();
-        if (!response.isSuccessful()) {
-            System.err.println("Fail to request(" + request + ") with code " + response.code()
+        try (Response response = httpClient.newCall(request).execute()) {
+            String responseContent = response.body() != null ? response.body().string() : null;
+            if (!response.isSuccessful()) {
+                logger.error("Fail to request(" + request + ") with code " + response.code()
                     + " , message " + response.message() + " and response" + responseContent);
-            logger.info("excep>>>>>>>>>>>>"+response);
-            throw new RuntimeException(errorMessage);
+                logger.info("excep>>>>>>>>>>>>" + response);
+                throw new RuntimeException(errorMessage);
+            }
+            return responseContent;
         }
-        return responseContent;
     }
-
 
     private OkHttpClient okHttpClient = new okhttp3.OkHttpClient.Builder()
             .connectTimeout(5L, TimeUnit.SECONDS)

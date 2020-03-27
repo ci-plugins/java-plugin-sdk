@@ -1,16 +1,15 @@
 package com.tencent.bk.devops.plugin.pojo.artifactory
 
 import com.tencent.bk.devops.plugin.utils.JacksonUtil
-import com.tencent.bk.devops.plugin.utils.JsonUtil
 
 data class JfrogFilesData(
-        val uri: String,
-        val created: String,
-        val files: List<JfrogFile>
+    val uri: String = "",
+    val created: String = "",
+    val files: List<JfrogFile> = listOf()
 )
 
 fun main() {
-    val s="{\n" +
+    val s = "{\n" +
             "  \"uri\" : \"http://bk.artifactory.oa.com:80/api/storage/generic-local/bk-custom/landunplugins\",\n" +
             "  \"created\" : \"2019-08-16T12:16:00.484+08:00\",\n" +
             "  \"files\" : [ {\n" +
@@ -25,5 +24,5 @@ fun main() {
             "    \"folder\" : false,\n" +
             "    \"sha1\" : \"90b09dcd2199c62f00335f884ebf6667c746cd7c\"\n" +
             "  }]}"
-    println(">>>>"+JacksonUtil.createObjectMapper().readValue(s,JfrogFilesData::class.java))
+    println(">>>>" + JacksonUtil.createObjectMapper().readValue(s, JfrogFilesData::class.java))
 }
