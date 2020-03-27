@@ -21,7 +21,7 @@ object ThirdPartExecutor {
                 val pullCmd = "docker pull ${param.imageName}"
                 ScriptUtils.execute(pullCmd, workspace)
 
-                val command = "docker run -d -v $workspace:$workspace ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" && ")}"
+                val command = "docker run -d -v $workspace:$workspace ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" ")}"
                 println("execute command: $command")
                 val containerId = ScriptUtils.execute(command, workspace)
                 return DockerRunResponse(
