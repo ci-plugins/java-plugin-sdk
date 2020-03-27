@@ -172,11 +172,10 @@ object DevCloudExecutor {
             val imagePair = getImagePair(param.imageName)
 
             // get user pass param
-            val userPassPair = ParamUtils.getUserPassPair(ticketId)
             val registry = Registry(
                 host = imagePair.first,
-                username = userPassPair.first,
-                password = userPassPair.second
+                username = param.dockerLoginUsername,
+                password = param.dockerLoginPassword
             )
 
             return JobRequest(

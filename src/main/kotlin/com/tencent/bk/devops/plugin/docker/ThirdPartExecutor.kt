@@ -78,11 +78,10 @@ object ThirdPartExecutor {
     }
 
     private fun dockerLogin(param: DockerRunRequest) {
-        if (param.ticketId.isNullOrBlank()) return
+        if (param.dockerLoginUsername.isNullOrBlank()) return
 
-        val userPassPair = ParamUtils.getUserPassPair(param.ticketId)
-        val username = userPassPair.first
-        val password = userPassPair.second
+        val username = param.dockerLoginUsername
+        val password = param.dockerLoginPassword
         val loginHost = param.imageName.split("/").first()
         // WARNING! Using --password via the CLI is insecure. Use --password-stdin.
         val commandStr = "docker login $loginHost --username $username --password $password"
@@ -91,7 +90,7 @@ object ThirdPartExecutor {
     }
 
     private fun dockerLogout(param: DockerRunRequest) {
-        if (param.ticketId.isNullOrBlank()) return
+        if (param.dockerLoginUsername.isNullOrBlank()) return
 
         val loginHost = param.imageName.split("/").first()
         val commandStr = "docker logout $loginHost"
