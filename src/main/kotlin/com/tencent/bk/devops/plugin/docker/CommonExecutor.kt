@@ -26,6 +26,9 @@ object CommonExecutor {
         val dockerHostIP = System.getenv("docker_host_ip")
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
+        println("dockerRunUrl: $dockerRunUrl")
+        // TODO password
+        println("docker run param: $runParam")
         val responseContent = OkHttpUtils.doPost(dockerRunUrl, runParam)
         val extraOptions = JsonUtil.to(responseContent, object : TypeReference<Result<Map<String, Any>>>() {}).data
         return DockerRunResponse(
@@ -89,17 +92,11 @@ object CommonExecutor {
     private fun getRunParamJson(param: DockerRunRequest): String {
         val runParam = with(param) {
             // get user pass param
-
-            val commandLines = mutableListOf<String>()
-            command.forEach {
-                commandLines.addAll(Commandline.translateCommandline(it).toList())
-            }
-
             DockerRunParam(
                 imageName,
                 param.dockerLoginUsername,
                 param.dockerLoginPassword,
-                commandLines,
+                command,
                 envMap ?: mapOf()
             )
         }

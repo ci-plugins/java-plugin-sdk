@@ -140,11 +140,6 @@ object DevCloudExecutor {
 
     private fun getJobRequest(param: DockerRunRequest): JobRequest {
         with(param) {
-            val commandLines = mutableListOf<String>()
-            command.forEach {
-                commandLines.addAll(Commandline.translateCommandline(it).toList())
-            }
-
             // get job param
             val jobParam = JobParam(
                 env = envMap,
