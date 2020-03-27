@@ -69,12 +69,18 @@ object ThirdPartExecutor {
         val status = state["Status"] as String
         if (status == "running") return Pair(Status.running, "")
 
+        dockerRm(containerId, workspace)
+
         val exitCode = state["ExitCode"] as Int
 
         val finishedAt = state["FinishedAt"] as String
 
         return if (exitCode != 0) Pair(Status.failure, finishedAt)
         else Pair(Status.success, finishedAt)
+    }
+
+    private fun dockerRm(containerId: String, workspace: File) {
+        ScriptUtils.execute(script = "docker rm $containerId", dir = workspace, failExit = false)
     }
 
     private fun dockerLogin(param: DockerRunRequest) {

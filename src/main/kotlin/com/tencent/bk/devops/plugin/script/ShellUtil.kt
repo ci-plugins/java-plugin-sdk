@@ -75,20 +75,23 @@ object ShellUtil {
         dir: File,
         runtimeVariables: Map<String, String>,
         prefix: String = "",
-        printLog: Boolean
+        printLog: Boolean,
+        failExit: Boolean
     ): String {
         return executeUnixCommand(
             command = getCommandFile(script, dir, runtimeVariables).canonicalPath,
             sourceDir = dir,
             prefix = prefix,
-            printLog = printLog
+            printLog = printLog,
+            failExit = failExit
         )
     }
 
     fun getCommandFile(
         script: String,
         dir: File,
-        runtimeVariables: Map<String, String>
+        runtimeVariables: Map<String, String>,
+        failExit: Boolean = true
     ): File {
         val file = Files.createTempFile("devops_script", ".sh").toFile()
         file.deleteOnExit()
@@ -117,17 +120,24 @@ object ShellUtil {
         command.append(script)
 
         file.writeText(command.toString())
-        executeUnixCommand("chmod +x ${file.absolutePath}", dir)
+        executeUnixCommand("chmod +x ${file.absolutePath}", dir, failExit = failExit)
 
         return file
     }
 
-    private fun executeUnixCommand(command: String, sourceDir: File, prefix: String = "", printLog: Boolean = true): String {
-        try {
-            return CommandLineUtils.execute(command, sourceDir, printLog, prefix)
+    private fun executeUnixCommand(
+        command: String,
+        sourceDir: File,
+        prefix: String = "",
+        printLog: Boolean = true,
+        failExit: Boolean = true
+    ): String {
+        return try {
+            CommandLineUtils.execute(command, sourceDir, printLog, prefix)
         } catch (ignored: Throwable) {
             println("Fail to run the command $command because of error(${ignored.message})")
-            throw ignored
+            if (failExit) throw ignored
+            else ignored.message ?: ""
         }
     }
 
