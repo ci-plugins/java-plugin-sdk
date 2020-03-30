@@ -4,14 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.SdkEnv
 import com.tencent.bk.devops.atom.common.Status
 import com.tencent.bk.devops.atom.pojo.Result
-import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
-import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
 import com.tencent.bk.devops.atom.utils.http.OkHttpUtils
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
-import com.tencent.bk.devops.plugin.docker.utils.ParamUtils
+import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
+import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
 import com.tencent.bk.devops.plugin.utils.JsonUtil
-import org.apache.tools.ant.types.Commandline
 
 object CommonExecutor {
 
@@ -91,12 +89,16 @@ object CommonExecutor {
 
     private fun getRunParamJson(param: DockerRunRequest): String {
         val runParam = with(param) {
+            val cmd = mutableListOf<String>()
+            command.forEach {
+                cmd.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
+            }
             // get user pass param
             DockerRunParam(
                 imageName,
                 param.dockerLoginUsername,
                 param.dockerLoginPassword,
-                command,
+                cmd,
                 envMap ?: mapOf()
             )
         }
