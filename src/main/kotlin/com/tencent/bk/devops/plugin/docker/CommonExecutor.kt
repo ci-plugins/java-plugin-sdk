@@ -89,16 +89,16 @@ object CommonExecutor {
 
     private fun getRunParamJson(param: DockerRunRequest): String {
         val runParam = with(param) {
-//            val cmd = mutableListOf<String>()
-//            command.forEach {
-//                cmd.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
-//            }
+            val cmd = mutableListOf<String>()
+            command.forEach {
+                cmd.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
+            }
             // get user pass param
             DockerRunParam(
                 imageName,
                 param.dockerLoginUsername,
                 param.dockerLoginPassword,
-                param.command,
+                cmd,
                 envMap ?: mapOf()
             )
         }
