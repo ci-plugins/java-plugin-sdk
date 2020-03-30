@@ -137,13 +137,13 @@ object DevCloudExecutor {
     private fun getJobRequest(param: DockerRunRequest): JobRequest {
         with(param) {
             // get job param
-            val cmd = mutableListOf<String>()
-            command.forEach {
-                cmd.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
-            }
+//            val cmd = mutableListOf<String>()
+//            command.forEach {
+//                cmd.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
+//            }
             val jobParam = JobParam(
                 env = envMap,
-                command = cmd
+                command = command
             )
 
             if (jobParam.nfsVolume == null) {
