@@ -8,16 +8,11 @@ import com.tencent.bk.devops.plugin.docker.pojo.job.response.JobResponse
 import com.tencent.bk.devops.plugin.docker.pojo.status.JobStatusResponse
 import com.tencent.bk.devops.plugin.utils.JsonUtil
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
-import okhttp3.Headers
-import okhttp3.MediaType
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import org.apache.commons.beanutils.BeanUtils
+import okhttp3.*
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.commons.lang3.StringUtils
-import java.util.HashMap
+import java.util.*
 
 class DevCloudClient(
     private val executeUser: String,
@@ -43,7 +38,7 @@ class DevCloudClient(
         return headerBuilder
     }
 
-    fun createJob(
+    @Synchronized fun createJob(
         jobReq: JobRequest
     ): DevCloudTask {
         println("start to create job: ${jobReq.alias}, ${jobReq.clusterType}, ${jobReq.regionId}, ${jobReq.params}, ${jobReq.podNameSelector}")
@@ -70,9 +65,11 @@ class DevCloudClient(
         taskId: Int
     ): TaskStatus {
         val url = "$devCloudUrl/api/v2.1/tasks/$taskId"
+//        println("get task status url: $url")
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
         val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
+//        println("get task status response: $responseBody")
         val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
         if (responseMap["actionCode"] as? Int != 200) {
             throw RuntimeException("get task status fail: $responseBody")
@@ -85,12 +82,12 @@ class DevCloudClient(
         jobName: String
     ): JobStatusResponse {
         val url = "$devCloudUrl/api/v2.1/job/$jobName/status"
-        println("job Status url: $url")
+//        println("job Status url: $url")
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
         val response: Response = OkhttpUtils.doHttp(request)
         val body = response.body()!!.string()
-        println("[job status] $body")
+//        println("[job status] $body")
         val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
         val actionCode: Int = jobStatusRep.actionCode
         if (actionCode != 200) {

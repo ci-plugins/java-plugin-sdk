@@ -4,14 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.SdkEnv
 import com.tencent.bk.devops.atom.common.Status
 import com.tencent.bk.devops.atom.pojo.Result
-import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
-import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
 import com.tencent.bk.devops.atom.utils.http.OkHttpUtils
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
-import com.tencent.bk.devops.plugin.docker.utils.ParamUtils
+import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
+import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
 import com.tencent.bk.devops.plugin.utils.JsonUtil
-import org.apache.tools.ant.types.Commandline
 
 object CommonExecutor {
 
@@ -26,6 +24,9 @@ object CommonExecutor {
         val dockerHostIP = System.getenv("docker_host_ip")
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
+//        println("dockerRunUrl: $dockerRunUrl")
+        // TODO password
+//        println("docker run param: $runParam")
         val responseContent = OkHttpUtils.doPost(dockerRunUrl, runParam)
         val extraOptions = JsonUtil.to(responseContent, object : TypeReference<Result<Map<String, Any>>>() {}).data
         return DockerRunResponse(
@@ -48,8 +49,9 @@ object CommonExecutor {
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerGetLogUrl =
             "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
-
+//        println("get logs url: $dockerGetLogUrl")
         val logResponse = OkHttpUtils.doGet(dockerGetLogUrl)
+//        println("get logs response: $logResponse")
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
                 status = Status.error,
@@ -88,18 +90,16 @@ object CommonExecutor {
 
     private fun getRunParamJson(param: DockerRunRequest): String {
         val runParam = with(param) {
-            // get user pass param
-
-            val commandLines = mutableListOf<String>()
+            val cmd = mutableListOf<String>()
             command.forEach {
-                commandLines.addAll(Commandline.translateCommandline(it).toList())
+                cmd.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
             }
-
+            // get user pass param
             DockerRunParam(
                 imageName,
                 param.dockerLoginUsername,
                 param.dockerLoginPassword,
-                commandLines,
+                cmd,
                 envMap ?: mapOf()
             )
         }

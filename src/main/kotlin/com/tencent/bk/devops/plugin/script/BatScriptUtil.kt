@@ -28,18 +28,20 @@ object BatScriptUtil {
         runtimeVariables: Map<String, String>,
         dir: File,
         prefix: String = "",
-        printLog: Boolean = true
+        printLog: Boolean = true,
+        failExit: Boolean = true
     ): String {
         val file = getCommandFile(script, dir, runtimeVariables)
-        try {
-            return CommandLineUtils.execute(
+        return try {
+            CommandLineUtils.execute(
                 command = "cmd.exe /C \"${file.canonicalPath}\"",
                 workspace = dir,
                 print2Logger = printLog,
                 prefix = prefix
             )
         } catch (e: Throwable) {
-            throw e
+            if (failExit) throw e
+            else e.message ?: ""
         }
     }
 

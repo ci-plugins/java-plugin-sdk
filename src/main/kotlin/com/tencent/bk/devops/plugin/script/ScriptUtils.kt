@@ -10,17 +10,18 @@ object ScriptUtils {
         dir: File,
         runtimeVariables: Map<String, String> = mapOf(),
         prefix: String = "",
-        printLog: Boolean = true
+        printLog: Boolean = true,
+        failExit: Boolean = true
     ): String {
         return when (MachineEnvUtils.getOS()) {
             MachineEnvUtils.OSType.LINUX, MachineEnvUtils.OSType.MAC_OS -> {
-                ShellUtil.execute(script, dir, runtimeVariables, prefix, printLog)
+                ShellUtil.execute(script, dir, runtimeVariables, prefix, printLog, failExit)
             }
             MachineEnvUtils.OSType.WINDOWS -> {
-                BatScriptUtil.execute(script, runtimeVariables, dir, prefix, printLog)
+                BatScriptUtil.execute(script, runtimeVariables, dir, prefix, printLog, failExit)
             }
             else -> {
-                ShellUtil.execute(script, dir, runtimeVariables, prefix, printLog)
+                ShellUtil.execute(script, dir, runtimeVariables, prefix, printLog, failExit)
             }
         }
     }

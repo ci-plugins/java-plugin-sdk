@@ -10,12 +10,9 @@ import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobRequest
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.Registry
 import com.tencent.bk.devops.plugin.docker.utils.DevCloudClient
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
-import com.tencent.bk.devops.plugin.docker.utils.ParamUtils
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
 import org.apache.commons.lang3.RandomUtils
 import org.apache.tools.ant.types.Commandline
-import java.text.SimpleDateFormat
-import java.util.TimeZone
 
 object DevCloudExecutor {
     private val VOLUME_SERVER = "volume_server"
@@ -140,15 +137,15 @@ object DevCloudExecutor {
 
     private fun getJobRequest(param: DockerRunRequest): JobRequest {
         with(param) {
-            val commandLines = mutableListOf<String>()
-            command.forEach {
-                commandLines.addAll(Commandline.translateCommandline(it).toList())
-            }
-
             // get job param
+            val cmdTmp = mutableListOf<String>()
+            command.forEach {
+                cmdTmp.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
+            }
+            val cmd = if (cmdTmp.size == 1) { Commandline.translateCommandline(cmdTmp.first()).toList() } else { cmdTmp }
             val jobParam = JobParam(
                 env = envMap,
-                command = command
+                command = cmd
             )
 
             if (jobParam.nfsVolume == null) {
