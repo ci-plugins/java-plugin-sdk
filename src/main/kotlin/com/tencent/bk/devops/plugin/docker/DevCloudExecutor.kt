@@ -12,6 +12,7 @@ import com.tencent.bk.devops.plugin.docker.utils.DevCloudClient
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
 import org.apache.commons.lang3.RandomUtils
+import org.apache.tools.ant.types.Commandline
 
 object DevCloudExecutor {
     private val VOLUME_SERVER = "volume_server"
@@ -137,10 +138,11 @@ object DevCloudExecutor {
     private fun getJobRequest(param: DockerRunRequest): JobRequest {
         with(param) {
             // get job param
-            val cmd = mutableListOf<String>()
+            val cmdTmp = mutableListOf<String>()
             command.forEach {
-                cmd.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
+                cmdTmp.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
             }
+            val cmd = if (cmdTmp.size == 1) { Commandline.translateCommandline(cmdTmp.first()).toList() } else { cmdTmp }
             val jobParam = JobParam(
                 env = envMap,
                 command = cmd
