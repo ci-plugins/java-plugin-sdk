@@ -9,6 +9,7 @@ import com.tencent.bk.devops.plugin.docker.utils.ParamUtils
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
 import com.tencent.bk.devops.plugin.script.ScriptUtils
 import com.tencent.bk.devops.plugin.utils.JsonUtil
+import com.tencent.bk.devops.plugin.utils.MachineEnvUtils
 import java.io.File
 import java.lang.StringBuilder
 
@@ -20,8 +21,13 @@ object ThirdPartExecutor {
 
                 val pullCmd = "docker pull ${param.imageName}"
                 ScriptUtils.execute(pullCmd, workspace)
+                val dockerWorkspace = if (MachineEnvUtils.getOS() == MachineEnvUtils.OSType.WINDOWS) {
+                    "/" + workspace.canonicalPath.replace("\\", "/").replace(":", "")
+                } else {
+                    workspace.canonicalPath
+                }
 
-                val command = "docker run -d -v $workspace:$workspace ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" ")}"
+                val command = "docker run -d -v $dockerWorkspace:$dockerWorkspace ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" ")}"
                 println("execute command: $command")
                 val containerId = ScriptUtils.execute(command, workspace)
                 return DockerRunResponse(
