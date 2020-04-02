@@ -52,6 +52,7 @@ class DevCloudClient(
         println("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
         if (jobRep.actionCode == 200) {
+            Thread.sleep(50)        // 防止devcloud并发创建名称冲突
             return DevCloudTask(
                 jobRep.data.taskId,
                 jobRep.data.name
