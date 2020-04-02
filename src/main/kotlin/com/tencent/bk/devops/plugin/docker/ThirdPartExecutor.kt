@@ -27,7 +27,7 @@ object ThirdPartExecutor {
                     workspace.canonicalPath
                 }
 
-                val command = "docker run -d --ulimit nofile=204800:204800 -v $dockerWorkspace:$dockerWorkspace ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" ")}"
+                val command = "docker run -d -v $dockerWorkspace:$dockerWorkspace ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" ")}"
                 println("execute command: $command")
                 val containerId = ScriptUtils.execute(command, workspace)
                 return DockerRunResponse(
