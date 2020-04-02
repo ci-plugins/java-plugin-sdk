@@ -88,10 +88,10 @@ object BatScriptUtil {
             .append(setGateValue.replace("##gateValueFile##", File(dir, GATEWAY_FILE).canonicalPath))
 
         val charset = Charset.defaultCharset()
-        logger.info("The default charset is $charset")
+//        logger.info("The default charset is $charset")
 
         file.writeText(command.toString(), charset)
-        logger.info("start to run windows script")
+//        logger.info("start to run windows script")
         return file
     }
 }
