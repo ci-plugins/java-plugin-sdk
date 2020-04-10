@@ -1,5 +1,6 @@
 package com.tencent.bk.devops.plugin.utils
 
+import okhttp3.ConnectionPool
 import okhttp3.Request
 import okhttp3.Response
 import org.slf4j.LoggerFactory
@@ -15,6 +16,7 @@ object OkhttpUtils {
             .connectTimeout(60L, TimeUnit.SECONDS)
             .readTimeout(30L, TimeUnit.MINUTES)
             .writeTimeout(30L, TimeUnit.MINUTES)
+            .connectionPool(ConnectionPool(32, 5, TimeUnit.MINUTES))
             .build()
 
     fun doGet(url: String, headers: Map<String, String> = mapOf()): Response {
