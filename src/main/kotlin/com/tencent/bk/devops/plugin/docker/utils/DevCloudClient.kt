@@ -48,7 +48,7 @@ class DevCloudClient(
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser)))
             .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body)).build()
-        val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
+        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
         println("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
         if (jobRep.actionCode == 200) {
@@ -69,7 +69,7 @@ class DevCloudClient(
 //        println("get task status url: $url")
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
+        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
 //        println("get task status response: $responseBody")
         val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
         if (responseMap["actionCode"] as? Int != 200) {
@@ -86,7 +86,7 @@ class DevCloudClient(
 //        println("job Status url: $url")
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val response: Response = OkhttpUtils.doHttp(request)
+        val response: Response = OkhttpUtils.doShortHttp(request)
         val body = response.body()!!.string()
 //        println("[job status] $body")
         val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
@@ -104,7 +104,7 @@ class DevCloudClient(
         val sendUrl = "$devCloudUrl/api/v2.1/job/$jobName/logs?sinceTime=$sinceTime"
         val request = Request.Builder().url(sendUrl)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val response = OkhttpUtils.doHttp(request)
+        val response = OkhttpUtils.doShortHttp(request)
         val res = response.body()!!.string()
         if (!response.isSuccessful) {
             return Pair(false, res)

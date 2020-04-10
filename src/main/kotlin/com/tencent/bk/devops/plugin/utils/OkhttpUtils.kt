@@ -1,6 +1,7 @@
 package com.tencent.bk.devops.plugin.utils
 
 import okhttp3.ConnectionPool
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.slf4j.LoggerFactory
@@ -16,10 +17,24 @@ object OkhttpUtils {
             .connectTimeout(60L, TimeUnit.SECONDS)
             .readTimeout(30L, TimeUnit.MINUTES)
             .writeTimeout(30L, TimeUnit.MINUTES)
+            .build()
+
+    private val shortOkHttpClient = okhttp3.OkHttpClient.Builder()
+            .connectTimeout(5L, TimeUnit.SECONDS)
+            .readTimeout(30L, TimeUnit.SECONDS)
+            .writeTimeout(30L, TimeUnit.SECONDS)
             .connectionPool(ConnectionPool(32, 5, TimeUnit.MINUTES))
             .build()
 
+    fun doShortGet(url: String, headers: Map<String, String> = mapOf()): Response {
+        return doGet(shortOkHttpClient, url, headers)
+    }
+
     fun doGet(url: String, headers: Map<String, String> = mapOf()): Response {
+        return doGet(okHttpClient, url, headers)
+    }
+
+    fun doGet(client: OkHttpClient, url: String, headers: Map<String, String> = mapOf()): Response {
         val requestBuilder = Request.Builder()
                 .url(url)
                 .get()
@@ -29,7 +44,11 @@ object OkhttpUtils {
             }
         }
         val request = requestBuilder.build()
-        return okHttpClient.newCall(request).execute()
+        return client.newCall(request).execute()
+    }
+
+    fun doShortHttp(request: Request): Response {
+        return shortOkHttpClient.newCall(request).execute()
     }
 
     fun doHttp(request: Request): Response {
