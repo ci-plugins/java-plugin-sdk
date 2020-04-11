@@ -66,11 +66,11 @@ class DevCloudClient(
         taskId: Int
     ): TaskStatus {
         val url = "$devCloudUrl/api/v2.1/tasks/$taskId"
-//        println("get task status url: $url")
+        println("get task status url: $url")
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
-//        println("get task status response: $responseBody")
+        val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
+        println("get task status response: $responseBody")
         val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
         if (responseMap["actionCode"] as? Int != 200) {
             throw RuntimeException("get task status fail: $responseBody")
@@ -83,12 +83,12 @@ class DevCloudClient(
         jobName: String
     ): JobStatusResponse {
         val url = "$devCloudUrl/api/v2.1/job/$jobName/status"
-//        println("job Status url: $url")
+        println("job Status url: $url")
         val request = Request.Builder().url(url)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val response: Response = OkhttpUtils.doShortHttp(request)
+        val response: Response = OkhttpUtils.doHttp(request)
         val body = response.body()!!.string()
-//        println("[job status] $body")
+        println("[job status] $body")
         val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
         val actionCode: Int = jobStatusRep.actionCode
         if (actionCode != 200) {
