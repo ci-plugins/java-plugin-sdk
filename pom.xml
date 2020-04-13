@@ -9,7 +9,7 @@
         <version>1.0.0</version>
     </parent>
     <artifactId>java-atom-sdk</artifactId>
-    <version>1.0.25-2020041101-SNAPSHOT</version>
+    <version>1.0.25-2020041301-SNAPSHOT</version>
 
     <inceptionYear>2018-2118</inceptionYear>
     <name>BK-ATOM-JAVA-SDK</name>
