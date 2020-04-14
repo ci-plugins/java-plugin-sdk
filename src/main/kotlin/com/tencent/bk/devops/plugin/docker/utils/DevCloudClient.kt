@@ -104,7 +104,7 @@ class DevCloudClient(
         val sendUrl = "$devCloudUrl/api/v2.1/job/$jobName/logs?sinceTime=$sinceTime"
         val request = Request.Builder().url(sendUrl)
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val response = OkhttpUtils.doShortHttp(request)
+        val response = OkhttpUtils.doHttp(request)
         val res = response.body()!!.string()
         if (!response.isSuccessful) {
             return Pair(false, res)
