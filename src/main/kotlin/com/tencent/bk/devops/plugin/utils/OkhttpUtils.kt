@@ -24,7 +24,7 @@ object OkhttpUtils {
             .connectTimeout(5L, TimeUnit.SECONDS)
             .readTimeout(30L, TimeUnit.SECONDS)
             .writeTimeout(30L, TimeUnit.SECONDS)
-            .connectionPool(ConnectionPool(32, 5, TimeUnit.MINUTES))
+            .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
             .build()
 
     fun doShortGet(url: String, headers: Map<String, String> = mapOf()): Response {
