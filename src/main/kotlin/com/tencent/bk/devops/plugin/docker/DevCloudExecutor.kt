@@ -8,6 +8,7 @@ import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobParam
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobRequest
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.Registry
+import com.tencent.bk.devops.plugin.docker.pojo.status.JobStatusResponse
 import com.tencent.bk.devops.plugin.docker.utils.DevCloudClient
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
@@ -74,8 +75,10 @@ object DevCloudExecutor {
         // get job status
         val jobStatusFlag = param.extraOptions["jobStatusFlag"]
         val jobName = param.extraOptions["devCloudJobName"] ?: throw RuntimeException("devCloudJobName is null")
+        var jobStatusResp: JobStatusResponse? = null
         if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == Status.running.name) {
-            val jobStatus = devCloudClient.getJobStatus(jobName).data.status
+            jobStatusResp = devCloudClient.getJobStatus(jobName)
+            val jobStatus = jobStatusResp.data.status
             if ("failed" != jobStatus && "succeeded" != jobStatus && "running" != jobStatus) {
                 return DockerRunLogResponse(
                     status = Status.running,
@@ -99,7 +102,11 @@ object DevCloudExecutor {
         // add logs
         logs.add(logResult.second)
 
-        val finalStatus = devCloudClient.getJobStatus(jobName)
+
+        if (jobStatusResp == null) {
+            jobStatusResp = devCloudClient.getJobStatus(jobName)
+        }
+        val finalStatus = jobStatusResp
         val podResults = finalStatus.data.pod_result
         podResults?.forEach { ps ->
             ps.events?.forEach { event ->

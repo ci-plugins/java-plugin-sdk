@@ -17,7 +17,7 @@ object OkhttpUtils {
             .connectTimeout(60L, TimeUnit.SECONDS)
             .readTimeout(30L, TimeUnit.MINUTES)
             .writeTimeout(30L, TimeUnit.MINUTES)
-            .connectionPool(ConnectionPool(32, 5, TimeUnit.MINUTES))
+            .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
             .build()
 
     private val shortOkHttpClient = okhttp3.OkHttpClient.Builder()
