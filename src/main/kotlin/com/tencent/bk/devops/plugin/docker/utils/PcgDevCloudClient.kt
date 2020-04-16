@@ -3,23 +3,22 @@ package com.tencent.bk.devops.plugin.docker.utils
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.tencent.bk.devops.plugin.docker.pojo.DevCloudTask
 import com.tencent.bk.devops.plugin.docker.pojo.TaskStatus
-import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobRequest
+import com.tencent.bk.devops.plugin.docker.pojo.job.request.PcgJobRequest
 import com.tencent.bk.devops.plugin.docker.pojo.job.response.JobResponse
 import com.tencent.bk.devops.plugin.docker.pojo.status.JobStatusResponse
 import com.tencent.bk.devops.plugin.utils.JsonUtil
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
-import okhttp3.*
+import okhttp3.MediaType
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.commons.lang3.StringUtils
-import java.util.*
+import java.util.HashMap
 
-class DevCloudClient(
-    private val executeUser: String,
-    private val devCloudAppId: String,
-    private val devCloudUrl: String,
-    private val devCloudToken: String
-) {
+class PcgDevCloudClient(private val executeUser: String){
+
+    private val host = "http://mita.server.wsd.com"
 
     private fun getHeaders(
         appId: String,
@@ -39,16 +38,17 @@ class DevCloudClient(
     }
 
     fun createJob(
-        jobReq: JobRequest
+        jobReq: PcgJobRequest
     ): DevCloudTask {
-        println("start to create job: ${jobReq.alias}, ${jobReq.clusterType}, ${jobReq.regionId}, ${jobReq.params}, ${jobReq.podNameSelector}")
-
-        val url = "$devCloudUrl/api/v2.1/job"
+        val url = "$host/api/devcloud/job/add"
         val body = JsonUtil.toJson(jobReq)
+        println("[create job] $url")
+        println("start to create job: $body")
+
         val request = Request.Builder().url(url)
-            .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser)))
             .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body)).build()
-        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
+        println("[create job headers]: ${request.headers().toMultimap()}")
+        val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
         println("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
         if (jobRep.actionCode == 200) {
@@ -64,28 +64,29 @@ class DevCloudClient(
     fun getTaskStatus(
         taskId: Int
     ): TaskStatus {
-        val url = "$devCloudUrl/api/v2.1/tasks/$taskId"
-        println("get task status url: $url")
+        val url = "$host/api/devcloud/container/task/detail?taskId=$taskId&operator=$executeUser"
         val request = Request.Builder().url(url)
-            .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
-        println("get task status response: $responseBody")
+            .get().build()
+        val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
         val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
-        if (responseMap["actionCode"] as? Int != 200) {
-            throw RuntimeException("get task status fail: $responseBody")
+        val responseData = responseMap["data"] as Map<String, Any>
+        val responseDataMsg = responseData["message"] as String
+        val realResponseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseDataMsg)
+        if (realResponseMap["actionCode"] as? Int != 200) {
+            throw RuntimeException("get task status fail")
         }
-        val data = responseMap["data"] as Map<String, Any>
+        val data = realResponseMap["data"] as Map<String, Any>
         return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, result = data["result"])
     }
 
     fun getJobStatus(
         jobName: String
     ): JobStatusResponse {
-        val url = "$devCloudUrl/api/v2.1/job/$jobName/status"
+        val url = "$host/api/devcloud/job/status?name=$jobName&operator=$executeUser"
         println("job Status url: $url")
         val request = Request.Builder().url(url)
-            .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val response: Response = OkhttpUtils.doShortHttp(request)
+            .get().build()
+        val response: Response = OkhttpUtils.doHttp(request)
         val body = response.body()!!.string()
         println("[job status] $body")
         val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
@@ -99,23 +100,26 @@ class DevCloudClient(
     fun getLog(
         jobName: String,
         sinceTime: String
-    ): Pair<Boolean, String> {
-        val sendUrl = "$devCloudUrl/api/v2.1/job/$jobName/logs?sinceTime=$sinceTime"
+    ): String? {
+        val sendUrl = "$host/api/devcloud/job/logs?sinceTime=$sinceTime&name=$jobName&operator=$executeUser"
         val request = Request.Builder().url(sendUrl)
-            .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val response = OkhttpUtils.doShortHttp(request)
+            .get().build()
+        val response = OkhttpUtils.doHttp(request)
         val res = response.body()!!.string()
         if (!response.isSuccessful) {
-            return Pair(false, res)
+            println("get log fail: $res")
+            return null
         }
-        return try {
+        try {
             val resultMap: Map<String, Any> =
                 JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
-            val message = resultMap["message"]
-            val isBlank = message is String && !StringUtils.isBlank(message as String?)
-            Pair(isBlank, res)
+            val data = resultMap["data"] as Map<String, String>?
+            val logs = data?.values?.joinToString("\n")
+            println(logs)
+            return logs
         } catch (e: Exception) {
-            Pair(false, (e.message ?: "") + "\n" + res)
+            System.err.println(e.message)
         }
+        return null
     }
 }
