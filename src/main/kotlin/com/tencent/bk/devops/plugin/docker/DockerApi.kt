@@ -6,13 +6,22 @@ import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
 import com.tencent.bk.devops.plugin.pojo.Result
+import org.slf4j.LoggerFactory
 
 class DockerApi : BaseApi() {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(DockerApi::class.java)
+    }
 
     fun dockerRunCommand(projectId: String, pipelineId: String, buildId: String, param: DockerRunRequest): Result<DockerRunResponse> {
         val devCloudProperty = System.getenv("devops.slave.environment")
         val property = System.getenv("devops_slave_model")
         val newDevCloudProperty = System.getenv("DEVOPS_SLAVE_ENVIRONMENT")
+
+        logger.info("devops.slave.environment: $devCloudProperty")
+        logger.info("devops_slave_model: $property")
+        logger.info("DEVOPS_SLAVE_ENVIRONMENT: $newDevCloudProperty")
 
         val response = when {
             "pcg-devcloud" == newDevCloudProperty -> PcgDevCloudExecutor.execute(param)

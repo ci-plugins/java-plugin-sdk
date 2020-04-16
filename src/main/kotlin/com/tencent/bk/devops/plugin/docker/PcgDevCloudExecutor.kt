@@ -41,12 +41,7 @@ object PcgDevCloudExecutor {
     fun getLogs(param: DockerRunLogRequest): DockerRunLogResponse {
         val extraOptions = param.extraOptions.toMutableMap()
 
-        val devCloudClient = DevCloudClient(
-            executeUser = param.userId,
-            devCloudAppId = param.extraOptions["devCloudAppId"] ?: throw RuntimeException("devCloudAppId is null"),
-            devCloudUrl = param.extraOptions["devCloudUrl"] ?: throw RuntimeException("devCloudUrl is null"),
-            devCloudToken = param.extraOptions["devCloudToken"] ?: throw RuntimeException("devCloudToken is null")
-        )
+        val devCloudClient = PcgDevCloudClient(param.userId)
 
         // get task status
         val taskId = param.extraOptions["devCloudTaskId"] ?: throw RuntimeException("devCloudTaskId is null")
@@ -94,11 +89,11 @@ object PcgDevCloudExecutor {
         val logResult = devCloudClient.getLog(jobName, beiJ2UTC(startTimeStamp))
 
         // only if not blank then add start time
-        val isNotBlank = logResult.first
-        if (isNotBlank) extraOptions["startTimeStamp"] = (startTimeStamp + param.timeGap).toString()
+        val isNotBlank = logResult.isNullOrEmpty()
+        if (!isNotBlank) extraOptions["startTimeStamp"] = (startTimeStamp + param.timeGap).toString()
 
         // add logs
-        logs.add(logResult.second)
+        if (!isNotBlank) logs.add(logResult!!)
 
 
         if (jobStatusResp == null) {
@@ -118,14 +113,14 @@ object PcgDevCloudExecutor {
             val finalLogs = devCloudClient.getLog(jobName, beiJ2UTC(startTimeStamp + 6000))
             if (finalStatus.data.status == "failed") {
                 return DockerRunLogResponse(
-                    log = logs.plus(finalLogs.second),
+                    log = logs.plus(finalLogs ?: ""),
                     status = Status.failure,
                     message = "docker run fail...",
                     extraOptions = extraOptions
                 )
             }
             return DockerRunLogResponse(
-                log = logs.plus(finalLogs.second),
+                log = logs.plus(finalLogs ?: ""),
                 status = Status.success,
                 message = "docker run success...",
                 extraOptions = extraOptions

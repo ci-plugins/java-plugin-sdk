@@ -96,11 +96,11 @@ object DevCloudExecutor {
         val logResult = devCloudClient.getLog(jobName, beiJ2UTC(startTimeStamp))
 
         // only if not blank then add start time
-        val isNotBlank = logResult.first
-        if (isNotBlank) extraOptions["startTimeStamp"] = (startTimeStamp + param.timeGap).toString()
+        val isNotBlank = logResult.isNullOrBlank()
+        if (!isNotBlank) extraOptions["startTimeStamp"] = (startTimeStamp + param.timeGap).toString()
 
         // add logs
-        logs.add(logResult.second)
+        if (!isNotBlank) logs.add(logResult!!)
 
 
         if (jobStatusResp == null) {
@@ -120,14 +120,14 @@ object DevCloudExecutor {
             val finalLogs = devCloudClient.getLog(jobName, beiJ2UTC(startTimeStamp + 6000))
             if (finalStatus.data.status == "failed") {
                 return DockerRunLogResponse(
-                    log = logs.plus(finalLogs.second),
+                    log = logs.plus(finalLogs ?: ""),
                     status = Status.failure,
                     message = "docker run fail...",
                     extraOptions = extraOptions
                 )
             }
             return DockerRunLogResponse(
-                log = logs.plus(finalLogs.second),
+                log = logs.plus(finalLogs ?: ""),
                 status = Status.success,
                 message = "docker run success...",
                 extraOptions = extraOptions
