@@ -19,9 +19,9 @@ class DockerApi : BaseApi() {
         val property = System.getenv("devops_slave_model")
         val newDevCloudProperty = System.getenv("DEVOPS_SLAVE_ENVIRONMENT")
 
-        logger.info("devops.slave.environment: $devCloudProperty")
-        logger.info("devops_slave_model: $property")
-        logger.info("DEVOPS_SLAVE_ENVIRONMENT: $newDevCloudProperty")
+//        if (null != devCloudProperty) { logger.info("devops.slave.environment: $devCloudProperty") }
+//        if (null != property) { logger.info("devops_slave_model: $property") }
+//        if (null != newDevCloudProperty) { logger.info("DEVOPS_SLAVE_ENVIRONMENT: $newDevCloudProperty") }
 
         val response = when {
             "pcg-devcloud" == newDevCloudProperty -> PcgDevCloudExecutor.execute(param)
