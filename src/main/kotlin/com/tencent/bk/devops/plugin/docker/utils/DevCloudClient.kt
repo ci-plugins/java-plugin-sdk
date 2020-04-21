@@ -11,7 +11,7 @@ import com.tencent.bk.devops.plugin.utils.OkhttpUtils
 import okhttp3.*
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.commons.lang3.StringUtils
+import java.io.IOException
 import java.util.*
 
 class DevCloudClient(
@@ -64,60 +64,91 @@ class DevCloudClient(
     fun getTaskStatus(
         taskId: Int
     ): TaskStatus {
-        val url = "$devCloudUrl/api/v2.1/tasks/$taskId"
-        println("get task status url: $url")
-        val request = Request.Builder().url(url)
-            .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
-        println("get task status response: $responseBody")
-        val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
-        if (responseMap["actionCode"] as? Int != 200) {
-            throw RuntimeException("get task status fail: $responseBody")
+        var countFailed = 0
+        while (true) {
+            if (countFailed > 3) {
+                println("Request DevCloud failed 3 times, exit with exception")
+                throw RuntimeException("Request DevCloud failed 3 times, exit with exception")
+            }
+            try {
+                val url = "$devCloudUrl/api/v2.1/tasks/$taskId"
+                println("get task status url: $url")
+                val request = Request.Builder().url(url)
+                        .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
+                val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
+                println("get task status response: $responseBody")
+                val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
+                if (responseMap["actionCode"] as? Int != 200) {
+                    throw RuntimeException("get task status fail: $responseBody")
+                }
+                val data = responseMap["data"] as Map<String, Any>
+                return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, result = data["result"])
+            } catch (e: IOException) {
+                println("Get DevCloud task status exception: ${e.message}")
+                countFailed++
+            }
         }
-        val data = responseMap["data"] as Map<String, Any>
-        return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, result = data["result"])
     }
 
     fun getJobStatus(
         jobName: String
     ): JobStatusResponse {
-        val url = "$devCloudUrl/api/v2.1/job/$jobName/status"
-        println("job Status url: $url")
-        val request = Request.Builder().url(url)
-            .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val response: Response = OkhttpUtils.doShortHttp(request)
-        val body = response.body()!!.string()
-        println("[job status] $body")
-        val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
-        val actionCode: Int = jobStatusRep.actionCode
-        if (actionCode != 200) {
-            throw RuntimeException("get job status fail")
+        var countFailed = 0
+        while (true) {
+            if (countFailed > 3) {
+                println("Request DevCloud failed 3 times, exit with exception")
+                throw RuntimeException("Request DevCloud failed 3 times, exit with exception")
+            }
+            try {
+                val url = "$devCloudUrl/api/v2.1/job/$jobName/status"
+                println("job Status url: $url")
+                val request = Request.Builder().url(url)
+                        .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
+                val response: Response = OkhttpUtils.doShortHttp(request)
+                val body = response.body()!!.string()
+                println("[job status] $body")
+                val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
+                val actionCode: Int = jobStatusRep.actionCode
+                if (actionCode != 200) {
+                    throw RuntimeException("get job status fail")
+                }
+                return jobStatusRep
+            } catch (e: IOException) {
+                println("Get DevCloud job status exception: ${e.message}")
+                countFailed++
+            }
         }
-        return jobStatusRep
     }
 
     fun getLog(
         jobName: String,
         sinceTime: String
     ): String? {
-        val sendUrl = "$devCloudUrl/api/v2.1/job/$jobName/logs?sinceTime=$sinceTime"
-        val request = Request.Builder().url(sendUrl)
-            .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
-        val response = OkhttpUtils.doShortHttp(request)
-        val res = response.body()!!.string()
-        if (!response.isSuccessful) {
-            return null
+        var countFailed = 0
+        while (true) {
+            if (countFailed > 3) {
+                println("Request DevCloud get log failed 3 times, exit with exception")
+                throw RuntimeException("Request DevCloud get log failed 3 times, exit with exception")
+            }
+            try {
+                val sendUrl = "$devCloudUrl/api/v2.1/job/$jobName/logs?sinceTime=$sinceTime"
+                val request = Request.Builder().url(sendUrl)
+                        .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
+                val response = OkhttpUtils.doShortHttp(request)
+                val res = response.body()!!.string()
+                if (!response.isSuccessful) {
+                    return null
+                }
+                val resultMap: Map<String, Any> =
+                        JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
+                val data = resultMap["data"] as Map<String, String>?
+                val logs = data?.values?.joinToString("\n")
+                println(logs)
+                return logs
+            } catch (e: IOException) {
+                println("Get DevCloud job log exception: ${e.message}")
+                countFailed++
+            }
         }
-        try {
-            val resultMap: Map<String, Any> =
-                JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
-            val data = resultMap["data"] as Map<String, String>?
-            val logs = data?.values?.joinToString("\n")
-            println(logs)
-            return logs
-        } catch (e: Exception) {
-            System.err.println(e.message)
-        }
-        return null
     }
 }
