@@ -75,7 +75,7 @@ class PcgDevCloudClient(private val executeUser: String){
                 val url = "$host/api/devcloud/container/task/detail?taskId=$taskId&operator=$executeUser"
                 val request = Request.Builder().url(url)
                         .get().build()
-                val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
+                val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
                 val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
                 val responseData = responseMap["data"] as Map<String, Any>
                 val responseDataMsg = responseData["message"] as String
@@ -106,7 +106,7 @@ class PcgDevCloudClient(private val executeUser: String){
                 println("job Status url: $url")
                 val request = Request.Builder().url(url)
                         .get().build()
-                val response: Response = OkhttpUtils.doHttp(request)
+                val response: Response = OkhttpUtils.doShortHttp(request)
                 val body = response.body()!!.string()
                 println("[job status] $body")
                 val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
@@ -136,7 +136,7 @@ class PcgDevCloudClient(private val executeUser: String){
                 val sendUrl = "$host/api/devcloud/job/logs?sinceTime=$sinceTime&name=$jobName&operator=$executeUser"
                 val request = Request.Builder().url(sendUrl)
                         .get().build()
-                val response = OkhttpUtils.doHttp(request)
+                val response = OkhttpUtils.doShortHttp(request)
                 val res = response.body()!!.string()
                 if (!response.isSuccessful) {
                     println("get log fail: $res")
