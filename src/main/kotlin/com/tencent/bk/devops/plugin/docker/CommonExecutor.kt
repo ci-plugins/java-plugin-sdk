@@ -47,7 +47,11 @@ object CommonExecutor {
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerGetLogUrl =
             "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
-        val logResponse = OkHttpUtils.doGet(dockerGetLogUrl, -1, -1, 600)
+        val logResponse = OkHttpUtils.doGet(dockerGetLogUrl, 300, 300, 600) ?: return DockerRunLogResponse(
+                status = Status.error,
+                message = "the log data is null......",
+                extraOptions = request.extraOptions
+        )
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
                 status = Status.error,
