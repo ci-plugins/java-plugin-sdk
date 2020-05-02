@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="03e64806-ed8d-4df3-94d3-aa009f9e6782" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/AtomContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/AtomRunner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/api/BaseApi.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/api/Header.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/api/SdkEnv.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/common/ArtifactoryType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/common/BuildType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/common/Constants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/common/DataType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/common/ReportType.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/common/Status.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/exception/AtomException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/ArtifactData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/AtomBaseParam.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/AtomResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/DataField.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/ReportData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/Result.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/StringData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/plugin/OnsHostInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/pojo/quality/QualityValue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/spi/AtomService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/spi/ServiceLoader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/spi/TaskAtom.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/utils/AtomTestParam.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/utils/Test.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/utils/http/OkHttpUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/utils/http/SdkUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/utils/json/JsonMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/utils/json/JsonUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/tencent/bk/devops/atom/utils/json/annotation/SkipLogField.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/simplelogger.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/tencent/bk/devops/atom/api/SdkEnvTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/tencent/bk/devops/atom/pojo/ArtifactDataTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/tencent/bk/devops/atom/pojo/AtomParamTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/tencent/bk/devops/atom/pojo/ReportDataTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/tencent/bk/devops/atom/pojo/StringDataTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/tencent/bk/devops/atom/utils/http/SdkUtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/tencent/bk/devops/atom/utils/json/JsonUtilTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/com/tencent/bk/devops/plugin/utils/JsonUtilTest.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/.sdk.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/input.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution>
+      <executable />
+    </execution>
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="DefaultGradleProjectSettings">
+    <option name="isMigrated" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="userSettingsFile" value="D:\常用工具\apache-maven-3.6.1\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1bJBcJi1MMHzxucQA9inTYfuPix" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../atom/ci-plugins/bcs" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2505669" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\bkcode\sdk\BKSendEmail" />
+      <recent name="E:\bkcode\atom\ci-plugins\BKSendEmail" />
+      <recent name="E:\ci-plugins\jobExecuteScriptGithub" />
+      <recent name="E:\ci-plugins\jobExecuteScriptGithub\jobExecuteScriptGithub\src\main\java\com\tencent\bk\devops\atom\task" />
+    </key>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="03e64806-ed8d-4df3-94d3-aa009f9e6782" name="Default Changelist" comment="" />
+      <created>1588340393181</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1588340393181</updated>
+      <workItem from="1588340397290" duration="3331000" />
+      <workItem from="1588385918993" duration="1235000" />
+      <workItem from="1588387488263" duration="2702000" />
+      <workItem from="1588404234000" duration="540000" />
+      <workItem from="1588404804031" duration="1226000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="690" y="267" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1588390231019">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="690" y="267" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1588390231019" />
+    <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1588405138176">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1588405138176" />
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1588404774483">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1588404774483" />
+    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1588404774483">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1588404774483" />
+    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1588404774483">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1588404774483" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1588404774483">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1588404774483" />
+    <state x="461" y="162" key="SettingsEditor" timestamp="1588386080848">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="162" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1588386080848" />
+    <state x="640" y="344" key="com.intellij.ide.util.TipDialog" timestamp="1588387488251">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="640" y="344" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1588387488251" />
+    <state x="636" y="253" width="647" height="534" key="find.popup" timestamp="1588390723674">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="636" y="253" width="647" height="534" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1588390723674" />
+    <state x="334" y="215" key="new project wizard" timestamp="1588404279785">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="334" y="215" key="new project wizard/0.0.1920.1040@0.0.1920.1040" timestamp="1588404279785" />
+  </component>
+</project>

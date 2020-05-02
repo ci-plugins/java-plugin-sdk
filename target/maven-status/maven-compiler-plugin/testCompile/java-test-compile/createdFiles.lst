@@ -1,0 +1,8 @@
+com\tencent\bk\devops\atom\api\SdkEnvTest.class
+com\tencent\bk\devops\atom\pojo\AtomParamTest.class
+com\tencent\bk\devops\atom\pojo\ReportDataTest.class
+com\tencent\bk\devops\atom\pojo\StringDataTest.class
+com\tencent\bk\devops\atom\pojo\ArtifactDataTest.class
+com\tencent\bk\devops\atom\utils\json\JsonUtilTest$Bean.class
+com\tencent\bk\devops\atom\utils\http\SdkUtilsTest.class
+com\tencent\bk\devops\atom\utils\json\JsonUtilTest.class
