@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tencent.bk.devops.atom</groupId>
-    <artifactId>pipeline-plugin-bksdk</artifactId>
+    <artifactId>java-plugin-sdk</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
