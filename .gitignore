@@ -34,3 +34,4 @@ gradlew
 gradlew.bat
 version.txt
 support-files/etc
+.idea
