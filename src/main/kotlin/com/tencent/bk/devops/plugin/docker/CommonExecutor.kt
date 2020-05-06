@@ -97,11 +97,12 @@ object CommonExecutor {
             val cmd = if (cmdTmp.size == 1) { Commandline.translateCommandline(cmdTmp.first()).toList() } else { cmdTmp }
             // get user pass param
             DockerRunParam(
-                imageName,
-                param.dockerLoginUsername,
-                param.dockerLoginPassword,
-                cmd,
-                envMap ?: mapOf()
+                imageName = imageName,
+                registryUser = param.dockerLoginUsername,
+                registryPwd = param.dockerLoginPassword,
+                command = cmd,
+                env = envMap ?: mapOf(),
+                poolNo = System.getenv("pool_no")
             )
         }
 
@@ -125,7 +126,8 @@ object CommonExecutor {
         val registryUser: String?,
         val registryPwd: String?,
         val command: List<String>,
-        val env: Map<String, String>
+        val env: Map<String, String>,
+        val poolNo: String?
     )
 
     data class LogParam (
