@@ -48,9 +48,9 @@ object CommonExecutor {
         val dockerGetLogUrl =
             "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
         val logResponse = OkHttpUtils.doGet(dockerGetLogUrl, 300, 300, 600) ?: return DockerRunLogResponse(
-                status = Status.error,
-                message = "the log data is null......",
-                extraOptions = request.extraOptions
+            status = Status.error,
+            message = "the log data is null......",
+            extraOptions = request.extraOptions
         )
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
@@ -94,7 +94,11 @@ object CommonExecutor {
             command.forEach {
                 cmdTmp.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
             }
-            val cmd = if (cmdTmp.size == 1) { Commandline.translateCommandline(cmdTmp.first()).toList() } else { cmdTmp }
+            val cmd = if (cmdTmp.size == 1) {
+                Commandline.translateCommandline(cmdTmp.first()).toList()
+            } else {
+                cmdTmp
+            }
             // get user pass param
             DockerRunParam(
                 imageName = imageName,
@@ -130,7 +134,7 @@ object CommonExecutor {
         val poolNo: String?
     )
 
-    data class LogParam (
+    data class LogParam(
         val exitCode: Int? = null,
         val logs: List<String>? = null,
         val running: Boolean? = null
