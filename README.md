@@ -12,7 +12,7 @@
 | :----: | :------: |
 | v1.0.0 |   新建   |
 | v1.0.1 |   jackson由2.9.10.3升级到2.9.10.4   |
-| v1.0.2 |   修复AtomContext#getAllParameters获取值为null   |
+| v1.0.2 |   AtomContext参数解析由String对象改成Object对象   |
 
 
 
