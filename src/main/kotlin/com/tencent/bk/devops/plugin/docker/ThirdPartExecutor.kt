@@ -73,6 +73,7 @@ object ThirdPartExecutor {
                 log = ScriptUtils.execute(command, param.workspace, printLog = false, failExit = false)
             }
             dockerRm(containerId, param.workspace)
+
         }
 
         return DockerRunLogResponse(
