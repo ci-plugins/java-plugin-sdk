@@ -6,7 +6,7 @@
 
     <groupId>com.tencent.bk.devops.atom</groupId>
     <artifactId>java-plugin-sdk</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <inceptionYear>2018-2118</inceptionYear>
     <name>bksdk</name>
