@@ -56,8 +56,15 @@ object ThirdPartExecutor {
         val status = statusPair.first
         val startTime = if (status == Status.running) beiJ2UTC(startTimestamp) else statusPair.second
         val preStartTime = beiJ2UTC(startTimestamp - param.timeGap)
-        val command = "docker logs --until=\"$startTime\" --since=\"$preStartTime\" $containerId"
-        val log = ScriptUtils.execute(command, param.workspace, printLog = false)
+
+        val log = try {
+            val command = "docker logs --until=\"$startTime\" --since=\"$preStartTime\" $containerId"
+            ScriptUtils.execute(command, param.workspace, printLog = false)
+        } catch (e :Exception) {
+            e.printStackTrace()
+            val command = "docker logs $containerId"
+            ScriptUtils.execute(command, param.workspace, printLog = false, failExit = false)
+        }
 
         if (status != Status.running) {
             dockerRm(containerId, param.workspace)
