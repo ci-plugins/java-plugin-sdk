@@ -5,7 +5,6 @@ import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
-import com.tencent.bk.devops.plugin.docker.utils.ParamUtils
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
 import com.tencent.bk.devops.plugin.script.ScriptUtils
 import com.tencent.bk.devops.plugin.utils.JsonUtil
@@ -58,22 +57,24 @@ object ThirdPartExecutor {
         val preStartTime = beiJ2UTC(startTimestamp - param.timeGap)
 
         var failToGetLog = false
+        var errorMessage = ""
         var log = try {
             val command = "docker logs --until=\"$startTime\" --since=\"$preStartTime\" $containerId"
             ScriptUtils.execute(command, param.workspace, printLog = false)
         } catch (e :Exception) {
-            System.err.println(e.message)
+            errorMessage = e.message ?: ""
             failToGetLog = true
             ""
         }
 
         if (status != Status.running) {
             if (failToGetLog) {
+                System.err.println("fail to get log: $errorMessage")
+
                 val command = "docker logs $containerId"
                 log = ScriptUtils.execute(command, param.workspace, printLog = false, failExit = false)
             }
             dockerRm(containerId, param.workspace)
-
         }
 
         return DockerRunLogResponse(
