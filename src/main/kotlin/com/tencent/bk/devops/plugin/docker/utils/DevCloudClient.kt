@@ -82,7 +82,7 @@ class DevCloudClient(
                     throw RuntimeException("get task status fail: $responseBody")
                 }
                 val data = responseMap["data"] as Map<String, Any>
-                return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, result = data["result"])
+                return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, responseBody = responseBody)
             } catch (e: IOException) {
                 println("Get DevCloud task status exception: ${e.message}")
                 countFailed++

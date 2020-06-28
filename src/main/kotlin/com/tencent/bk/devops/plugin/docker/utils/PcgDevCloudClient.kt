@@ -84,7 +84,7 @@ class PcgDevCloudClient(private val executeUser: String){
                     throw RuntimeException("get task status fail")
                 }
                 val data = realResponseMap["data"] as Map<String, Any>
-                return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, result = data["result"])
+                return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, responseBody = responseBody)
             } catch (e: IOException) {
                 println("Get pcgDevCloud task status exception: ${e.message}")
                 countFailed++

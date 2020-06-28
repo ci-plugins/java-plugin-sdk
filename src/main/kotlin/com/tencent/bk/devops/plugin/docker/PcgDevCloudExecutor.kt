@@ -51,14 +51,14 @@ object PcgDevCloudExecutor {
             if (taskStatus.status == "failed") {
                 return DockerRunLogResponse(
                     status = Status.failure,
-                    message = "get task status fail",
+                    message = "get task status fail: $taskStatus",
                     extraOptions = extraOptions
                 )
             }
             if (taskStatus.status != "succeeded") {
                 return DockerRunLogResponse(
                     status = Status.running,
-                    message = "get task status...",
+                    message = "get task status...: $taskStatus",
                     extraOptions = extraOptions
                 )
             }
