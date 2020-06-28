@@ -55,7 +55,7 @@ object CommonExecutor {
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
                 status = Status.error,
-                message = "the log data is null......",
+                message = "the log data is null......: $logResponse",
                 extraOptions = request.extraOptions
             )
 
