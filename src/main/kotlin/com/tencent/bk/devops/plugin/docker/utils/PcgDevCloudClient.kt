@@ -49,7 +49,7 @@ class PcgDevCloudClient(private val executeUser: String){
         val request = Request.Builder().url(url)
             .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body)).build()
         println("[create job headers]: ${request.headers().toMultimap()}")
-        val responseBody = OkhttpUtils.doHttp(request).body()!!.string()
+        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
         println("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
         if (jobRep.actionCode == 200) {
