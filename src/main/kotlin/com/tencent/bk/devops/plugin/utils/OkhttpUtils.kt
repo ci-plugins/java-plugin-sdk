@@ -18,7 +18,6 @@ object OkhttpUtils {
             .readTimeout(30L, TimeUnit.MINUTES)
             .writeTimeout(30L, TimeUnit.MINUTES)
             .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
-            .retryOnConnectionFailure(false)
             .build()
 
     private val shortOkHttpClient = okhttp3.OkHttpClient.Builder()
@@ -26,7 +25,6 @@ object OkhttpUtils {
             .readTimeout(30L, TimeUnit.SECONDS)
             .writeTimeout(30L, TimeUnit.SECONDS)
             .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
-            .retryOnConnectionFailure(false)
             .build()
 
     private val noRetryShortOkHttpClient = okhttp3.OkHttpClient.Builder()
@@ -34,6 +32,7 @@ object OkhttpUtils {
         .readTimeout(30L, TimeUnit.SECONDS)
         .writeTimeout(30L, TimeUnit.SECONDS)
         .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
+        .retryOnConnectionFailure(false)
         .build()
 
     fun doShortGet(url: String, headers: Map<String, String> = mapOf()): Response {
