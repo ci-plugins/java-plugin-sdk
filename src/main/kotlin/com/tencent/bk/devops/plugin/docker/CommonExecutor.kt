@@ -25,6 +25,7 @@ object CommonExecutor {
         val dockerHostIP = System.getenv("docker_host_ip")
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
+        println("execute docker run url: $dockerRunUrl")
         val responseContent = OkHttpUtils.doPost(dockerRunUrl, runParam, -1, -1, 600)
         val extraOptions = JsonUtil.to(responseContent, object : TypeReference<Result<Map<String, Any>>>() {}).data
         return DockerRunResponse(
@@ -49,13 +50,13 @@ object CommonExecutor {
             "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
         val logResponse = OkHttpUtils.doGet(dockerGetLogUrl, 300, 300, 600) ?: return DockerRunLogResponse(
             status = Status.logError,
-            message = "the log data is null......",
+            message = "the log data is null with get http: $dockerGetLogUrl",
             extraOptions = request.extraOptions
         )
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
                 status = Status.logError,
-                message = "the log data is null......: $logResponse",
+                message = "the log data is null with get http: $dockerGetLogUrl",
                 extraOptions = request.extraOptions
             )
 
@@ -110,6 +111,8 @@ object CommonExecutor {
             )
         }
 
+        println("execute docker run image: $runParam")
+
         return JsonUtil.toJson(runParam)
     }
 
@@ -132,7 +135,11 @@ object CommonExecutor {
         val command: List<String>,
         val env: Map<String, String>,
         val poolNo: String?
-    )
+    ) {
+        override fun toString(): String {
+            return "image name: $imageName, registry user: $registryUser, command: $command, env: $env, pool no: $poolNo"
+        }
+    }
 
     data class LogParam(
         val exitCode: Int? = null,
