@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.tencent.bk.devops.atom</groupId>
         <artifactId>sdk-dependencies</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
     <artifactId>java-atom-sdk</artifactId>
     <version>1.0.24</version>
