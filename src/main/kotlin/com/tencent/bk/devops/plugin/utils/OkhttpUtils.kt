@@ -35,6 +35,14 @@ object OkhttpUtils {
         .retryOnConnectionFailure(false)
         .build()
 
+    private val noRetryOkHttpClient = okhttp3.OkHttpClient.Builder()
+        .connectTimeout(60L, TimeUnit.SECONDS)
+        .readTimeout(30L, TimeUnit.MINUTES)
+        .writeTimeout(30L, TimeUnit.MINUTES)
+        .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
+        .retryOnConnectionFailure(false)
+        .build()
+
     fun doShortGet(url: String, headers: Map<String, String> = mapOf()): Response {
         return doGet(shortOkHttpClient, url, headers)
     }
@@ -66,6 +74,10 @@ object OkhttpUtils {
 
     fun doHttp(request: Request): Response {
         return okHttpClient.newCall(request).execute()
+    }
+
+    fun doHttpNoRetry(request: Request): Response {
+        return noRetryOkHttpClient.newCall(request).execute()
     }
 
     fun downloadFile(url: String, destPath: File) {
