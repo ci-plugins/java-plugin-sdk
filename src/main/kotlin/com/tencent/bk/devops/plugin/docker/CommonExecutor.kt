@@ -26,7 +26,7 @@ object CommonExecutor {
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
         println("execute docker run url: $dockerRunUrl")
-        val responseContent = OkHttpUtils.doPost(dockerRunUrl, runParam, -1, -1, 600)
+        val responseContent = OkHttpUtils.doPost(dockerRunUrl, runParam, 300, 600, 600)
         val extraOptions = JsonUtil.to(responseContent, object : TypeReference<Result<Map<String, Any>>>() {}).data
         return DockerRunResponse(
             extraOptions = mapOf(
