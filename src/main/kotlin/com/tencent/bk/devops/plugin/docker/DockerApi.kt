@@ -45,4 +45,18 @@ class DockerApi : BaseApi() {
         }
         return Result(response)
     }
+
+    fun dockerRunGetStatus(projectId: String, pipelineId: String, buildId: String, param: DockerRunLogRequest): Result<DockerRunLogResponse> {
+        val devCloudProperty = System.getenv("devops.slave.environment")
+        val property = System.getenv("devops_slave_model")
+        val newDevCloudProperty = System.getenv("DEVOPS_SLAVE_ENVIRONMENT")
+
+        val response = when {
+            "pcg-devcloud" == newDevCloudProperty -> PcgDevCloudExecutor.getLogs(param)
+            "DevCloud" == devCloudProperty -> DevCloudExecutor.getLogs(param)
+            "docker" == property -> CommonExecutor.getStatus(projectId, pipelineId, buildId, param)
+            else -> ThirdPartExecutor.getLogs(param)
+        }
+        return Result(response)
+    }
 }

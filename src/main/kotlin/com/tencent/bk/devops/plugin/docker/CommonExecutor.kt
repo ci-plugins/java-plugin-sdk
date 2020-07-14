@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.SdkEnv
 import com.tencent.bk.devops.atom.common.Status
 import com.tencent.bk.devops.atom.pojo.Result
-import com.tencent.bk.devops.atom.utils.http.OkHttpUtils
+import com.tencent.bk.devops.plugin.utils.OkhttpUtils
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
@@ -26,7 +26,7 @@ object CommonExecutor {
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
         println("execute docker run url: $dockerRunUrl")
-        val responseContent = OkHttpUtils.doPost(dockerRunUrl, runParam, 300, 600, 600)
+        val responseContent = OkhttpUtils.doPost(dockerRunUrl, runParam).use { it.body()!!.string() }
         val extraOptions = JsonUtil.to(responseContent, object : TypeReference<Result<Map<String, Any>>>() {}).data
         return DockerRunResponse(
             extraOptions = mapOf(
@@ -34,6 +34,54 @@ object CommonExecutor {
                 "startTimeStamp" to extraOptions["startTimeStamp"].toString()
             )
         )
+    }
+
+    fun getStatus(
+        projectId: String,
+        pipelineId: String,
+        buildId: String,
+        request: DockerRunLogRequest
+    ): DockerRunLogResponse {
+        val containerId = request.extraOptions.getValue("containerId")
+        val startTimeStamp = request.extraOptions.getValue("startTimeStamp")
+        val dockerHostIP = System.getenv("docker_host_ip")
+        val vmSeqId = SdkEnv.getVmSeqId()
+        val dockerGetLogUrl =
+            "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp?printLog=false"
+        val logResponse = OkhttpUtils.doShortGet(dockerGetLogUrl).use { it.body()!!.string() }
+        val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
+            ?: return DockerRunLogResponse(
+                status = Status.running,
+                message = "the status data is null with get http: $dockerGetLogUrl",
+                extraOptions = request.extraOptions
+            )
+
+        return if (logResult.running != true) {
+            if (logResult.exitCode == 0) {
+                DockerRunLogResponse(
+                    log = listOf(),
+                    status = Status.success,
+                    message = "",
+                    extraOptions = request.extraOptions
+                )
+            } else {
+                DockerRunLogResponse(
+                    log = listOf(),
+                    status = Status.error,
+                    message = "",
+                    extraOptions = request.extraOptions
+                )
+            }
+        } else {
+            DockerRunLogResponse(
+                log = listOf(),
+                status = Status.running,
+                message = "",
+                extraOptions = request.extraOptions.plus(mapOf(
+                    "startTimeStamp" to (startTimeStamp.toLong() + request.timeGap / 1000).toString()
+                ))
+            )
+        }
     }
 
     fun getLogs(
@@ -48,11 +96,7 @@ object CommonExecutor {
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerGetLogUrl =
             "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
-        val logResponse = OkHttpUtils.doGet(dockerGetLogUrl, 300, 300, 600) ?: return DockerRunLogResponse(
-            status = Status.logError,
-            message = "the log data is null with get http: $dockerGetLogUrl",
-            extraOptions = request.extraOptions
-        )
+        val logResponse = OkhttpUtils.doGet(dockerGetLogUrl).use { it.body()!!.string() }
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
                 status = Status.logError,
