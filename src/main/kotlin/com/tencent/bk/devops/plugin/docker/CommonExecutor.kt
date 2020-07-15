@@ -68,7 +68,7 @@ object CommonExecutor {
                 DockerRunLogResponse(
                     log = listOf(),
                     status = Status.error,
-                    message = "",
+                    message = "exit code is:" + logResult.exitCode,
                     extraOptions = request.extraOptions
                 )
             }
