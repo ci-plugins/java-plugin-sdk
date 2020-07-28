@@ -70,10 +70,15 @@ public class SdkEnv {
     }
 
     public static String genUrl(String path) {
-        if (path.startsWith("/")) {
-            return "http://" + instance.gateway + "/" + path.substring(1).trim();
+        String newPath = path.trim();
+        if (newPath.startsWith("http://") || newPath.startsWith("https://")) {
+            return newPath;
         } else {
-            return "http://" + instance.gateway + "/" + path.trim();
+            if (newPath.startsWith("/")) {
+                return "http://" + instance.gateway + "/" + newPath.substring(1).trim();
+            } else {
+                return "http://" + instance.gateway + "/" + newPath;
+            }
         }
     }
 
