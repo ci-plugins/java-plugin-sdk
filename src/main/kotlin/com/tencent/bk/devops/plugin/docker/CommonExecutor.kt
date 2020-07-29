@@ -27,6 +27,8 @@ object CommonExecutor {
         val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
         println("execute docker run url: $dockerRunUrl")
         val responseContent = OkhttpUtils.doPost(dockerRunUrl, runParam).use { it.body()!!.string() }
+        println("execute docker run response: $responseContent")
+
         val extraOptions = JsonUtil.to(responseContent, object : TypeReference<Result<Map<String, Any>>>() {}).data
         return DockerRunResponse(
             extraOptions = mapOf(
@@ -61,7 +63,7 @@ object CommonExecutor {
                 DockerRunLogResponse(
                     log = listOf(),
                     status = Status.success,
-                    message = "",
+                    message = "exit code is:" + logResult.exitCode,
                     extraOptions = request.extraOptions
                 )
             } else {
