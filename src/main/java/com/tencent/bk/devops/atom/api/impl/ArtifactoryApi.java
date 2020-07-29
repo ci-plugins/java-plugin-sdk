@@ -5,6 +5,7 @@ import com.tencent.bk.devops.atom.api.BaseApi;
 import com.tencent.bk.devops.atom.api.SdkEnv;
 import com.tencent.bk.devops.atom.pojo.Result;
 import com.tencent.bk.devops.atom.pojo.artifactory.FileDetail;
+import com.tencent.bk.devops.atom.utils.EncodeUtil;
 import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import okhttp3.Request;
@@ -122,7 +123,8 @@ public class ArtifactoryApi extends BaseApi {
                 OutputStream outputStream = null;
                 String saveFilePath = null;
                 try {
-                    URL netUrl = new URL(srcUrl);
+                    String encodedSrcUrl = EncodeUtil.encodeChinese(srcUrl);
+                    URL netUrl = new URL(encodedSrcUrl);
                     HttpURLConnection conn = (HttpURLConnection) netUrl.openConnection();
                     conn.setRequestMethod("GET");
                     conn.setConnectTimeout(5 * 1000);

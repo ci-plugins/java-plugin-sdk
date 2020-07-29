@@ -8,6 +8,7 @@ import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.pojo.Result
 import com.tencent.bk.devops.plugin.pojo.artifactory.JfrogFilesData
+import com.tencent.bk.devops.plugin.utils.EncodeUtil
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
 import okhttp3.Request
 import org.apache.commons.io.IOUtils
@@ -18,7 +19,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.ArrayList
+import java.util.*
 import java.util.regex.Pattern
 
 class ArtifactoryApi : BaseApi() {
@@ -175,7 +176,8 @@ class ArtifactoryApi : BaseApi() {
 
     private fun downloadFileToLocal(srcUrl: String, saveFilePath: String): File {
         try {
-            val netUrl = URL(srcUrl)
+            val encodedSrcUrl = EncodeUtil.encodeChinese(srcUrl)
+            val netUrl = URL(encodedSrcUrl)
             val conn = netUrl.openConnection() as HttpURLConnection
             conn.requestMethod = "GET"
             conn.connectTimeout = 5 * 1000
