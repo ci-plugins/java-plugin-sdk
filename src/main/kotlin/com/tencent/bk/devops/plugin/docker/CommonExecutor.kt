@@ -38,54 +38,6 @@ object CommonExecutor {
         )
     }
 
-    fun getStatus(
-        projectId: String,
-        pipelineId: String,
-        buildId: String,
-        request: DockerRunLogRequest
-    ): DockerRunLogResponse {
-        val containerId = request.extraOptions.getValue("containerId")
-        val startTimeStamp = request.extraOptions.getValue("startTimeStamp")
-        val dockerHostIP = System.getenv("docker_host_ip")
-        val vmSeqId = SdkEnv.getVmSeqId()
-        val dockerGetLogUrl =
-            "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp?printLog=false"
-        val logResponse = OkhttpUtils.doShortGet(dockerGetLogUrl).use { it.body()!!.string() }
-        val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
-            ?: return DockerRunLogResponse(
-                status = Status.running,
-                message = "the status data is null with get http: $dockerGetLogUrl",
-                extraOptions = request.extraOptions
-            )
-
-        return if (logResult.running != true) {
-            if (logResult.exitCode == 0) {
-                DockerRunLogResponse(
-                    log = listOf(),
-                    status = Status.success,
-                    message = "exit code is:" + logResult.exitCode,
-                    extraOptions = request.extraOptions
-                )
-            } else {
-                DockerRunLogResponse(
-                    log = listOf(),
-                    status = Status.error,
-                    message = "exit code is:" + logResult.exitCode,
-                    extraOptions = request.extraOptions
-                )
-            }
-        } else {
-            DockerRunLogResponse(
-                log = listOf(),
-                status = Status.running,
-                message = "",
-                extraOptions = request.extraOptions.plus(mapOf(
-                    "startTimeStamp" to (startTimeStamp.toLong() + request.timeGap / 1000).toString()
-                ))
-            )
-        }
-    }
-
     fun getLogs(
         projectId: String,
         pipelineId: String,

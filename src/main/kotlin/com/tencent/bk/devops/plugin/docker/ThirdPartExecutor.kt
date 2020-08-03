@@ -1,6 +1,8 @@
 package com.tencent.bk.devops.plugin.docker
 
 import com.tencent.bk.devops.atom.common.Status
+import com.tencent.bk.devops.plugin.docker.exception.DockerPullException
+import com.tencent.bk.devops.plugin.docker.exception.DockerRunException
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
@@ -18,17 +20,10 @@ object ThirdPartExecutor {
             try {
                 dockerLogin(this)
 
-                val pullCmd = "docker pull ${param.imageName}"
-                ScriptUtils.execute(pullCmd, workspace)
-                val dockerWorkspace = if (MachineEnvUtils.getOS() == MachineEnvUtils.OSType.WINDOWS) {
-                    "/" + workspace.canonicalPath.replace("\\", "/").replace(":", "")
-                } else {
-                    workspace.canonicalPath
-                }
+                doDockerPull(this)
 
-                val command = "docker run -d -v $dockerWorkspace:$dockerWorkspace ${getEnvVar(param.envMap)} $imageName ${command.joinToString(" ")}"
-                println("execute command: $command")
-                val containerId = ScriptUtils.execute(command, workspace)
+                val containerId = doDockerRun(this)
+
                 return DockerRunResponse(
                     extraOptions = mapOf("startTimestamp" to System.currentTimeMillis().toString(),
                         "dockerContainerId" to containerId)
@@ -36,6 +31,28 @@ object ThirdPartExecutor {
             } finally {
                 dockerLogout(this)
             }
+        }
+    }
+
+    private fun doDockerRun(param: DockerRunRequest): String {
+        val dockerWorkspace = if (MachineEnvUtils.getOS() == MachineEnvUtils.OSType.WINDOWS) {
+            "/" + param.workspace.canonicalPath.replace("\\", "/").replace(":", "")
+        } else {
+            param.workspace.canonicalPath
+        }
+
+        val command = "docker run -d -v $dockerWorkspace:$dockerWorkspace ${getEnvVar(param.envMap)} " +
+            "${param.imageName} ${param.command.joinToString(" ")}"
+        println("execute command: $command")
+        return ScriptUtils.execute(command, param.workspace)
+    }
+
+    private fun doDockerPull(param: DockerRunRequest) {
+        try {
+            val pullCmd = "docker pull ${param.imageName}"
+            ScriptUtils.execute(pullCmd, param.workspace)
+        } catch (e: Exception) {
+            throw DockerPullException(e.message ?: "")
         }
     }
 
