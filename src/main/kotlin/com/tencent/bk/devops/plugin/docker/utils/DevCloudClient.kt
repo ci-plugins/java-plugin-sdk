@@ -101,16 +101,14 @@ class DevCloudClient(
             }
             try {
                 val url = "$devCloudUrl/api/v2.1/job/$jobName/status"
-                println("job Status url: $url")
                 val request = Request.Builder().url(url)
                         .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
                 val response: Response = OkhttpUtils.doShortHttp(request)
                 val body = response.body()!!.string()
-                println("[job status] $body")
                 val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
                 val actionCode: Int = jobStatusRep.actionCode
                 if (actionCode != 200) {
-                    throw RuntimeException("get job status fail")
+                    throw RuntimeException("get job status fail: $url, $body")
                 }
                 return jobStatusRep
             } catch (e: IOException) {
