@@ -718,7 +718,42 @@ public interface Logger {
      */
     public void error(Marker marker, String msg, Throwable t);
 
+    /**
+     * This is a start method for controlling log folding
+     *
+     * @param startTitle the title of folding
+     */
     public void groupStart(String startTitle);
 
+    /**
+     * This is a end method for controlling log folding
+     *
+     * @param endTitle the title of folding
+     */
     public void groupEnd(String endTitle);
+
+    /**
+     * This is a info log method for controlling log folding
+     *
+     * @param msg the log content
+     * @param subTagName the sub tag name
+     */
+    public void infoInTag(String msg, String subTagName);
+
+    /**
+     * This is a error log method for controlling log folding
+     *
+     * @param msg the log content
+     * @param subTagName the sub tag name
+     */
+    public void errorInTag(String msg, String subTagName);
+
+    /**
+     * This is a warn log method for controlling log folding
+     *
+     * @param msg the log content
+     * @param subTagName the sub tag name
+     */
+    public void warnInTag(String msg, String subTagName);
+
 }

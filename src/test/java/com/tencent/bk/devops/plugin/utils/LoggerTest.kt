@@ -18,5 +18,7 @@ class LoggerTest {
         logger.trace("This is a trace log")
         logger.groupStart("Group Start Title")
         logger.groupEnd("Group End Title")
+        logger.infoInTag("This is an info log", "tag1")
+        logger.errorInTag("This is an error log", "tag2")
     }
 }
