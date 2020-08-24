@@ -11,4 +11,9 @@ data class DockerRunRequest(
     val envMap: Map<String, String>? = null,
     val workspace: File,
     val extraOptions: Map<String, String>? = null
-)
+) {
+    override fun toString(): String {
+        return "userId: $userId, imageName: $imageName, dockerLoginUsername: $dockerLoginUsername, " +
+            "extraOptions: ${extraOptions?.filter { !it.key.contains("token", ignoreCase = true) }}"
+    }
+}
