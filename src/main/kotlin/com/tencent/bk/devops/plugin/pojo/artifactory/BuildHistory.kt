@@ -3,45 +3,45 @@ package com.tencent.bk.devops.plugin.pojo.artifactory
 // @ApiModel("历史构建模型")
 data class BuildHistory(
     // ("构建ID", required = true)
-    val id: String,
+    val id: String = "",
     // ("启动用户", required = true)
-    val userId: String,
+    val userId: String = "",
     // ("触发条件", required = true)
-    val trigger: String,
+    val trigger: String = "",
     // ("构建号", required = true)
-    val buildNum: Int?,
+    val buildNum: Int? = -1,
     // ("编排文件版本号", required = true)
-    val pipelineVersion: Int,
+    val pipelineVersion: Int = 0,
     // ("开始时间", required = true)
-    val startTime: Long,
+    val startTime: Long = 0,
     // ("结束时间", required = true)
-    val endTime: Long?,
+    val endTime: Long? = 0,
     // ("状态", required = true)
-    val status: String,
+    val status: String = "",
     // ("结束原因", required = true)
-    val deleteReason: String?,
+    val deleteReason: String? = "",
     // ("服务器当前时间戳", required = true)
-    val currentTimestamp: Long,
+    val currentTimestamp: Long = 0,
     // ("是否是手机启动", required = false)
     val isMobileStart: Boolean = false,
     // ("原材料", required = false)
-    val material: List<PipelineBuildMaterial>?,
+    val material: List<PipelineBuildMaterial>? = null,
     // ("排队于", required = false)
-    val queueTime: Long?,
+    val queueTime: Long? = 0,
     // ("构件列表", required = false)
-    val artifactList: List<FileInfo>?,
+    val artifactList: List<FileInfo>? = null,
     // ("备注", required = false)
-    val remark: String?,
+    val remark: String? = "",
     // ("总耗时(秒)", required = false)
-    val totalTime: Long?,
+    val totalTime: Long? = 0,
     // ("运行耗时(秒，不包括人工审核时间)", required = false)
-    val executeTime: Long?,
+    val executeTime: Long? = 0,
     // ("启动参数", required = false)
-    val buildParameters: List<BuildParameters>?,
+    val buildParameters: List<BuildParameters>? = null,
     // ("WebHookType", required = false)
-    val webHookType: String?,
+    val webHookType: String? = "",
     // ("启动类型(新)", required = false)
-    val startType: String?,
+    val startType: String? = "",
     // ("推荐版本号", required = false)
-    val recommendVersion: String?
+    val recommendVersion: String? = ""
 )

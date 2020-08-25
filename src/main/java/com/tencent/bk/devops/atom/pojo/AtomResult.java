@@ -74,4 +74,10 @@ public class AtomResult {
     @JsonProperty("errorCode")
     private Integer errorCode;
 
+    /**
+     * 监控数据
+     */
+    @JsonProperty("monitorData")
+    private MonitorData monitorData;
+
 }

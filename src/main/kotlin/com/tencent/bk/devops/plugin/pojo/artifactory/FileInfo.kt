@@ -3,23 +3,23 @@ package com.tencent.bk.devops.plugin.pojo.artifactory
 // ("版本仓库-文件信息")
 data class FileInfo(
     // ("文件名", required = true)
-    val name: String,
+    val name: String = "",
     // ("文件全名", required = true)
-    val fullName: String,
+    val fullName: String = "",
     // ("文件路径", required = true)
-    val path: String,
+    val path: String = "",
     // ("文件全路径", required = true)
-    val fullPath: String,
+    val fullPath: String = "",
     // ("文件大小(byte)", required = true)
-    val size: Long,
+    val size: Long = 0,
     // ("是否文件夹", required = true)
-    val folder: Boolean,
+    val folder: Boolean = false,
     // ("更新时间", required = true)
-    val modifiedTime: Long,
+    val modifiedTime: Long = 0,
     // ("仓库类型", required = true)
-    val artifactoryType: ArtifactoryType,
+    val artifactoryType: ArtifactoryType = ArtifactoryType.PIPELINE,
     // ("元数据", required = true)
-    val properties: List<Property>?,
+    val properties: List<Property>? = null,
     // ("app版本", required = true)
     val appVersion: String? = null,
     // ("下载短链接", required = true)
