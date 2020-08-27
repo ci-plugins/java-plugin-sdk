@@ -6,6 +6,8 @@ import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.spi.AtomService;
 import com.tencent.bk.devops.atom.spi.ServiceLoader;
 import com.tencent.bk.devops.atom.spi.TaskAtom;
+import com.tencent.bk.devops.plugin.pojo.DefaultErrorCode;
+import com.tencent.bk.devops.plugin.pojo.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +33,8 @@ public class AtomRunner {
             logger.error("Unknown Error：{}",e.getMessage());
             e.printStackTrace();
             context.getResult().setStatus(Status.error);
+            context.getResult().setErrorType(ErrorType.PLUGIN.getNum());
+            context.getResult().setErrorCode(DefaultErrorCode.PLUGIN_DEFAULT_ERROR);
             context.getResult().setMessage("Unknown Error：" + e.getMessage());
         } finally {
             context.persistent();

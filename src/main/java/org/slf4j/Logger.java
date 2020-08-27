@@ -756,4 +756,11 @@ public interface Logger {
      */
     public void warnInTag(String msg, String subTagName);
 
+    /**
+     * This is a finish method for controlling log loading
+     *
+     * @param subTagName the sub tag name
+     */
+    public void finishTag(String msg, String subTagName);
+
 }

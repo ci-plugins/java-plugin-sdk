@@ -131,6 +131,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
     private static final int LOG_LEVEL_ERROR = LocationAwareLogger.ERROR_INT;
     private static final int LOG_LEVEL_GROUP_START = LocationAwareLogger.GROUP_START_INT;
     private static final int LOG_LEVEL_GROUP_END = LocationAwareLogger.GROUP_END_INT;
+    private static final int LOG_LEVEL_SUBTAG_FINISH = LocationAwareLogger.SUBTAG_FINISH_INT;
 
     private static boolean INITIALIZED = false;
 
@@ -162,6 +163,8 @@ public class SimpleLogger extends MarkerIgnoringBase {
     public static final String LOG_KEY_PREFIX = SYSTEM_PREFIX + "log.";
 
     public static String LOG_SUBTAG_FLAG = "##subTag##";
+
+    public static String LOG_SUBTAG_FINISH_FLAG = "##subTagFinish##";
 
     private static String getStringProperty(String name) {
         String prop = null;
@@ -322,6 +325,9 @@ public class SimpleLogger extends MarkerIgnoringBase {
         // Append sub-tag if specified
         if (subTagName != null) {
             buf.append(LOG_SUBTAG_FLAG).append(subTagName).append(LOG_SUBTAG_FLAG);
+
+            // Append sub-tag finsh flag
+            if (level == LOG_LEVEL_SUBTAG_FINISH) buf.append(LOG_SUBTAG_FINISH_FLAG);
         }
 
         // Append date-time if so configured
@@ -680,6 +686,10 @@ public class SimpleLogger extends MarkerIgnoringBase {
 
     public void warnInTag(String msg, String subTagName) {
         log(LOG_LEVEL_WARN, msg, subTagName, null);
+    }
+
+    public void finishTag(String msg, String subTagName) {
+        log(LOG_LEVEL_SUBTAG_FINISH, msg, subTagName, null);
     }
 
     public void log(LoggingEvent event) {
