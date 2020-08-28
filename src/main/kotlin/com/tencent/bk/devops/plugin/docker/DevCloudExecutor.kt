@@ -116,6 +116,9 @@ object DevCloudExecutor {
         }
 
         if (finalStatus.data.status in listOf("failed", "succeeded")) {
+            val url = "/api/v2.1/job/$jobName/status"
+            println("final job status url: $url")
+            println("final job status data: $jobStatusResp")
             Thread.sleep(6000)
             val finalLogs = devCloudClient.getLog(jobName, beiJ2UTC(startTimeStamp + 6000))
             if (finalStatus.data.status == "failed") {
