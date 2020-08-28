@@ -71,6 +71,12 @@ public class AtomResult {
     /**
      * 用于后台度量的错误码
      */
+    @JsonProperty("errorType")
+    private Integer errorType;
+
+    /**
+     * 用于后台度量的错误码
+     */
     @JsonProperty("errorCode")
     private Integer errorCode;
 
