@@ -56,7 +56,7 @@ object CommonExecutor {
         val logResponse = OkhttpUtils.doGet(dockerGetLogUrl).use { it.body()!!.string() }
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
-                status = DockerStatus.logError,
+                status = DockerStatus.error,
                 message = "the log data is null with get http: $dockerGetLogUrl",
                 extraOptions = request.extraOptions
             )

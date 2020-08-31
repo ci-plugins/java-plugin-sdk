@@ -5,5 +5,5 @@ package com.tencent.bk.devops.atom.common;
  */
 @SuppressWarnings("unused")
 public enum Status {
-    success, failure, error, logError, running
+    success, failure, error
 }
