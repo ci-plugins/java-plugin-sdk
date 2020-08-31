@@ -1,6 +1,12 @@
 package com.tencent.bk.devops.plugin.utils
 
+import com.tencent.bk.devops.atom.utils.http.OkHttpUtils
+import okhttp3.ConnectionPool
+import okhttp3.Headers
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -12,33 +18,79 @@ object OkhttpUtils {
     private val logger = LoggerFactory.getLogger(OkhttpUtils::class.java)
 
     private val okHttpClient = okhttp3.OkHttpClient.Builder()
-            .connectTimeout(60L, TimeUnit.SECONDS)
-            .readTimeout(30L, TimeUnit.MINUTES)
-            .writeTimeout(30L, TimeUnit.MINUTES)
-            .build()
+        .connectTimeout(60L, TimeUnit.SECONDS)
+        .readTimeout(30L, TimeUnit.MINUTES)
+        .writeTimeout(30L, TimeUnit.MINUTES)
+        .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
+        .build()
+
+    private val shortOkHttpClient = okhttp3.OkHttpClient.Builder()
+        .connectTimeout(30L, TimeUnit.SECONDS)
+        .readTimeout(30L, TimeUnit.SECONDS)
+        .writeTimeout(30L, TimeUnit.SECONDS)
+        .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
+        .build()
+
+    private val noRetryShortOkHttpClient = okhttp3.OkHttpClient.Builder()
+        .connectTimeout(5L, TimeUnit.SECONDS)
+        .readTimeout(30L, TimeUnit.SECONDS)
+        .writeTimeout(30L, TimeUnit.SECONDS)
+        .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
+        .retryOnConnectionFailure(false)
+        .build()
+
+    private val noRetryOkHttpClient = okhttp3.OkHttpClient.Builder()
+        .connectTimeout(60L, TimeUnit.SECONDS)
+        .readTimeout(30L, TimeUnit.MINUTES)
+        .writeTimeout(30L, TimeUnit.MINUTES)
+        .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
+        .retryOnConnectionFailure(false)
+        .build()
+
+    private const val CONTENT_TYPE_JSON = "application/json; charset=utf-8"
+
+    fun doShortGet(url: String, headers: Map<String, String> = mapOf()): Response {
+        return doGet(shortOkHttpClient, url, headers)
+    }
 
     fun doGet(url: String, headers: Map<String, String> = mapOf()): Response {
+        return doGet(okHttpClient, url, headers)
+    }
+
+    fun doGet(client: OkHttpClient, url: String, headers: Map<String, String> = mapOf()): Response {
         val requestBuilder = Request.Builder()
-                .url(url)
-                .get()
+            .url(url)
+            .get()
         if (headers.isNotEmpty()) {
             headers.forEach { key, value ->
                 requestBuilder.addHeader(key, value)
             }
         }
         val request = requestBuilder.build()
-        return okHttpClient.newCall(request).execute()
+        return client.newCall(request).execute()
+    }
+
+    fun doShortHttp(request: Request): Response {
+        return shortOkHttpClient.newCall(request).execute()
+    }
+
+    fun doShortHttpNoRetry(request: Request): Response {
+        return noRetryShortOkHttpClient.newCall(request).execute()
     }
 
     fun doHttp(request: Request): Response {
         return okHttpClient.newCall(request).execute()
     }
 
+    fun doHttpNoRetry(request: Request): Response {
+        return noRetryOkHttpClient.newCall(request).execute()
+    }
+
     fun downloadFile(url: String, destPath: File) {
         val request = Request.Builder()
-                .url(url)
-                .get()
-                .build()
+            .url(url)
+            .get()
+            .build()
         okHttpClient.newCall(request).execute().use { response ->
             if (response.code() == 404) {
                 logger.warn("The file $url is not exist")
@@ -82,5 +134,21 @@ object OkhttpUtils {
                 }
             }
         }
+    }
+
+    fun doPost(url: String, jsonParam: String, headers: Map<String, String> = mapOf()): Response {
+        val builder = getBuilder(url, headers)
+        val body = RequestBody.create(MediaType.parse(CONTENT_TYPE_JSON), jsonParam)
+        val request = builder.post(body).build()
+        return doHttp(request)
+    }
+
+    private fun getBuilder(url: String, headers: Map<String, String>?): Request.Builder {
+        val builder = Request.Builder()
+        builder.url(url)
+        if (null != headers) {
+            builder.headers(Headers.of(headers))
+        }
+        return builder
     }
 }
