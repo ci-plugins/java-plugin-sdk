@@ -6,6 +6,7 @@ import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.spi.AtomService;
 import com.tencent.bk.devops.atom.spi.ServiceLoader;
 import com.tencent.bk.devops.atom.spi.TaskAtom;
+import com.tencent.bk.devops.plugin.pojo.ErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

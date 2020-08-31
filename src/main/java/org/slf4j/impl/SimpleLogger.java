@@ -131,6 +131,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
     private static final int LOG_LEVEL_ERROR = LocationAwareLogger.ERROR_INT;
     private static final int LOG_LEVEL_GROUP_START = LocationAwareLogger.GROUP_START_INT;
     private static final int LOG_LEVEL_GROUP_END = LocationAwareLogger.GROUP_END_INT;
+    private static final int LOG_LEVEL_SUBTAG_FINISH = LocationAwareLogger.SUBTAG_FINISH_INT;
 
     private static boolean INITIALIZED = false;
 
@@ -160,6 +161,10 @@ public class SimpleLogger extends MarkerIgnoringBase {
     public static final String WARN_LEVEL_STRING_KEY = SYSTEM_PREFIX + "warnLevelString";
 
     public static final String LOG_KEY_PREFIX = SYSTEM_PREFIX + "log.";
+
+    public static String LOG_SUBTAG_FLAG = "##subTag##";
+
+    public static String LOG_SUBTAG_FINISH_FLAG = "##subTagFinish##";
 
     private static String getStringProperty(String name) {
         String prop = null;
@@ -310,12 +315,20 @@ public class SimpleLogger extends MarkerIgnoringBase {
      * @param message The message itself
      * @param t       The exception whose stack trace should be logged
      */
-    private void log(int level, String message, Throwable t) {
+    private void log(int level, String message, String subTagName, Throwable t) {
         if (!isLevelEnabled(level)) {
             return;
         }
 
         StringBuilder buf = new StringBuilder(32);
+
+        // Append sub-tag if specified
+        if (subTagName != null) {
+            buf.append(LOG_SUBTAG_FLAG).append(subTagName).append(LOG_SUBTAG_FLAG);
+
+            // Append sub-tag finsh flag
+            if (level == LOG_LEVEL_SUBTAG_FINISH) buf.append(LOG_SUBTAG_FINISH_FLAG);
+        }
 
         // Append date-time if so configured
         if (SHOW_DATE_TIME) {
@@ -416,7 +429,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
             return;
         }
         FormattingTuple tp = MessageFormatter.format(format, arg1, arg2);
-        log(level, tp.getMessage(), tp.getThrowable());
+        log(level, tp.getMessage(), null, tp.getThrowable());
     }
 
     /**
@@ -431,7 +444,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
             return;
         }
         FormattingTuple tp = MessageFormatter.arrayFormat(format, arguments);
-        log(level, tp.getMessage(), tp.getThrowable());
+        log(level, tp.getMessage(), null, tp.getThrowable());
     }
 
     /**
@@ -455,7 +468,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void trace(String msg) {
-        log(LOG_LEVEL_TRACE, msg, null);
+        log(LOG_LEVEL_TRACE, msg, null, null);
     }
 
     /**
@@ -484,7 +497,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
 
     /** Log a message of level TRACE, including an exception. */
     public void trace(String msg, Throwable t) {
-        log(LOG_LEVEL_TRACE, msg, t);
+        log(LOG_LEVEL_TRACE, msg, null, t);
     }
 
     /** Are {@code debug} messages currently enabled? */
@@ -497,7 +510,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void debug(String msg) {
-        log(LOG_LEVEL_DEBUG, msg, null);
+        log(LOG_LEVEL_DEBUG, msg, null, null);
     }
 
     /**
@@ -526,7 +539,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
 
     /** Log a message of level DEBUG, including an exception. */
     public void debug(String msg, Throwable t) {
-        log(LOG_LEVEL_DEBUG, msg, t);
+        log(LOG_LEVEL_DEBUG, msg, null, t);
     }
 
     /** Are {@code info} messages currently enabled? */
@@ -539,7 +552,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void info(String msg) {
-        log(LOG_LEVEL_INFO, msg, null);
+        log(LOG_LEVEL_INFO, msg, null, null);
     }
 
     /**
@@ -568,7 +581,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
 
     /** Log a message of level INFO, including an exception. */
     public void info(String msg, Throwable t) {
-        log(LOG_LEVEL_INFO, msg, t);
+        log(LOG_LEVEL_INFO, msg, null, t);
     }
 
     /** Are {@code warn} messages currently enabled? */
@@ -581,7 +594,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void warn(String msg) {
-        log(LOG_LEVEL_WARN, msg, null);
+        log(LOG_LEVEL_WARN, msg, null, null);
     }
 
     /**
@@ -610,7 +623,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
 
     /** Log a message of level WARN, including an exception. */
     public void warn(String msg, Throwable t) {
-        log(LOG_LEVEL_WARN, msg, t);
+        log(LOG_LEVEL_WARN, msg, null, t);
     }
 
     /** Are {@code error} messages currently enabled? */
@@ -623,7 +636,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
      * to the format outlined above.
      */
     public void error(String msg) {
-        log(LOG_LEVEL_ERROR, msg, null);
+        log(LOG_LEVEL_ERROR, msg, null, null);
     }
 
     /**
@@ -652,15 +665,31 @@ public class SimpleLogger extends MarkerIgnoringBase {
 
     /** Log a message of level ERROR, including an exception. */
     public void error(String msg, Throwable t) {
-        log(LOG_LEVEL_ERROR, msg, t);
+        log(LOG_LEVEL_ERROR, msg, null, t);
     }
 
     public void groupStart(String startTitle){
-        this.log(LOG_LEVEL_GROUP_START, startTitle, (Throwable)null);
+        this.log(LOG_LEVEL_GROUP_START, startTitle, null, (Throwable)null);
     }
 
     public void groupEnd(String endTitle){
-        this.log(LOG_LEVEL_GROUP_END, endTitle, (Throwable)null);
+        this.log(LOG_LEVEL_GROUP_END, endTitle, null, (Throwable)null);
+    }
+
+    public void infoInTag(String msg, String subTagName) {
+        log(LOG_LEVEL_INFO, msg, subTagName, null);
+    }
+
+    public void errorInTag(String msg, String subTagName) {
+        log(LOG_LEVEL_ERROR, msg, subTagName, null);
+    }
+
+    public void warnInTag(String msg, String subTagName) {
+        log(LOG_LEVEL_WARN, msg, subTagName, null);
+    }
+
+    public void finishTag(String msg, String subTagName) {
+        log(LOG_LEVEL_SUBTAG_FINISH, msg, subTagName, null);
     }
 
     public void log(LoggingEvent event) {
@@ -670,7 +699,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
             return;
         }
         FormattingTuple tp = MessageFormatter.arrayFormat(event.getMessage(), event.getArgumentArray(), event.getThrowable());
-        log(levelInt, tp.getMessage(), event.getThrowable());
+        log(levelInt, tp.getMessage(), null, event.getThrowable());
     }
 
 }

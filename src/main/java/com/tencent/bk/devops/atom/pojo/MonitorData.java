@@ -16,16 +16,16 @@ public class MonitorData {
     private String channel;
 
     /**
-     * 插件运行开始时间(格式：yyyy-MM-dd HH:mm:ss)
+     * 插件运行开始时间(格式：时间戳)
      */
     @JsonProperty("startTime")
-    private String startTime;
+    private long startTime;
 
     /**
-     * 插件运行结束时间(格式：yyyy-MM-dd HH:mm:ss)
+     * 插件运行结束时间(格式：时间戳)
      */
     @JsonProperty("endTime")
-    private String endTime;
+    private long endTime;
 
     /**
      * 扩展数据
