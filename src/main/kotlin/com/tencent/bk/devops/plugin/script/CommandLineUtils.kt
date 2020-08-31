@@ -27,7 +27,7 @@ object CommandLineUtils {
 
                 val tmpLine = SensitiveLineParser.onParseLine(prefix + line)
                 if (print2Logger) {
-                    println(tmpLine)
+                    logger.info(tmpLine)
                 }
                 result.append(tmpLine).append("\n")
             }
@@ -41,7 +41,7 @@ object CommandLineUtils {
 
                 val tmpLine = SensitiveLineParser.onParseLine(prefix + line)
                 if (print2Logger) {
-                    System.err.println(tmpLine)
+                    logger.error(tmpLine)
                 }
                 result.append(tmpLine).append("\n")
             }

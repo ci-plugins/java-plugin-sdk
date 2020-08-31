@@ -1,10 +1,10 @@
 package com.tencent.bk.devops.plugin.docker.pojo
 
-import com.tencent.bk.devops.atom.common.Status
+import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
 
 data class DockerRunLogResponse(
     val log: List<String>? = listOf(),
-    val status: Status = Status.running,
+    val status: String = DockerStatus.running,
     val message: String,
     val extraOptions: Map<String, String>
 ) {

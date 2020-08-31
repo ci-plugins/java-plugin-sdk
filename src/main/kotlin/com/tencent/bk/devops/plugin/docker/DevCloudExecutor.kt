@@ -1,10 +1,10 @@
 package com.tencent.bk.devops.plugin.docker
 
-import com.tencent.bk.devops.atom.common.Status
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
+import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobParam
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobRequest
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.Registry
@@ -14,11 +14,14 @@ import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
 import org.apache.commons.lang3.RandomUtils
 import org.apache.tools.ant.types.Commandline
+import org.slf4j.LoggerFactory
 
 object DevCloudExecutor {
     private val VOLUME_SERVER = "volume_server"
     private val VOLUME_PATH = "volume_path"
     private val VOLUME_MOUNT_PATH = "volume_mount_path"
+
+    private val logger = LoggerFactory.getLogger(DevCloudExecutor::class.java)
 
     fun execute(request: DockerRunRequest): DockerRunResponse {
         val startTimeStamp = System.currentTimeMillis()
@@ -53,41 +56,41 @@ object DevCloudExecutor {
         // get task status
         val taskId = param.extraOptions["devCloudTaskId"] ?: throw RuntimeException("devCloudTaskId is null")
         val taskStatusFlag = param.extraOptions["taskStatusFlag"]
-        if (taskStatusFlag.isNullOrBlank() || taskStatusFlag == Status.running.name) {
+        if (taskStatusFlag.isNullOrBlank() || taskStatusFlag == DockerStatus.running) {
             val taskStatus = devCloudClient.getTaskStatus(taskId.toInt())
             if (taskStatus.status == "failed") {
                 return DockerRunLogResponse(
-                    status = Status.failure,
+                    status = DockerStatus.failure,
                     message = "get task status fail",
                     extraOptions = extraOptions
                 )
             }
             if (taskStatus.status != "succeeded") {
                 return DockerRunLogResponse(
-                    status = Status.running,
+                    status = DockerStatus.running,
                     message = "get task status...",
                     extraOptions = extraOptions
                 )
             }
         }
-        extraOptions["taskStatusFlag"] = Status.success.name
+        extraOptions["taskStatusFlag"] = DockerStatus.success
 
         // get job status
         val jobStatusFlag = param.extraOptions["jobStatusFlag"]
         val jobName = param.extraOptions["devCloudJobName"] ?: throw RuntimeException("devCloudJobName is null")
         var jobStatusResp: JobStatusResponse? = null
-        if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == Status.running.name) {
+        if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == DockerStatus.running) {
             jobStatusResp = devCloudClient.getJobStatus(jobName)
             val jobStatus = jobStatusResp.data.status
             if ("failed" != jobStatus && "succeeded" != jobStatus && "running" != jobStatus) {
                 return DockerRunLogResponse(
-                    status = Status.running,
+                    status = DockerStatus.running,
                     message = "get job status...",
                     extraOptions = extraOptions
                 )
             }
         }
-        extraOptions["jobStatusFlag"] = Status.success.name
+        extraOptions["jobStatusFlag"] = DockerStatus.success
 
         // actual get log logic
         val startTimeStamp = extraOptions["startTimeStamp"]?.toLong() ?: System.currentTimeMillis()
@@ -117,21 +120,21 @@ object DevCloudExecutor {
 
         if (finalStatus.data.status in listOf("failed", "succeeded")) {
             val url = "/api/v2.1/job/$jobName/status"
-            println("final job status url: $url")
-            println("final job status data: $jobStatusResp")
+            logger.info("final job status url: $url")
+            logger.info("final job status data: $jobStatusResp")
             Thread.sleep(6000)
             val finalLogs = devCloudClient.getLog(jobName, beiJ2UTC(startTimeStamp + 6000))
             if (finalStatus.data.status == "failed") {
                 return DockerRunLogResponse(
                     log = logs.plus(finalLogs ?: ""),
-                    status = Status.failure,
+                    status = DockerStatus.failure,
                     message = "docker run fail...",
                     extraOptions = extraOptions
                 )
             }
             return DockerRunLogResponse(
                 log = logs.plus(finalLogs ?: ""),
-                status = Status.success,
+                status = DockerStatus.success,
                 message = "docker run success...",
                 extraOptions = extraOptions
             )
@@ -139,7 +142,7 @@ object DevCloudExecutor {
 
         return DockerRunLogResponse(
             log = logs,
-            status = Status.running,
+            status = DockerStatus.running,
             message = "get log...",
             extraOptions = extraOptions
         )
@@ -169,10 +172,6 @@ object DevCloudExecutor {
                         )
                     )
                 }
-            }
-
-            if (jobParam.workDir.isNullOrBlank()) {
-                jobParam.workDir = "/data/landun/workspace"
             }
 
             // get docker image host & path

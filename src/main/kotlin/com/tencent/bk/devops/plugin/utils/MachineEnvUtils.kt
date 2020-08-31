@@ -3,7 +3,7 @@ package com.tencent.bk.devops.plugin.utils
 import java.util.Locale
 
 object MachineEnvUtils {
-    fun getOS(): OSType {
+    fun getOS(): String {
         val osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH)
         return if (osName.indexOf(string = "mac") >= 0 || osName.indexOf("darwin") >= 0) {
             OSType.MAC_OS
@@ -16,10 +16,10 @@ object MachineEnvUtils {
         }
     }
 
-    enum class OSType {
-        WINDOWS,
-        LINUX,
-        MAC_OS,
-        OTHER
+    object OSType {
+        const val WINDOWS = "WINDOWS"
+        const val LINUX = "LINUX"
+        const val MAC_OS = "MAC_OS"
+        const val OTHER = "OTHER"
     }
 }

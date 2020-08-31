@@ -2,17 +2,20 @@ package com.tencent.bk.devops.plugin.docker
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.SdkEnv
-import com.tencent.bk.devops.atom.common.Status
 import com.tencent.bk.devops.atom.pojo.Result
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
+import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
 import com.tencent.bk.devops.plugin.utils.JsonUtil
 import org.apache.tools.ant.types.Commandline
+import org.slf4j.LoggerFactory
 
 object CommonExecutor {
+
+    private val logger = LoggerFactory.getLogger(CommonExecutor::class.java)
 
     fun execute(
         projectId: String,
@@ -25,9 +28,9 @@ object CommonExecutor {
         val dockerHostIP = System.getenv("docker_host_ip")
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
-        println("execute docker run url: $dockerRunUrl")
+        logger.info("execute docker run url: $dockerRunUrl")
         val responseContent = OkhttpUtils.doPost(dockerRunUrl, runParam).use { it.body()!!.string() }
-        println("execute docker run response: $responseContent")
+        logger.info("execute docker run response: $responseContent")
 
         val extraOptions = JsonUtil.to(responseContent, object : TypeReference<Result<Map<String, Any>>>() {}).data
         return DockerRunResponse(
@@ -53,7 +56,7 @@ object CommonExecutor {
         val logResponse = OkhttpUtils.doGet(dockerGetLogUrl).use { it.body()!!.string() }
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
-                status = Status.logError,
+                status = DockerStatus.logError,
                 message = "the log data is null with get http: $dockerGetLogUrl",
                 extraOptions = request.extraOptions
             )
@@ -62,14 +65,14 @@ object CommonExecutor {
             if (logResult.exitCode == 0) {
                 DockerRunLogResponse(
                     log = trimLogs(logResult.logs),
-                    status = Status.success,
+                    status = DockerStatus.success,
                     message = "the Docker Run Log is listed as follows:",
                     extraOptions = request.extraOptions
                 )
             } else {
                 DockerRunLogResponse(
                     log = trimLogs(logResult.logs),
-                    status = Status.error,
+                    status = DockerStatus.error,
                     message = "the Docker Run Log is listed as follows:",
                     extraOptions = request.extraOptions
                 )
@@ -77,7 +80,7 @@ object CommonExecutor {
         } else {
             DockerRunLogResponse(
                 log = logResult.logs,
-                status = Status.running,
+                status = DockerStatus.running,
                 message = "get log...",
                 extraOptions = request.extraOptions.plus(mapOf(
                     "startTimeStamp" to (startTimeStamp.toLong() + request.timeGap / 1000).toString()
@@ -109,7 +112,7 @@ object CommonExecutor {
             )
         }
 
-        println("execute docker run image: $runParam")
+        logger.info("execute docker run image: $runParam")
 
         return JsonUtil.toJson(runParam)
     }

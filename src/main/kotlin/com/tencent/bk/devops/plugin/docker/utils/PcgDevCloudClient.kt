@@ -14,10 +14,15 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.lang3.RandomStringUtils
+import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.HashMap
 
 class PcgDevCloudClient(private val executeUser: String){
+
+    companion object {
+        val logger = LoggerFactory.getLogger(PcgDevCloudClient::class.java)
+    }
 
     private val host = "http://mita.server.wsd.com"
 
@@ -43,14 +48,14 @@ class PcgDevCloudClient(private val executeUser: String){
     ): DevCloudTask {
         val url = "$host/api/devcloud/job/add"
         val body = JsonUtil.toJson(jobReq)
-        println("[create job] $url")
-        println("start to create job: $body")
+        logger.info("[create job] $url")
+        logger.info("start to create job: $body")
 
         val request = Request.Builder().url(url)
             .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body)).build()
-        println("[create job headers]: ${request.headers().toMultimap()}")
+        logger.info("[create job headers]: ${request.headers().toMultimap()}")
         val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
-        println("[create job] $responseBody")
+        logger.info("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
         if (jobRep.actionCode == 200) {
             return DevCloudTask(
@@ -68,7 +73,7 @@ class PcgDevCloudClient(private val executeUser: String){
         var countFailed = 0
         while (true) {
             if (countFailed > 3) {
-                println("Request pcgDevCloud failed 3 times, exit with exception")
+                logger.info("Request pcgDevCloud failed 3 times, exit with exception")
                 throw RuntimeException("Request pcgDevCloud failed 3 times, exit with exception")
             }
             try {
@@ -86,7 +91,7 @@ class PcgDevCloudClient(private val executeUser: String){
                 val data = realResponseMap["data"] as Map<String, Any>
                 return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, responseBody = responseBody)
             } catch (e: IOException) {
-                println("Get pcgDevCloud task status exception: ${e.message}")
+                logger.error("Get pcgDevCloud task status exception: ${e.message}")
                 countFailed++
             }
         }
@@ -98,17 +103,16 @@ class PcgDevCloudClient(private val executeUser: String){
         var countFailed = 0
         while (true) {
             if (countFailed > 3) {
-                println("Request DevCloud failed 3 times, exit with exception")
                 throw RuntimeException("Request DevCloud failed 3 times, exit with exception")
             }
             try {
                 val url = "$host/api/devcloud/job/status?name=$jobName&operator=$executeUser"
-                println("job Status url: $url")
+                logger.info("job Status url: $url")
                 val request = Request.Builder().url(url)
                         .get().build()
                 val response: Response = OkhttpUtils.doShortHttp(request)
                 val body = response.body()!!.string()
-                println("[job status] $body")
+                logger.info("[job status] $body")
                 val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
                 val actionCode: Int = jobStatusRep.actionCode
                 if (actionCode != 200) {
@@ -116,7 +120,7 @@ class PcgDevCloudClient(private val executeUser: String){
                 }
                 return jobStatusRep
             } catch (e: IOException) {
-                println("Get pcgDevCloud task status exception: ${e.message}")
+                logger.info("Get pcgDevCloud task status exception: ${e.message}")
                 countFailed++
             }
         }
@@ -129,7 +133,7 @@ class PcgDevCloudClient(private val executeUser: String){
         var countFailed = 0
         while (true) {
             if (countFailed > 3) {
-                println("Request pcgDevCloud failed 3 times, exit with exception")
+                logger.info("Request pcgDevCloud failed 3 times, exit with exception")
                 throw RuntimeException("Request pcgDevCloud failed 3 times, exit with exception")
             }
             try {
@@ -139,17 +143,17 @@ class PcgDevCloudClient(private val executeUser: String){
                 val response = OkhttpUtils.doShortHttp(request)
                 val res = response.body()!!.string()
                 if (!response.isSuccessful) {
-                    println("get log fail: $res")
+                    logger.error("get log fail: $res")
                     return null
                 }
                 val resultMap: Map<String, Any> =
                         JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
                 val data = resultMap["data"] as Map<String, String>?
                 val logs = data?.values?.joinToString("\n")
-                println(logs)
+                logger.info(logs)
                 return logs
             } catch (e: IOException) {
-                println("Get pcgDevCloud job log exception: ${e.message}")
+                logger.error("Get pcgDevCloud job log exception: ${e.message}")
                 countFailed++
             }
         }

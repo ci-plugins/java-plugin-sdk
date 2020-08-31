@@ -2,19 +2,23 @@ package com.tencent.bk.devops.plugin.docker
 
 import com.tencent.bk.devops.atom.common.Status
 import com.tencent.bk.devops.plugin.docker.exception.DockerPullException
-import com.tencent.bk.devops.plugin.docker.exception.DockerRunException
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
+import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
 import com.tencent.bk.devops.plugin.script.ScriptUtils
 import com.tencent.bk.devops.plugin.utils.JsonUtil
 import com.tencent.bk.devops.plugin.utils.MachineEnvUtils
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.lang.StringBuilder
 
 object ThirdPartExecutor {
+
+    private val logger = LoggerFactory.getLogger(ThirdPartExecutor::class.java)
+
     fun execute(param: DockerRunRequest): DockerRunResponse {
         with(param) {
             try {
@@ -43,7 +47,7 @@ object ThirdPartExecutor {
 
         val command = "docker run -d -v $dockerWorkspace:$dockerWorkspace ${getEnvVar(param.envMap)} " +
             "${param.imageName} ${param.command.joinToString(" ")}"
-        println("execute command: $command")
+        logger.info("execute command: $command")
         return ScriptUtils.execute(command, param.workspace)
     }
 
@@ -70,7 +74,7 @@ object ThirdPartExecutor {
 
         val statusPair = getContainerStatus(containerId, param.workspace)
         val status = statusPair.first
-        val startTime = if (status == Status.running) beiJ2UTC(startTimestamp) else statusPair.second
+        val startTime = if (status == DockerStatus.running) beiJ2UTC(startTimestamp) else statusPair.second
         val preStartTime = beiJ2UTC(startTimestamp - param.timeGap)
 
         var failToGetLog = false
@@ -84,9 +88,9 @@ object ThirdPartExecutor {
             ""
         }
 
-        if (status != Status.running) {
+        if (status != DockerStatus.running) {
             if (failToGetLog) {
-                System.err.println("fail to get log: $errorMessage")
+                logger.error("fail to get log: $errorMessage")
 
                 val command = "docker logs $containerId"
                 log = ScriptUtils.execute(command, param.workspace, printLog = false, failExit = false)
@@ -104,24 +108,24 @@ object ThirdPartExecutor {
         )
     }
 
-    private fun getContainerStatus(containerId: String, workspace: File): Pair<Status, String> {
+    private fun getContainerStatus(containerId: String, workspace: File): Pair<String, String> {
         val inspectResult = ScriptUtils.execute(script = "docker inspect $containerId", dir = workspace, printLog = false)
         val inspectMap = JsonUtil.to<List<Map<String, Any>>>(inspectResult).first()
         val state = inspectMap["State"] as Map<String, Any>
         val status = state["Status"] as String
-        if (status == "running") return Pair(Status.running, "")
+        if (status == "running") return Pair(DockerStatus.running, "")
 
         val exitCode = state["ExitCode"] as Int
 
         val finishedAt = state["FinishedAt"] as String
 
-        return if (exitCode != 0) Pair(Status.failure, finishedAt)
-        else Pair(Status.success, finishedAt)
+        return if (exitCode != 0) Pair(DockerStatus.failure, finishedAt)
+        else Pair(DockerStatus.success, finishedAt)
     }
 
     private fun dockerRm(containerId: String, workspace: File) {
         val cmd = "docker rm $containerId"
-        println("[execute script]: $cmd")
+        logger.info("[execute script]: $cmd")
         ScriptUtils.execute(script = cmd, dir = workspace, failExit = false)
     }
 
@@ -133,7 +137,7 @@ object ThirdPartExecutor {
         val loginHost = param.imageName.split("/").first()
         // WARNING! Using --password via the CLI is insecure. Use --password-stdin.
         val commandStr = "docker login $loginHost --username $username --password $password"
-        println("[execute script]: " + String.format("docker login %s --username %s  --password ***", loginHost, username))
+        logger.info("[execute script]: " + String.format("docker login %s --username %s  --password ***", loginHost, username))
         ScriptUtils.execute(commandStr, param.workspace)
     }
 
@@ -142,7 +146,7 @@ object ThirdPartExecutor {
 
         val loginHost = param.imageName.split("/").first()
         val commandStr = "docker logout $loginHost"
-        println("[execute script]: $commandStr")
+        logger.info("[execute script]: $commandStr")
         ScriptUtils.execute(commandStr, param.workspace)
     }
 }

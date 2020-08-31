@@ -1,10 +1,10 @@
 package com.tencent.bk.devops.plugin.docker
 
-import com.tencent.bk.devops.atom.common.Status
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
+import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobParam
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobRequest
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.PcgJobRequest
@@ -46,41 +46,41 @@ object PcgDevCloudExecutor {
         // get task status
         val taskId = param.extraOptions["devCloudTaskId"] ?: throw RuntimeException("devCloudTaskId is null")
         val taskStatusFlag = param.extraOptions["taskStatusFlag"]
-        if (taskStatusFlag.isNullOrBlank() || taskStatusFlag == Status.running.name) {
+        if (taskStatusFlag.isNullOrBlank() || taskStatusFlag == DockerStatus.running) {
             val taskStatus = devCloudClient.getTaskStatus(taskId.toInt())
             if (taskStatus.status == "failed") {
                 return DockerRunLogResponse(
-                    status = Status.failure,
+                    status = DockerStatus.failure,
                     message = "get task status fail: $taskStatus",
                     extraOptions = extraOptions
                 )
             }
             if (taskStatus.status != "succeeded") {
                 return DockerRunLogResponse(
-                    status = Status.running,
+                    status = DockerStatus.running,
                     message = "get task status...: $taskStatus",
                     extraOptions = extraOptions
                 )
             }
         }
-        extraOptions["taskStatusFlag"] = Status.success.name
+        extraOptions["taskStatusFlag"] = DockerStatus.success
 
         // get job status
         val jobStatusFlag = param.extraOptions["jobStatusFlag"]
         val jobName = param.extraOptions["devCloudJobName"] ?: throw RuntimeException("devCloudJobName is null")
         var jobStatusResp: JobStatusResponse? = null
-        if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == Status.running.name) {
+        if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == DockerStatus.running) {
             jobStatusResp = devCloudClient.getJobStatus(jobName)
             val jobStatus = jobStatusResp.data.status
             if ("failed" != jobStatus && "succeeded" != jobStatus && "running" != jobStatus) {
                 return DockerRunLogResponse(
-                    status = Status.running,
+                    status = DockerStatus.running,
                     message = "get job status...",
                     extraOptions = extraOptions
                 )
             }
         }
-        extraOptions["jobStatusFlag"] = Status.success.name
+        extraOptions["jobStatusFlag"] = DockerStatus.success
 
         // actual get log logic
         val startTimeStamp = extraOptions["startTimeStamp"]?.toLong() ?: System.currentTimeMillis()
@@ -114,14 +114,14 @@ object PcgDevCloudExecutor {
             if (finalStatus.data.status == "failed") {
                 return DockerRunLogResponse(
                     log = logs.plus(finalLogs ?: ""),
-                    status = Status.failure,
+                    status = DockerStatus.failure,
                     message = "docker run fail...",
                     extraOptions = extraOptions
                 )
             }
             return DockerRunLogResponse(
                 log = logs.plus(finalLogs ?: ""),
-                status = Status.success,
+                status = DockerStatus.success,
                 message = "docker run success...",
                 extraOptions = extraOptions
             )
@@ -129,7 +129,7 @@ object PcgDevCloudExecutor {
 
         return DockerRunLogResponse(
             log = logs,
-            status = Status.running,
+            status = DockerStatus.running,
             message = "get log...",
             extraOptions = extraOptions
         )
@@ -161,10 +161,6 @@ object PcgDevCloudExecutor {
                 }
             }
 
-            if (jobParam.workDir.isNullOrBlank()) {
-                jobParam.workDir = "/data/landun/workspace"
-            }
-
             // get docker image host & path
             val imagePair = getImagePair(param.imageName)
 
@@ -177,13 +173,13 @@ object PcgDevCloudExecutor {
 
             return PcgJobRequest(
                 alias = "bkdevops_job_${System.currentTimeMillis()}_${RandomUtils.nextLong()}",
-                regionId = "ap-guangzhou",
-                clusterType = "normal",
-                activeDeadlineSeconds = 86400,
+                regionId = extraOptions?.get("regionId") ?: "ap-guangzhou",
+                clusterType = extraOptions?.get("clusterType") ?: "normal",
+                activeDeadlineSeconds = extraOptions?.get("activeDeadlineSeconds")?.toInt() ?: 86400,
                 image = imagePair.second,
                 registry = registry,
-                cpu = 1,
-                memory = "1024M",
+                cpu = extraOptions?.get("cpu")?.toInt() ?: 1,
+                memory = extraOptions?.get("memory") ?: "1024M",
                 params = jobParam,
                 podNameSelector = EnvUtils.getHostName(),
                 operator = param.userId

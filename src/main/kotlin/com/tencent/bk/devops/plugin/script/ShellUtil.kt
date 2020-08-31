@@ -26,6 +26,7 @@
 
 package com.tencent.bk.devops.plugin.script
 
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.nio.file.Files
 
@@ -69,6 +70,8 @@ object ShellUtil {
     private val specialValue = listOf("|", "&", "(", ")")
     private val specialCharToReplace = Regex("['\n]") // --bug=75509999 Agent环境变量中替换掉破坏性字符
     private const val WORKSPACE_ENV = "WORKSPACE"
+
+    private val logger = LoggerFactory.getLogger(ShellUtil::class.java)
 
     fun execute(
         script: String,
@@ -135,7 +138,7 @@ object ShellUtil {
         return try {
             CommandLineUtils.execute(command, sourceDir, printLog, prefix)
         } catch (ignored: Throwable) {
-            println("Fail to run the command $command because of error(${ignored.message})")
+            logger.error("Fail to run the command $command because of error(${ignored.message})")
             if (failExit) throw ignored
             else ignored.message ?: ""
         }
@@ -155,20 +158,4 @@ object ShellUtil {
         }
         return false
     }
-
-    fun getEnvironmentPathPrefix(): String {
-        val os = System.getProperty("os.name")
-        if (os.isNullOrEmpty()) {
-            return ENVIRONMENT_LINUX_PATH_PREFIX
-        }
-        if (os.startsWith("mac", true)) {
-            return ENVIRONMENT_MAC_PATH_PREFIX
-        }
-        return ENVIRONMENT_LINUX_PATH_PREFIX
-    }
-
-    private const val ENVIRONMENT_LINUX_PATH_PREFIX = "/data/bkdevops/apps/"
-
-    private const val ENVIRONMENT_MAC_PATH_PREFIX = "/data/bkdevops/apps/"
-
 }

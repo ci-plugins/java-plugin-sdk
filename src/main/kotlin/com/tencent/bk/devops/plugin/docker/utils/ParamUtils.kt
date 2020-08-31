@@ -1,19 +1,22 @@
 package com.tencent.bk.devops.plugin.docker.utils
 
 import com.tencent.bk.devops.atom.api.impl.CredentialApi
+import org.slf4j.LoggerFactory
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 
 object ParamUtils {
     private val credentialApi = CredentialApi()
 
+    private val logger = LoggerFactory.getLogger(ParamUtils::class.java)
+
     fun getEnvMap(envStr: String?): Map<String, String> {
         val envMap = mutableMapOf<String, String>()
         envStr?.split("\n")?.forEach {
-            println(it)
+            logger.info(it)
 
             if (!it.contains("=")) {
-                System.err.println("$it is illegal param,please check your input, like xx=xxx")
+                logger.error("$it is illegal param,please check your input, like xx=xxx")
             } else {
                 val list = it.split("=")
                 envMap[list.first()] = list.last()

@@ -11,6 +11,7 @@ import com.tencent.bk.devops.plugin.utils.OkhttpUtils
 import okhttp3.*
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.lang3.RandomStringUtils
+import org.slf4j.LoggerFactory
 import java.io.IOException
 import java.util.*
 
@@ -20,6 +21,10 @@ class DevCloudClient(
     private val devCloudUrl: String,
     private val devCloudToken: String
 ) {
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(DevCloudClient::class.java)
+    }
 
     private fun getHeaders(
         appId: String,
@@ -41,7 +46,7 @@ class DevCloudClient(
     fun createJob(
         jobReq: JobRequest
     ): DevCloudTask {
-        println("start to create job: ${jobReq.alias}, ${jobReq.clusterType}, ${jobReq.regionId}, ${jobReq.params}, ${jobReq.podNameSelector}")
+        logger.info("start to create job: ${jobReq.alias}, ${jobReq.clusterType}, ${jobReq.regionId}, ${jobReq.params}, ${jobReq.podNameSelector}")
 
         val url = "$devCloudUrl/api/v2.1/job"
         val body = JsonUtil.toJson(jobReq)
@@ -49,7 +54,7 @@ class DevCloudClient(
             .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser)))
             .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body)).build()
         val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
-        println("[create job] $responseBody")
+        logger.info("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
         if (jobRep.actionCode == 200) {
             return DevCloudTask(
@@ -67,16 +72,16 @@ class DevCloudClient(
         var countFailed = 0
         while (true) {
             if (countFailed > 3) {
-                println("Request DevCloud failed 3 times, exit with exception")
+                logger.info("Request DevCloud failed 3 times, exit with exception")
                 throw RuntimeException("Request DevCloud failed 3 times, exit with exception")
             }
             try {
                 val url = "$devCloudUrl/api/v2.1/tasks/$taskId"
-                println("get task status url: $url")
+                logger.info("get task status url: $url")
                 val request = Request.Builder().url(url)
                         .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
                 val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
-                println("get task status response: $responseBody")
+                logger.info("get task status response: $responseBody")
                 val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
                 if (responseMap["actionCode"] as? Int != 200) {
                     throw RuntimeException("get task status fail: $responseBody")
@@ -84,7 +89,7 @@ class DevCloudClient(
                 val data = responseMap["data"] as Map<String, Any>
                 return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, responseBody = responseBody)
             } catch (e: IOException) {
-                println("Get DevCloud task status exception: ${e.message}")
+                logger.info("Get DevCloud task status exception: ${e.message}")
                 countFailed++
             }
         }
@@ -96,7 +101,7 @@ class DevCloudClient(
         var countFailed = 0
         while (true) {
             if (countFailed > 3) {
-                println("Request DevCloud failed 3 times, exit with exception")
+                logger.info("Request DevCloud failed 3 times, exit with exception")
                 throw RuntimeException("Request DevCloud failed 3 times, exit with exception")
             }
             try {
@@ -112,7 +117,7 @@ class DevCloudClient(
                 }
                 return jobStatusRep
             } catch (e: IOException) {
-                println("Get DevCloud job status exception: ${e.message}")
+                logger.info("Get DevCloud job status exception: ${e.message}")
                 countFailed++
             }
         }
@@ -125,7 +130,7 @@ class DevCloudClient(
         var countFailed = 0
         while (true) {
             if (countFailed > 3) {
-                println("Request DevCloud get log failed 3 times, exit with exception")
+                logger.info("Request DevCloud get log failed 3 times, exit with exception")
                 throw RuntimeException("Request DevCloud get log failed 3 times, exit with exception")
             }
             try {
@@ -141,10 +146,10 @@ class DevCloudClient(
                         JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
                 val data = resultMap["data"] as Map<String, String>?
                 val logs = data?.values?.joinToString("\n")
-                println(logs)
+                logger.info(logs)
                 return logs
             } catch (e: IOException) {
-                println("Get DevCloud job log exception: ${e.message}")
+                logger.info("Get DevCloud job log exception: ${e.message}")
                 countFailed++
             }
         }
