@@ -19,7 +19,8 @@ import java.util.*
 
 class PcgDevCloudClient(
     private val executeUser: String,
-    private val secretId: String
+    private val secretId: String,
+    private val secretKey: String
 ){
 
     companion object {
@@ -41,8 +42,9 @@ class PcgDevCloudClient(
             .headers(getHeaders())
             .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body))
             .build()
-        logger.info("[create job headers]: ${request.headers().toMultimap()}")
-        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
+        val response = OkhttpUtils.doShortHttp(request)
+        val responseBody = response.body()!!.string()
+        logger.info("[create job] ${response.headers()}")
         logger.info("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
         if (jobRep.actionCode == 200) {
@@ -75,13 +77,14 @@ class PcgDevCloudClient(
                     .headers(getHeaders())
                     .get()
                     .build()
-                val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
+                val response = OkhttpUtils.doShortHttp(request)
+                val responseBody = response.body()!!.string()
                 val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
                 val responseData = responseMap["data"] as Map<*, *>
                 val responseDataMsg = responseData["message"] as String
                 val realResponseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseDataMsg)
                 if (realResponseMap["actionCode"] as? Int != 200) {
-                    throw RuntimeException("get task status fail")
+                    throw RuntimeException("get task status fail: ${response.headers()}, $responseBody")
                 }
                 val data = realResponseMap["data"] as Map<*, *>
                 return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, responseBody = responseBody)
@@ -112,8 +115,9 @@ class PcgDevCloudClient(
                     .headers(getHeaders())
                     .get()
                     .build()
-                val response: Response = OkhttpUtils.doShortHttp(request)
+                val response = OkhttpUtils.doShortHttp(request)
                 val body = response.body()!!.string()
+                logger.info("[job status] ${response.headers()}")
                 logger.info("[job status] $body")
                 val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
                 val actionCode: Int = jobStatusRep.actionCode
@@ -153,7 +157,7 @@ class PcgDevCloudClient(
                 val response = OkhttpUtils.doShortHttp(request)
                 val res = response.body()!!.string()
                 if (!response.isSuccessful) {
-                    logger.error("get log fail: $res")
+                    logger.error("get log fail: ${response.headers()}, $res")
                     return null
                 }
                 val resultMap: Map<String, Any> =
@@ -173,7 +177,7 @@ class PcgDevCloudClient(
         val headers = mutableMapOf<String, String>()
         headers["X-Gateway-Stage"] = "RELEASE"
         headers["X-Gateway-SecretId"] = secretId
-        headers["X-Gateway-SecretKey"] = secretId
+        headers["X-Gateway-SecretKey"] = secretKey
         return Headers.of(headers)
     }
 }

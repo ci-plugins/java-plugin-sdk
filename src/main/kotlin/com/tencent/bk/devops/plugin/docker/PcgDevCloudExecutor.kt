@@ -21,13 +21,15 @@ object PcgDevCloudExecutor {
     private val VOLUME_SERVER = "volume_server"
     private val VOLUME_PATH = "volume_path"
     private val VOLUME_MOUNT_PATH = "volume_mount_path"
-    private val PCG_SECRET_TOKEN = "pcg_secret_token"
+    val PCG_TOKEN_SECRET_ID = "pcg_token_secret_id"
+    val PCG_TOKEN_SECRET_KEY = "pcg_token_secret_key"
 
     fun execute(request: DockerRunRequest): DockerRunResponse {
         val startTimeStamp = System.currentTimeMillis()
         val jobRequest = getJobRequest(request)
-        val secretId = request.extraOptions?.get(PCG_SECRET_TOKEN) ?: throw RuntimeException("pcg secret id is not set")
-        val devCloudClient = PcgDevCloudClient(executeUser = request.userId, secretId = secretId)
+        val secretId = request.extraOptions?.get(PCG_TOKEN_SECRET_ID) ?: throw RuntimeException("pcg secret id is not set")
+        val secretKey = request.extraOptions[PCG_TOKEN_SECRET_KEY] ?: throw RuntimeException("pcg secret key is not set")
+        val devCloudClient = PcgDevCloudClient(executeUser = request.userId, secretId = secretId, secretKey = secretKey)
 
         val task = devCloudClient.createJob(jobRequest)
 
@@ -44,8 +46,9 @@ object PcgDevCloudExecutor {
     fun getLogs(param: DockerRunLogRequest): DockerRunLogResponse {
         val extraOptions = param.extraOptions.toMutableMap()
 
-        val secretId = extraOptions[PCG_SECRET_TOKEN] ?: throw RuntimeException("pcg secret id is not set")
-        val devCloudClient = PcgDevCloudClient(param.userId, secretId)
+        val secretId = extraOptions[PCG_TOKEN_SECRET_ID] ?: throw RuntimeException("pcg secret id is not set")
+        val secretKey = extraOptions[PCG_TOKEN_SECRET_KEY] ?: throw RuntimeException("pcg secret key is not set")
+        val devCloudClient = PcgDevCloudClient(executeUser = param.userId, secretId = secretId, secretKey = secretKey)
 
         // get task status
         val taskId = param.extraOptions["devCloudTaskId"] ?: throw RuntimeException("devCloudTaskId is null")
