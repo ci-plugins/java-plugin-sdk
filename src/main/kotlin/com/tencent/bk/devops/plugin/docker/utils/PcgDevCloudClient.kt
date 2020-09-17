@@ -44,6 +44,7 @@ class PcgDevCloudClient(
             .build()
         val response = OkhttpUtils.doShortHttp(request)
         val responseBody = response.body()!!.string()
+        logger.info("start to create job headers: ${request.headers()}")
         logger.info("[create job] ${response.headers()}")
         logger.info("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
