@@ -44,7 +44,6 @@ class PcgDevCloudClient(
             .build()
         val response = OkhttpUtils.doShortHttp(request)
         val responseBody = response.body()!!.string()
-        logger.info("start to create job headers: ${request.headers()}")
         logger.info("[create job] ${response.headers()}")
         logger.info("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
@@ -80,6 +79,11 @@ class PcgDevCloudClient(
                     .build()
                 val response = OkhttpUtils.doShortHttp(request)
                 val responseBody = response.body()!!.string()
+                val headers = response.headers()
+                if (!response.isSuccessful || headers["X-Gateway-Code"] != "0") {
+                    throw RuntimeException("get task status fail: $headers, $responseBody")
+                }
+
                 val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
                 val responseData = responseMap["data"] as Map<*, *>
                 val responseDataMsg = responseData["message"] as String
@@ -118,8 +122,12 @@ class PcgDevCloudClient(
                     .build()
                 val response = OkhttpUtils.doShortHttp(request)
                 val body = response.body()!!.string()
-                logger.info("[job status] ${response.headers()}")
-                logger.info("[job status] $body")
+                val headers = response.headers()
+                logger.info("[job status] $headers, $body")
+                if (!response.isSuccessful || headers["X-Gateway-Code"] != "0") {
+                    throw RuntimeException("get task status fail: $headers, $body")
+                }
+
                 val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
                 val actionCode: Int = jobStatusRep.actionCode
                 if (actionCode != 200) {
@@ -157,10 +165,12 @@ class PcgDevCloudClient(
                     .build()
                 val response = OkhttpUtils.doShortHttp(request)
                 val res = response.body()!!.string()
-                if (!response.isSuccessful) {
-                    logger.error("get log fail: ${response.headers()}, $res")
+                val headers = response.headers()
+                if (!response.isSuccessful || headers["X-Gateway-Code"] != "0") {
+                    logger.error("get log fail: $headers, $res")
                     return null
                 }
+
                 val resultMap: Map<String, Any> =
                         JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
                 val data = resultMap["data"] as Map<*, *>?
