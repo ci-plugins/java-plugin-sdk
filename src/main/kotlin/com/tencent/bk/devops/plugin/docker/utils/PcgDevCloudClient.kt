@@ -68,7 +68,7 @@ class PcgDevCloudClient(
             }
             try {
                 val param = JsonUtil.toJson(mapOf(
-                    "taskId" to taskId,
+                    "taskId" to taskId.toString(),
                     "operator" to executeUser
                 ))
                 val url = "$host/api/container/task/detail?param=$param"
