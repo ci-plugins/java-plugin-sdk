@@ -81,7 +81,7 @@ class PcgDevCloudClient(
                 val responseBody = response.body()!!.string()
                 val headers = response.headers()
                 if (!response.isSuccessful || headers["X-Gateway-Code"] != "0") {
-                    throw RuntimeException("get task status fail: $headers, $responseBody")
+                    throw RuntimeException("get task status fail: $headers, $responseBody, $url")
                 }
 
                 val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
@@ -89,7 +89,7 @@ class PcgDevCloudClient(
                 val responseDataMsg = responseData["message"] as String
                 val realResponseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseDataMsg)
                 if (realResponseMap["actionCode"] as? Int != 200) {
-                    throw RuntimeException("get task status fail: ${response.headers()}, $responseBody")
+                    throw RuntimeException("get task status fail: ${response.headers()}, $responseBody, $url")
                 }
                 val data = realResponseMap["data"] as Map<*, *>
                 return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, responseBody = responseBody)
@@ -125,7 +125,7 @@ class PcgDevCloudClient(
                 val headers = response.headers()
                 logger.info("[job status] $headers, $body")
                 if (!response.isSuccessful || headers["X-Gateway-Code"] != "0") {
-                    throw RuntimeException("get task status fail: $headers, $body")
+                    throw RuntimeException("get job status fail: $headers, $body")
                 }
 
                 val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
