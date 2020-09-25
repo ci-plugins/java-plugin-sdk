@@ -8,53 +8,43 @@ import com.tencent.bk.devops.plugin.docker.pojo.job.response.JobResponse
 import com.tencent.bk.devops.plugin.docker.pojo.status.JobStatusResponse
 import com.tencent.bk.devops.plugin.utils.JsonUtil
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
+import okhttp3.Headers
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.lang3.RandomStringUtils
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import java.util.HashMap
+import java.util.*
 
-class PcgDevCloudClient(private val executeUser: String){
+class PcgDevCloudClient(
+    private val executeUser: String,
+    private val secretId: String,
+    private val secretKey: String
+){
 
     companion object {
-        val logger = LoggerFactory.getLogger(PcgDevCloudClient::class.java)
+        private val logger = LoggerFactory.getLogger(PcgDevCloudClient::class.java)!!
     }
 
-    private val host = "http://mita.server.wsd.com"
-
-    private fun getHeaders(
-        appId: String,
-        token: String,
-        staffName: String
-    ): Map<String, String> {
-        val headerBuilder = mutableMapOf<String, String>()
-        headerBuilder["APPID"] = appId
-        val random = RandomStringUtils.randomAlphabetic(8)
-        headerBuilder["RANDOM"] = random
-        val timestamp = (System.currentTimeMillis() / 1000).toString()
-        headerBuilder["TIMESTP"] = timestamp
-        headerBuilder["STAFFNAME"] = staffName
-        val encKey = DigestUtils.md5Hex(token + timestamp + random)
-        headerBuilder["ENCKEY"] = encKey
-        return headerBuilder
-    }
+    private val host = "http://api.apigw.oa.com/mita_container"
 
     fun createJob(
         jobReq: PcgJobRequest
     ): DevCloudTask {
-        val url = "$host/api/devcloud/job/add"
+        val url = "$host/api/job/add"
         val body = JsonUtil.toJson(jobReq)
         logger.info("[create job] $url")
         logger.info("start to create job: $body")
 
-        val request = Request.Builder().url(url)
-            .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body)).build()
-        logger.info("[create job headers]: ${request.headers().toMultimap()}")
-        val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
+        val request = Request.Builder()
+            .url(url)
+            .headers(getHeaders())
+            .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), body))
+            .build()
+        val response = OkhttpUtils.doShortHttp(request)
+        val responseBody = response.body()!!.string()
+        logger.info("[create job] ${response.headers()}")
         logger.info("[create job] $responseBody")
         val jobRep = JsonUtil.getObjectMapper().readValue<JobResponse>(responseBody)
         if (jobRep.actionCode == 200) {
@@ -77,18 +67,31 @@ class PcgDevCloudClient(private val executeUser: String){
                 throw RuntimeException("Request pcgDevCloud failed 3 times, exit with exception")
             }
             try {
-                val url = "$host/api/devcloud/container/task/detail?taskId=$taskId&operator=$executeUser"
-                val request = Request.Builder().url(url)
-                        .get().build()
-                val responseBody = OkhttpUtils.doShortHttp(request).body()!!.string()
+                val param = JsonUtil.toJson(mapOf(
+                    "taskId" to taskId.toString(),
+                    "operator" to executeUser
+                ))
+                val url = "$host/api/container/task/detail?param=$param"
+                val request = Request.Builder()
+                    .url(url)
+                    .headers(getHeaders())
+                    .get()
+                    .build()
+                val response = OkhttpUtils.doShortHttp(request)
+                val responseBody = response.body()!!.string()
+                val headers = response.headers()
+                if (!response.isSuccessful || headers["X-Gateway-Code"] != "0") {
+                    throw RuntimeException("get task status fail: $headers, $responseBody, $url")
+                }
+
                 val responseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseBody)
-                val responseData = responseMap["data"] as Map<String, Any>
+                val responseData = responseMap["data"] as Map<*, *>
                 val responseDataMsg = responseData["message"] as String
                 val realResponseMap = JsonUtil.getObjectMapper().readValue<Map<String, Any>>(responseDataMsg)
                 if (realResponseMap["actionCode"] as? Int != 200) {
-                    throw RuntimeException("get task status fail")
+                    throw RuntimeException("get task status fail: ${response.headers()}, $responseBody, $url")
                 }
-                val data = realResponseMap["data"] as Map<String, Any>
+                val data = realResponseMap["data"] as Map<*, *>
                 return TaskStatus(status = data["status"] as String?, taskId = data["taskId"] as String?, responseBody = responseBody)
             } catch (e: IOException) {
                 logger.error("Get pcgDevCloud task status exception: ${e.message}")
@@ -106,13 +109,25 @@ class PcgDevCloudClient(private val executeUser: String){
                 throw RuntimeException("Request DevCloud failed 3 times, exit with exception")
             }
             try {
-                val url = "$host/api/devcloud/job/status?name=$jobName&operator=$executeUser"
+                val param = JsonUtil.toJson(mapOf(
+                    "name" to jobName,
+                    "operator" to executeUser
+                ))
+                val url = "$host/api/job/status?param=$param"
                 logger.info("job Status url: $url")
-                val request = Request.Builder().url(url)
-                        .get().build()
-                val response: Response = OkhttpUtils.doShortHttp(request)
+                val request = Request.Builder()
+                    .url(url)
+                    .headers(getHeaders())
+                    .get()
+                    .build()
+                val response = OkhttpUtils.doShortHttp(request)
                 val body = response.body()!!.string()
-                logger.info("[job status] $body")
+                val headers = response.headers()
+                logger.info("[job status] $headers, $body")
+                if (!response.isSuccessful || headers["X-Gateway-Code"] != "0") {
+                    throw RuntimeException("get job status fail: $headers, $body")
+                }
+
                 val jobStatusRep = JsonUtil.getObjectMapper().readValue<JobStatusResponse>(body)
                 val actionCode: Int = jobStatusRep.actionCode
                 if (actionCode != 200) {
@@ -137,18 +152,28 @@ class PcgDevCloudClient(private val executeUser: String){
                 throw RuntimeException("Request pcgDevCloud failed 3 times, exit with exception")
             }
             try {
-                val sendUrl = "$host/api/devcloud/job/logs?sinceTime=$sinceTime&name=$jobName&operator=$executeUser"
-                val request = Request.Builder().url(sendUrl)
-                        .get().build()
+                val param = JsonUtil.toJson(mapOf(
+                    "sinceTime" to sinceTime,
+                    "name" to jobName,
+                    "operator" to executeUser
+                ))
+                val sendUrl = "$host/api/job/logs?param=$param"
+                val request = Request.Builder()
+                    .url(sendUrl)
+                    .headers(getHeaders())
+                    .get()
+                    .build()
                 val response = OkhttpUtils.doShortHttp(request)
                 val res = response.body()!!.string()
-                if (!response.isSuccessful) {
-                    logger.error("get log fail: $res")
+                val headers = response.headers()
+                if (!response.isSuccessful || headers["X-Gateway-Code"] != "0") {
+                    logger.error("get log fail: $headers, $res")
                     return null
                 }
+
                 val resultMap: Map<String, Any> =
                         JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
-                val data = resultMap["data"] as Map<String, String>?
+                val data = resultMap["data"] as Map<*, *>?
                 val logs = data?.values?.joinToString("\n")
                 logger.info(logs)
                 return logs
@@ -157,5 +182,13 @@ class PcgDevCloudClient(private val executeUser: String){
                 countFailed++
             }
         }
+    }
+
+    private fun getHeaders(): Headers {
+        val headers = mutableMapOf<String, String>()
+        headers["X-Gateway-Stage"] = "RELEASE"
+        headers["X-Gateway-SecretId"] = secretId
+        headers["X-Gateway-SecretKey"] = secretKey
+        return Headers.of(headers)
     }
 }
