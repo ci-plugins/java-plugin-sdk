@@ -48,17 +48,17 @@ object PcgDevCloudExecutor {
         val taskStatusFlag = param.extraOptions["taskStatusFlag"]
         if (taskStatusFlag.isNullOrBlank() || taskStatusFlag == DockerStatus.running) {
             val taskStatus = devCloudClient.getTaskStatus(taskId.toInt())
-            if (taskStatus.status == "failed") {
+            if (taskStatus.status == "waiting" || taskStatus.status == "running") {
                 return DockerRunLogResponse(
-                    status = DockerStatus.failure,
-                    message = "get task status fail: $taskStatus",
+                    status = DockerStatus.running,
+                    message = "get task status...",
                     extraOptions = extraOptions
                 )
             }
             if (taskStatus.status != "succeeded") {
                 return DockerRunLogResponse(
-                    status = DockerStatus.running,
-                    message = "get task status...: $taskStatus",
+                    status = DockerStatus.failure,
+                    message = "get task status fail",
                     extraOptions = extraOptions
                 )
             }
@@ -72,10 +72,17 @@ object PcgDevCloudExecutor {
         if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == DockerStatus.running) {
             jobStatusResp = devCloudClient.getJobStatus(jobName)
             val jobStatus = jobStatusResp.data.status
-            if ("failed" != jobStatus && "succeeded" != jobStatus && "running" != jobStatus) {
+            if (jobStatus == "waiting" || jobStatus == "running") {
                 return DockerRunLogResponse(
                     status = DockerStatus.running,
-                    message = "get job status...",
+                    message = "get task status...",
+                    extraOptions = extraOptions
+                )
+            }
+            if ("succeeded" != jobStatus) {
+                return DockerRunLogResponse(
+                    status = DockerStatus.failure,
+                    message = "get task status fail",
                     extraOptions = extraOptions
                 )
             }
