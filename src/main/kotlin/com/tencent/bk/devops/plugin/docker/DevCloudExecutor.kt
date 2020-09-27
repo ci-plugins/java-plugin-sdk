@@ -82,17 +82,10 @@ object DevCloudExecutor {
         if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == DockerStatus.running) {
             jobStatusResp = devCloudClient.getJobStatus(jobName)
             val jobStatus = jobStatusResp.data.status
-            if (jobStatus == "waiting" || jobStatus == "running") {
+            if ("failed" != jobStatus && "succeeded" != jobStatus && "running" != jobStatus) {
                 return DockerRunLogResponse(
                     status = DockerStatus.running,
                     message = "get job status...",
-                    extraOptions = extraOptions
-                )
-            }
-            if ("succeeded" != jobStatus) {
-                return DockerRunLogResponse(
-                    status = DockerStatus.failure,
-                    message = "get job status fail: $jobStatusResp",
                     extraOptions = extraOptions
                 )
             }
