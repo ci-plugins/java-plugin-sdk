@@ -65,7 +65,7 @@ object PcgDevCloudExecutor {
             if (taskStatus.status != "succeeded") {
                 return DockerRunLogResponse(
                     status = DockerStatus.failure,
-                    message = "get task status fail",
+                    message = "get task status fail: $taskStatus",
                     extraOptions = extraOptions
                 )
             }
@@ -82,14 +82,14 @@ object PcgDevCloudExecutor {
             if (jobStatus == "waiting" || jobStatus == "running") {
                 return DockerRunLogResponse(
                     status = DockerStatus.running,
-                    message = "get task status...",
+                    message = "get job status...",
                     extraOptions = extraOptions
                 )
             }
             if ("succeeded" != jobStatus) {
                 return DockerRunLogResponse(
                     status = DockerStatus.failure,
-                    message = "get task status fail",
+                    message = "get job status fail: $jobStatusResp",
                     extraOptions = extraOptions
                 )
             }
