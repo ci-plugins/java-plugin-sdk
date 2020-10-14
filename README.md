@@ -1,4 +1,4 @@
-# 插件市场-插件开发 Java SDK（v1.0.3）
+# 插件市场-插件开发 Java SDK（v1.0.4）
 
 ```
 适用JDK版本：建议1.8
@@ -14,7 +14,7 @@
 | v1.0.1 |   jackson由2.9.10.3升级到2.9.10.4   |
 | v1.0.2 |   AtomContext参数解析由String对象改成Object对象   |
 | v1.0.3 |   JsonUtil转换支持kotlin |
-
+| v1.0.4 |   JsonUtil转换支持kotlin |
 
 
 
