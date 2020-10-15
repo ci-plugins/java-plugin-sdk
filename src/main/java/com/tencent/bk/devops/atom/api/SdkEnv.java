@@ -2,10 +2,12 @@ package com.tencent.bk.devops.atom.api;
 
 import com.google.common.collect.Maps;
 import com.tencent.bk.devops.atom.common.Constants;
+import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,16 +76,16 @@ public class SdkEnv {
         if (newPath.startsWith("http://") || newPath.startsWith("https://")) {
             return newPath;
         } else {
-            if (newPath.startsWith("/")) {
-                return "http://" + instance.gateway + "/" + newPath.substring(1).trim();
-            } else {
-                return "http://" + instance.gateway + "/" + newPath;
-            }
+            return getGatewayHost() + "/" + StringUtils.removeStart(newPath, "/");
         }
     }
 
     public static String getGatewayHost() {
-        return instance.gateway;
+        if (SdkUtils.hasProtocol(instance.gateway)) {
+            return instance.gateway;
+        } else {
+            return "http://" + instance.gateway;
+        }
     }
 
     public static String getVmSeqId() {
