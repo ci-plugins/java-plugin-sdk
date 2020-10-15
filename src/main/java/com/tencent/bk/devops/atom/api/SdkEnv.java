@@ -8,6 +8,7 @@ import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,10 +86,11 @@ public class SdkEnv {
     }
 
     public static String genUrl(String path) {
-        if (path.startsWith("/")) {
-            return getGatewayHost() + "/" + path.substring(1).trim();
+        String newPath = path.trim();
+        if (newPath.startsWith("http://") || newPath.startsWith("https://")) {
+            return newPath;
         } else {
-            return getGatewayHost() + "/" + path.trim();
+            return getGatewayHost() + "/" + StringUtils.removeStart(newPath, "/");
         }
     }
 
