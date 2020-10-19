@@ -26,8 +26,9 @@ object CommonExecutor {
         // start to run
         val runParam = getRunParamJson(request)
         val dockerHostIP = System.getenv("docker_host_ip")
+        val dockerHostPort = System.getenv("docker_host_port") ?: "80"
         val vmSeqId = SdkEnv.getVmSeqId()
-        val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
+        val dockerRunUrl = "http://$dockerHostIP:$dockerHostPort/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
         logger.info("execute docker run url: $dockerRunUrl")
         val responseContent = OkHttpUtils.doPost(dockerRunUrl, runParam)
         logger.info("execute docker run response: $responseContent")
@@ -50,9 +51,10 @@ object CommonExecutor {
         val containerId = request.extraOptions.getValue("containerId")
         val startTimeStamp = request.extraOptions.getValue("startTimeStamp")
         val dockerHostIP = System.getenv("docker_host_ip")
+        val dockerHostPort = System.getenv("docker_host_port") ?: "80"
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerGetLogUrl =
-            "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
+            "http://$dockerHostIP:$dockerHostPort/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
         val logResponse = OkHttpUtils.doGet(dockerGetLogUrl)
         val logResult = JsonUtil.fromJson(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
