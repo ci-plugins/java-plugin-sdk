@@ -1,6 +1,7 @@
 package com.tencent.bk.devops.atom.utils.http;
 
 import okhttp3.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -256,7 +257,7 @@ public class OkHttpUtils {
      * @return json格式响应报文
      */
     public static String doDelete(String url) {
-        return doDelete(url, null);
+        return doDelete(url, null, null);
     }
 
     /**
@@ -269,7 +270,7 @@ public class OkHttpUtils {
      * @return json格式响应报文
      */
     public static String doDelete(String url, long connectTimeout, long writeTimeout, long readTimeout) {
-        return doDelete(url, null, connectTimeout, writeTimeout, readTimeout);
+        return doDelete(url, null, null, connectTimeout, writeTimeout, readTimeout);
     }
 
     /**
@@ -280,7 +281,11 @@ public class OkHttpUtils {
      * @return json格式响应报文
      */
     public static String doDelete(String url, Map<String, String> headers) {
-        return doDelete(url, headers, -1, -1, -1);
+        return doDelete(url, headers, null, -1, -1, -1);
+    }
+
+    public static String doDelete(String url, String body, Map<String, String> headers) {
+        return doDelete(url, headers, body, -1, -1, -1);
     }
 
     /**
@@ -288,17 +293,26 @@ public class OkHttpUtils {
      *
      * @param url            请求路径
      * @param headers        请求头
+     * @param body           请求体
      * @param connectTimeout 连接超时时间
      * @param writeTimeout   写超时时间
      * @param readTimeout    读超时时间
      * @return json格式响应报文
      */
-    public static String doDelete(String url, Map<String, String> headers, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doDelete(String url, Map<String, String> headers, String body, long connectTimeout, long writeTimeout, long readTimeout) {
         Request.Builder builder = getBuilder(url, headers);
-        Request request = builder.delete().build();
+        Request request;
+        if (StringUtils.isBlank(body)) request = builder.delete().build();
+        else request = builder.delete(RequestBody.create(MediaType.parse(CONTENT_TYPE_JSON), body)).build();
         return doHttp(request, connectTimeout, writeTimeout, readTimeout);
     }
 
+    /**
+     * http方式请求，返回响应报文
+     *
+     * @param request    okhttp请求体
+     * @return json格式响应报文
+     */
     public static String doHttp(Request request) {
         return doHttp(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout);
     }
@@ -326,6 +340,12 @@ public class OkHttpUtils {
         return responseContent;
     }
 
+    /**
+     * http方式请求，返回response响应对象
+     *
+     * @param request    okhttp请求体
+     * @return json格式响应报文
+     */
     public static Response doHttpRaw(Request request) {
         return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout, false);
     }

@@ -146,6 +146,11 @@ public class BaseApi {
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).delete().build();
     }
 
+    public Request buildDelete(String path, RequestBody requestBody, Map<String, String> headers) {
+        String url = buildUrl(path);
+        return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).delete(requestBody).build();
+    }
+
     /**
      * 生成json形式请求报文体，返回请求报文体
      *
