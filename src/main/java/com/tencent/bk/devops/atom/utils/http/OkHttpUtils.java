@@ -25,11 +25,12 @@ public class OkHttpUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(OkHttpUtils.class);
 
+    private static long finalConnectTimeout = 5L;
+    private static long finalWriteTimeout = 60L;
+    private static long finalReadTimeout = 60L;
 
     private static OkHttpClient createClient(long connectTimeout, long writeTimeout, long readTimeout) {
-        long finalConnectTimeout = 5L;
-        long finalWriteTimeout = 60L;
-        long finalReadTimeout = 60L;
+
         OkHttpClient.Builder builder = new okhttp3.OkHttpClient.Builder();
         if (connectTimeout > 0)
             finalConnectTimeout = connectTimeout;
@@ -294,6 +295,10 @@ public class OkHttpUtils {
         return doHttp(request, connectTimeout, writeTimeout, readTimeout);
     }
 
+    public static String doHttp(Request request) {
+        return doHttp(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout);
+    }
+
     public static String doHttp(Request request, long connectTimeout, long writeTimeout, long readTimeout) {
         OkHttpClient httpClient = createClient(connectTimeout, writeTimeout, readTimeout);
         Response response = null;
@@ -312,9 +317,22 @@ public class OkHttpUtils {
         }
         if (response != null && !response.isSuccessful()) {
             logger.error("Fail to request(" + request + ") with code " + response.code()
-                    + " , message " + response.message() + " and response" + responseContent);
+                + " , message " + response.message() + " and response" + responseContent);
         }
         return responseContent;
     }
 
+    public static Response doHttpRaw(Request request) {
+        return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout);
+    }
+
+    public static Response doHttpRaw(Request request, long connectTimeout, long writeTimeout, long readTimeout) {
+        OkHttpClient httpClient = createClient(connectTimeout, writeTimeout, readTimeout);
+        try {
+            return httpClient.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
