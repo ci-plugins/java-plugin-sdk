@@ -42,4 +42,12 @@ public class Result<T> {
     public void setData(T data) {
         this.data = data;
     }
+
+    public boolean isNotOk() {
+        return this.status != 0;
+    }
+
+    public boolean isOk() {
+        return this.status == 0;
+    }
 }
