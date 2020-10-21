@@ -30,7 +30,10 @@ public class OkHttpUtils {
     private static long finalReadTimeout = 60L;
 
     private static OkHttpClient createClient(long connectTimeout, long writeTimeout, long readTimeout) {
+        return createRetryOptionClient(connectTimeout, writeTimeout, readTimeout, true);
+    }
 
+    private static OkHttpClient createRetryOptionClient(long connectTimeout, long writeTimeout, long readTimeout, boolean isRetry) {
         OkHttpClient.Builder builder = new okhttp3.OkHttpClient.Builder();
         if (connectTimeout > 0)
             finalConnectTimeout = connectTimeout;
@@ -42,6 +45,7 @@ public class OkHttpUtils {
         builder.writeTimeout(finalConnectTimeout, TimeUnit.SECONDS);
         builder.writeTimeout(finalWriteTimeout, TimeUnit.SECONDS);
         builder.readTimeout(finalReadTimeout, TimeUnit.SECONDS);
+        builder.retryOnConnectionFailure(isRetry);
         return builder.build();
     }
 
@@ -323,11 +327,15 @@ public class OkHttpUtils {
     }
 
     public static Response doHttpRaw(Request request) {
-        return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout);
+        return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout, false);
     }
 
-    public static Response doHttpRaw(Request request, long connectTimeout, long writeTimeout, long readTimeout) {
-        OkHttpClient httpClient = createClient(connectTimeout, writeTimeout, readTimeout);
+    public static Response doHttpRaw(Request request, boolean isRetry) {
+        return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout, isRetry);
+    }
+
+    public static Response doHttpRaw(Request request, long connectTimeout, long writeTimeout, long readTimeout, boolean isRetry) {
+        OkHttpClient httpClient = createRetryOptionClient(connectTimeout, writeTimeout, readTimeout, isRetry);
         try {
             return httpClient.newCall(request).execute();
         } catch (IOException e) {
