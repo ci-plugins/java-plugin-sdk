@@ -1,6 +1,11 @@
 package com.tencent.bk.devops.atom.utils.http;
 
-import okhttp3.*;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,13 +13,17 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -30,8 +39,16 @@ public class OkHttpUtils {
     private static long finalWriteTimeout = 60L;
     private static long finalReadTimeout = 60L;
 
+    private static long finalLongConnectTimeout = 30L;
+    private static long finalLongWriteTimeout = 60L * 30;
+    private static long finalLongReadTimeout = 60L * 30;
+
     private static OkHttpClient createClient(long connectTimeout, long writeTimeout, long readTimeout) {
         return createRetryOptionClient(connectTimeout, writeTimeout, readTimeout, true);
+    }
+
+    private static OkHttpClient createLongClient() {
+        return createRetryOptionClient(finalLongConnectTimeout, finalLongWriteTimeout, finalLongReadTimeout, true);
     }
 
     private static OkHttpClient createRetryOptionClient(long connectTimeout, long writeTimeout, long readTimeout, boolean isRetry) {
@@ -361,6 +378,65 @@ public class OkHttpUtils {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    /**
+     * 下载文件到目标路径
+     */
+    public static void downloadFile(String url, File destPath) {
+        Request request = new Request.Builder()
+            .url(url)
+            .get()
+            .build();
+        OkHttpClient httpClient = createLongClient();
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (response.code() == 404) {
+                logger.warn("The file $url is not exist");
+                throw new RuntimeException("文件不存在");
+            }
+            if (!response.isSuccessful()) {
+                logger.warn("fail to download the file from $url because of ${response.message()} and code ${response.code()}");
+                throw new RuntimeException("获取文件失败");
+            }
+            if (!destPath.getParentFile().exists()) destPath.getParentFile().mkdirs();
+            byte[] buf = new byte[4096];
+            try (InputStream bs = Objects.requireNonNull(response.body()).byteStream()) {
+                int len = bs.read(buf);
+                try (FileOutputStream fos = new FileOutputStream(destPath)) {
+                    while (len != -1) {
+                        fos.write(buf, 0, len);
+                        len = bs.read(buf);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void downloadFile(Response response, File destPath) {
+        if (response.code() == 304) {
+            logger.info("file is newest, do not download to $destPath");
+            return;
+        }
+        if (!response.isSuccessful()) {
+            logger.warn("fail to download the file because of ${response.message()} and code ${response.code()}");
+            throw new RuntimeException("获取文件失败");
+        }
+        if (!destPath.getParentFile().exists()) destPath.getParentFile().mkdirs();
+        byte[] buf = new byte[4096];
+
+        try (InputStream bs = Objects.requireNonNull(response.body()).byteStream()) {
+            int len = bs.read(buf);
+            try (FileOutputStream fos = new FileOutputStream(destPath)) {
+                while (len != -1) {
+                    fos.write(buf, 0, len);
+                    len = bs.read(buf);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
