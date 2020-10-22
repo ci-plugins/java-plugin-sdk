@@ -1,6 +1,6 @@
-package com.tencent.bk.devops.plugin.docker.pojo
+package com.tencent.bk.devops.plugin.pojo.docker
 
-import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
+import com.tencent.bk.devops.plugin.pojo.docker.common.DockerStatus
 
 data class DockerRunLogResponse(
     val log: List<String>? = listOf(),

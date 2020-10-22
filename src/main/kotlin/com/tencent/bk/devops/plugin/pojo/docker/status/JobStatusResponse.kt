@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.plugin.docker.pojo.status
+package com.tencent.bk.devops.plugin.pojo.docker.status
 
 
 data class JobStatusResponse (

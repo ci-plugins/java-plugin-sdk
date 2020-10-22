@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.plugin.docker.pojo
+package com.tencent.bk.devops.plugin.pojo.docker
 
 data class DockerRunResponse(
     val extraOptions: Map<String, String>

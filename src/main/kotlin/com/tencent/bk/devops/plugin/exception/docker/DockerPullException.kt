@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.plugin.docker.exception
+package com.tencent.bk.devops.plugin.exception.docker
 
 import java.lang.RuntimeException
 

@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.plugin.script
+package com.tencent.bk.devops.plugin.utils.script
 
 import java.util.regex.Pattern
 import org.slf4j.LoggerFactory
