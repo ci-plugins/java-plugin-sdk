@@ -68,4 +68,22 @@ public class AtomResult {
     @JsonProperty("qualityData")
     private Map<String, QualityValue> qualityData = Maps.newHashMap();
 
+    /**
+     * 用于后台度量的错误码
+     */
+    @JsonProperty("errorType")
+    private Integer errorType;
+
+    /**
+     * 用于后台度量的错误码
+     */
+    @JsonProperty("errorCode")
+    private Integer errorCode;
+
+    /**
+     * 监控数据
+     */
+    @JsonProperty("monitorData")
+    private MonitorData monitorData;
+
 }

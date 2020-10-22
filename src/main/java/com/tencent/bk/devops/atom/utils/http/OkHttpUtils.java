@@ -1,19 +1,29 @@
 package com.tencent.bk.devops.atom.utils.http;
 
-import okhttp3.*;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,11 +35,23 @@ public class OkHttpUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(OkHttpUtils.class);
 
+    private static long finalConnectTimeout = 5L;
+    private static long finalWriteTimeout = 60L;
+    private static long finalReadTimeout = 60L;
+
+    private static long finalLongConnectTimeout = 30L;
+    private static long finalLongWriteTimeout = 60L * 30;
+    private static long finalLongReadTimeout = 60L * 30;
 
     private static OkHttpClient createClient(long connectTimeout, long writeTimeout, long readTimeout) {
-        long finalConnectTimeout = 5L;
-        long finalWriteTimeout = 60L;
-        long finalReadTimeout = 60L;
+        return createRetryOptionClient(connectTimeout, writeTimeout, readTimeout, true);
+    }
+
+    private static OkHttpClient createLongClient() {
+        return createRetryOptionClient(finalLongConnectTimeout, finalLongWriteTimeout, finalLongReadTimeout, true);
+    }
+
+    private static OkHttpClient createRetryOptionClient(long connectTimeout, long writeTimeout, long readTimeout, boolean isRetry) {
         OkHttpClient.Builder builder = new okhttp3.OkHttpClient.Builder();
         if (connectTimeout > 0)
             finalConnectTimeout = connectTimeout;
@@ -41,6 +63,7 @@ public class OkHttpUtils {
         builder.writeTimeout(finalConnectTimeout, TimeUnit.SECONDS);
         builder.writeTimeout(finalWriteTimeout, TimeUnit.SECONDS);
         builder.readTimeout(finalReadTimeout, TimeUnit.SECONDS);
+        builder.retryOnConnectionFailure(isRetry);
         return builder.build();
     }
 
@@ -251,7 +274,7 @@ public class OkHttpUtils {
      * @return json格式响应报文
      */
     public static String doDelete(String url) {
-        return doDelete(url, null);
+        return doDelete(url, null, null);
     }
 
     /**
@@ -264,7 +287,7 @@ public class OkHttpUtils {
      * @return json格式响应报文
      */
     public static String doDelete(String url, long connectTimeout, long writeTimeout, long readTimeout) {
-        return doDelete(url, null, connectTimeout, writeTimeout, readTimeout);
+        return doDelete(url, null, null, connectTimeout, writeTimeout, readTimeout);
     }
 
     /**
@@ -275,7 +298,11 @@ public class OkHttpUtils {
      * @return json格式响应报文
      */
     public static String doDelete(String url, Map<String, String> headers) {
-        return doDelete(url, headers, -1, -1, -1);
+        return doDelete(url, headers, null, -1, -1, -1);
+    }
+
+    public static String doDelete(String url, String body, Map<String, String> headers) {
+        return doDelete(url, headers, body, -1, -1, -1);
     }
 
     /**
@@ -283,15 +310,28 @@ public class OkHttpUtils {
      *
      * @param url            请求路径
      * @param headers        请求头
+     * @param body           请求体
      * @param connectTimeout 连接超时时间
      * @param writeTimeout   写超时时间
      * @param readTimeout    读超时时间
      * @return json格式响应报文
      */
-    public static String doDelete(String url, Map<String, String> headers, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doDelete(String url, Map<String, String> headers, String body, long connectTimeout, long writeTimeout, long readTimeout) {
         Request.Builder builder = getBuilder(url, headers);
-        Request request = builder.delete().build();
+        Request request;
+        if (StringUtils.isBlank(body)) request = builder.delete().build();
+        else request = builder.delete(RequestBody.create(MediaType.parse(CONTENT_TYPE_JSON), body)).build();
         return doHttp(request, connectTimeout, writeTimeout, readTimeout);
+    }
+
+    /**
+     * http方式请求，返回响应报文
+     *
+     * @param request    okhttp请求体
+     * @return json格式响应报文
+     */
+    public static String doHttp(Request request) {
+        return doHttp(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout);
     }
 
     public static String doHttp(Request request, long connectTimeout, long writeTimeout, long readTimeout) {
@@ -312,9 +352,91 @@ public class OkHttpUtils {
         }
         if (response != null && !response.isSuccessful()) {
             logger.error("Fail to request(" + request + ") with code " + response.code()
-                    + " , message " + response.message() + " and response" + responseContent);
+                + " , message " + response.message() + " and response" + responseContent);
         }
         return responseContent;
     }
 
+    /**
+     * http方式请求，返回response响应对象
+     *
+     * @param request    okhttp请求体
+     * @return json格式响应报文
+     */
+    public static Response doHttpRaw(Request request) {
+        return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout, false);
+    }
+
+    public static Response doHttpRaw(Request request, boolean isRetry) {
+        return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout, isRetry);
+    }
+
+    public static Response doHttpRaw(Request request, long connectTimeout, long writeTimeout, long readTimeout, boolean isRetry) {
+        OkHttpClient httpClient = createRetryOptionClient(connectTimeout, writeTimeout, readTimeout, isRetry);
+        try {
+            return httpClient.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 下载文件到目标路径
+     */
+    public static void downloadFile(String url, File destPath) {
+        Request request = new Request.Builder()
+            .url(url)
+            .get()
+            .build();
+        OkHttpClient httpClient = createLongClient();
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (response.code() == 404) {
+                logger.warn("The file $url is not exist");
+                throw new RuntimeException("文件不存在");
+            }
+            if (!response.isSuccessful()) {
+                logger.warn("fail to download the file from $url because of ${response.message()} and code ${response.code()}");
+                throw new RuntimeException("获取文件失败");
+            }
+            if (!destPath.getParentFile().exists()) destPath.getParentFile().mkdirs();
+            byte[] buf = new byte[4096];
+            try (InputStream bs = Objects.requireNonNull(response.body()).byteStream()) {
+                int len = bs.read(buf);
+                try (FileOutputStream fos = new FileOutputStream(destPath)) {
+                    while (len != -1) {
+                        fos.write(buf, 0, len);
+                        len = bs.read(buf);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void downloadFile(Response response, File destPath) {
+        if (response.code() == 304) {
+            logger.info("file is newest, do not download to $destPath");
+            return;
+        }
+        if (!response.isSuccessful()) {
+            logger.warn("fail to download the file because of ${response.message()} and code ${response.code()}");
+            throw new RuntimeException("获取文件失败");
+        }
+        if (!destPath.getParentFile().exists()) destPath.getParentFile().mkdirs();
+        byte[] buf = new byte[4096];
+
+        try (InputStream bs = Objects.requireNonNull(response.body()).byteStream()) {
+            int len = bs.read(buf);
+            try (FileOutputStream fos = new FileOutputStream(destPath)) {
+                while (len != -1) {
+                    fos.write(buf, 0, len);
+                    len = bs.read(buf);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

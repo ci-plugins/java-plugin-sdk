@@ -1,4 +1,4 @@
-# 插件市场-插件开发 Java SDK（v1.0.3）
+# 插件市场-插件开发 Java SDK（v1.0.4）
 
 ```
 适用JDK版本：建议1.8
@@ -14,7 +14,7 @@
 | v1.0.1 |   jackson由2.9.10.3升级到2.9.10.4   |
 | v1.0.2 |   AtomContext参数解析由String对象改成Object对象   |
 | v1.0.3 |   JsonUtil转换支持kotlin |
-
+| v1.0.4 |   增加Docker相关api |
 
 
 
@@ -329,6 +329,95 @@ java实体对象如下：
 
 ```
 
+
+##### 7、DockerApi.kt（统一的docker run入口api）
+
+​     包含的主要方法如下：
+
+```
+    /**
+     * 执行镜像run相关操作，屏蔽构建资源差异
+     *
+     */
+    fun dockerRunCommand(projectId: String, pipelineId: String, buildId: String, param: DockerRunRequest): Result<DockerRunResponse> 
+
+    /**
+     * 获取镜像日志和状态
+     *
+     */
+    fun dockerRunGetLog(projectId: String, pipelineId: String, buildId: String, param: DockerRunLogRequest): Result<DockerRunLogResponse>
+
+```
+
+使用示例：
+
+```
+// 启动镜像
+val param = DockerRunRequest(
+    userId = commandParam.landunParam.userId,
+    imageName = imageParam.imageName,
+    command = imageParam.command,
+    dockerLoginUsername = imageParam.registryUser,
+    dockerLoginPassword = imageParam.registryPwd,
+    workspace = File(commandParam.landunParam.streamCodePath),
+    extraOptions = imageParam.env.plus(mapOf(
+        "devCloudAppId" to commandParam.devCloudAppId,
+        "devCloudUrl" to commandParam.devCloudUrl,
+        "devCloudToken" to commandParam.devCloudToken
+    ))
+
+)
+val dockerRunResponse = api.dockerRunCommand(
+    projectId = commandParam.landunParam.devopsProjectId,
+    pipelineId = commandParam.landunParam.devopsPipelineId,
+    buildId = commandParam.landunParam.buildId,
+    param = param
+).data!!
+```
+
+```
+// 轮询镜像日志和状态
+// extraOptions取自前面“启动镜像”步骤
+// 轮询镜像日志和状态
+// extraOptions取自前面“启动镜像”步骤
+for (i in 1..100000000) {
+        Thread.sleep(timeGap)
+
+        val runLogResponse = getRunLogResponse(api, commandParam, extraOptions, timeGap)
+
+        extraOptions = runLogResponse.extraOptions
+
+        var isBlank = false
+        runLogResponse.log?.forEachIndexed { index, s ->
+            if (s.isBlank()) {
+                isBlank = true
+                LogUtils.printStr(".")
+            } else {
+                if (isBlank) {
+                    isBlank = false;
+                    LogUtils.printLog("")
+                }
+                LogUtils.printLog("[docker]: $s")
+            }
+        }
+
+        when (runLogResponse.status) {
+            DockerStatus.success -> {
+                LogUtils.printLog("docker run success: $runLogResponse")
+                return
+            }
+            DockerStatus.failure, DockerStatus.error -> {
+                throw RuntimeException("docker run fail: $runLogResponse")
+            }
+            else -> {
+                if (i % 16 == 0) LogUtils.printLog("docker run status: $runLogResponse")
+            }
+        }
+    }
+}
+
+
+```
 
 
 
