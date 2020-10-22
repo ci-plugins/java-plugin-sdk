@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.plugin.docker.pojo
+package com.tencent.bk.devops.plugin.pojo.docker
 
 import java.io.File
 

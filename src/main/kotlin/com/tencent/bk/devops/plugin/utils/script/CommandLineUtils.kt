@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.plugin.script
+package com.tencent.bk.devops.plugin.utils.script
 
 import java.io.File
 import org.apache.commons.exec.CommandLine

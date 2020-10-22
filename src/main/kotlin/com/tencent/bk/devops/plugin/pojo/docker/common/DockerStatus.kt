@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.plugin.docker.pojo.common
+package com.tencent.bk.devops.plugin.pojo.docker.common
 
 object DockerStatus {
     const val success = "success"

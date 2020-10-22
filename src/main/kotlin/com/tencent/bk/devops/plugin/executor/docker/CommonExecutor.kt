@@ -1,15 +1,15 @@
-package com.tencent.bk.devops.plugin.docker
+package com.tencent.bk.devops.plugin.executor.docker
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.SdkEnv
 import com.tencent.bk.devops.atom.pojo.Result
 import com.tencent.bk.devops.atom.utils.http.OkHttpUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
-import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
-import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
-import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
-import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
-import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
+import com.tencent.bk.devops.plugin.pojo.docker.DockerRunLogRequest
+import com.tencent.bk.devops.plugin.pojo.docker.DockerRunLogResponse
+import com.tencent.bk.devops.plugin.pojo.docker.DockerRunRequest
+import com.tencent.bk.devops.plugin.pojo.docker.DockerRunResponse
+import com.tencent.bk.devops.plugin.pojo.docker.common.DockerStatus
 import org.apache.tools.ant.types.Commandline
 import org.slf4j.LoggerFactory
 

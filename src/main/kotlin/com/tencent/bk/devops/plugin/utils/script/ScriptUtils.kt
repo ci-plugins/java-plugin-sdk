@@ -1,4 +1,4 @@
-package com.tencent.bk.devops.plugin.script
+package com.tencent.bk.devops.plugin.utils.script
 
 import com.tencent.bk.devops.plugin.utils.MachineEnvUtils
 import java.io.File
