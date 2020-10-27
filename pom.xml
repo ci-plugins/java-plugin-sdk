@@ -9,7 +9,7 @@
         <version>1.0.1</version>
     </parent>
     <artifactId>java-atom-sdk</artifactId>
-    <version>1.1.5</version>
+    <version>1.1.6</version>
 
     <inceptionYear>2018-2118</inceptionYear>
     <name>BK-ATOM-JAVA-SDK</name>
@@ -31,7 +31,7 @@
         <lib.javasimon.version>3.5.2</lib.javasimon.version>
         <lib.dozer.version>5.5.1</lib.dozer.version>
         <lib.log.version>1.7.21</lib.log.version>
-        <lib.jackson.version>2.9.7</lib.jackson.version>
+        <lib.jackson.version>2.11.2</lib.jackson.version>
     </properties>
 
     <dependencies>
@@ -95,7 +95,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
