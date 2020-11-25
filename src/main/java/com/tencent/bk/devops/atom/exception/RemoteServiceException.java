@@ -2,13 +2,20 @@ package com.tencent.bk.devops.atom.exception;
 
 public class RemoteServiceException extends RuntimeException {
 
-  public RemoteServiceException() {}
+    private final int httpStatus;
+    private final String responseContent;
 
-  public RemoteServiceException(String errorMessage) {
-    super(errorMessage);
-  }
+    public RemoteServiceException(String errorMessage, int httpStatus, String responseContent) {
+        super(errorMessage);
+        this.httpStatus = httpStatus;
+        this.responseContent = responseContent;
+    }
 
-  public RemoteServiceException(String errorMessage, int httpStatus, String responseContent) {
-    super(errorMessage);
-  }
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+
+    public String getResponseContent() {
+        return responseContent;
+    }
 }
