@@ -51,8 +51,8 @@
         <lib.javasimon.version>3.5.2</lib.javasimon.version>
         <lib.dozer.version>5.5.1</lib.dozer.version>
         <lib.log.version>1.7.21</lib.log.version>
-        <lib.jackson.version>2.9.9</lib.jackson.version>
-        <lib.jackson.databind.version>2.9.10.5</lib.jackson.databind.version>
+        <lib.jackson.version>2.12.0</lib.jackson.version>
+        <lib.jackson.databind.version>2.12.0</lib.jackson.databind.version>
     </properties>
 
     <dependencies>
