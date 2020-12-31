@@ -15,7 +15,7 @@
 | v1.0.2 |   AtomContext参数解析由String对象改成Object对象   |
 | v1.0.3 |   JsonUtil转换支持kotlin |
 | v1.0.4 |   增加Docker相关api |
-
+| v1.0.5 |   更新jackson到2.12.0 |
 
 
 
