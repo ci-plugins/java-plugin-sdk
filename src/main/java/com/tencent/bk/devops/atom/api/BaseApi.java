@@ -2,6 +2,7 @@ package com.tencent.bk.devops.atom.api;
 
 
 import com.google.common.collect.Maps;
+import com.tencent.bk.devops.atom.exception.RemoteServiceException;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import okhttp3.*;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class BaseApi {
                 logger.error("Fail to request(" + request + ") with code " + response.code()
                     + " , message " + response.message() + " and response" + responseContent);
                 logger.info("excep>>>>>>>>>>>>" + response);
-                throw new RuntimeException(errorMessage);
+                throw new RemoteServiceException(errorMessage, response.code(), responseContent);
             }
             return responseContent;
         }
