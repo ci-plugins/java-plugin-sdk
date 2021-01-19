@@ -158,7 +158,9 @@ object DevCloudExecutor {
             val cmd = if (cmdTmp.size == 1) { Commandline.translateCommandline(cmdTmp.first()).toList() } else { cmdTmp }
             val jobParam = JobParam(
                 env = envMap,
-                command = cmd
+                command = cmd,
+                labels = labels,
+                ipEnabled = ipEnabled
             )
 
             if (jobParam.nfsVolume == null) {

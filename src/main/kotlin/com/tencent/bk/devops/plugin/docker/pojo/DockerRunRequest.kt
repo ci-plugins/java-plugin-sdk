@@ -10,7 +10,9 @@ data class DockerRunRequest(
     val dockerLoginPassword: String? = null,
     val envMap: Map<String, String>? = null,
     val workspace: File,
-    val extraOptions: Map<String, String>? = null
+    val extraOptions: Map<String, String>? = null,
+    var labels: Map<String, String>? = emptyMap(),
+    var ipEnabled: Boolean? = true
 ) {
     override fun toString(): String {
         return "userId: $userId, imageName: $imageName, dockerLoginUsername: $dockerLoginUsername, " +
