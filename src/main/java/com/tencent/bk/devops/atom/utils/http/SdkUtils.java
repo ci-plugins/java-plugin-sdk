@@ -3,6 +3,8 @@ package com.tencent.bk.devops.atom.utils.http;
 import com.tencent.bk.devops.atom.common.Constants;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * SDK工具类
@@ -43,5 +45,10 @@ public class SdkUtils {
             value = "output.json";
         }
         return value;
+    }
+
+    public static Boolean hasProtocol(String url) {
+        Matcher matcher = Pattern.compile("(http[s]?://)([-.a-z0-9A-Z]+)([/]?.*)").matcher(url);
+        return matcher.matches();
     }
 }

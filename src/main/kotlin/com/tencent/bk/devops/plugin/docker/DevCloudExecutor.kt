@@ -58,17 +58,17 @@ object DevCloudExecutor {
         val taskStatusFlag = param.extraOptions["taskStatusFlag"]
         if (taskStatusFlag.isNullOrBlank() || taskStatusFlag == DockerStatus.running) {
             val taskStatus = devCloudClient.getTaskStatus(taskId.toInt())
-            if (taskStatus.status == "failed") {
+            if (taskStatus.status == "waiting" || taskStatus.status == "running") {
                 return DockerRunLogResponse(
-                    status = DockerStatus.failure,
-                    message = "get task status fail",
+                    status = DockerStatus.running,
+                    message = "get task status...",
                     extraOptions = extraOptions
                 )
             }
             if (taskStatus.status != "succeeded") {
                 return DockerRunLogResponse(
-                    status = DockerStatus.running,
-                    message = "get task status...",
+                    status = DockerStatus.failure,
+                    message = "get task status fail: $taskStatus",
                     extraOptions = extraOptions
                 )
             }
@@ -158,7 +158,9 @@ object DevCloudExecutor {
             val cmd = if (cmdTmp.size == 1) { Commandline.translateCommandline(cmdTmp.first()).toList() } else { cmdTmp }
             val jobParam = JobParam(
                 env = envMap,
-                command = cmd
+                command = cmd,
+                labels = labels,
+                ipEnabled = ipEnabled
             )
 
             if (jobParam.nfsVolume == null) {

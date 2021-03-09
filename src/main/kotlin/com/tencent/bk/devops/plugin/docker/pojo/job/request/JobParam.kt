@@ -8,7 +8,9 @@ data class JobParam(
     val command: List<String>? = null,
     @JsonInclude(JsonInclude.Include.NON_NULL)
     var nfsVolume: List<NfsVolume>? = null,
-    var workDir: String? = "/data/landun/workspace"
+    var workDir: String? = "/data/landun/workspace",
+    var labels: Map<String, String>? = emptyMap(),
+    var ipEnabled: Boolean? = true
 ) {
     data class NfsVolume(
         val server: String? = null,

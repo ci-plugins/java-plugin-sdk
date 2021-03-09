@@ -26,8 +26,9 @@ object CommonExecutor {
         // start to run
         val runParam = getRunParamJson(request)
         val dockerHostIP = System.getenv("docker_host_ip")
+        val dockerHostPort = System.getenv("docker_host_port") ?: "80"
         val vmSeqId = SdkEnv.getVmSeqId()
-        val dockerRunUrl = "http://$dockerHostIP/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
+        val dockerRunUrl = "http://$dockerHostIP:$dockerHostPort/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
         logger.info("execute docker run url: $dockerRunUrl")
         val responseContent = OkhttpUtils.doPost(dockerRunUrl, runParam).use { it.body()!!.string() }
         logger.info("execute docker run response: $responseContent")
@@ -50,13 +51,14 @@ object CommonExecutor {
         val containerId = request.extraOptions.getValue("containerId")
         val startTimeStamp = request.extraOptions.getValue("startTimeStamp")
         val dockerHostIP = System.getenv("docker_host_ip")
+        val dockerHostPort = System.getenv("docker_host_port") ?: "80"
         val vmSeqId = SdkEnv.getVmSeqId()
         val dockerGetLogUrl =
-            "http://$dockerHostIP/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
+            "http://$dockerHostIP:$dockerHostPort/api/docker/runlog/$projectId/$pipelineId/$vmSeqId/$buildId/$containerId/$startTimeStamp"
         val logResponse = OkhttpUtils.doGet(dockerGetLogUrl).use { it.body()!!.string() }
         val logResult = JsonUtil.to(logResponse, object : TypeReference<Result<LogParam?>>() {}).data
             ?: return DockerRunLogResponse(
-                status = DockerStatus.error,
+                status = DockerStatus.failure,
                 message = "the log data is null with get http: $dockerGetLogUrl",
                 extraOptions = request.extraOptions
             )
@@ -72,7 +74,7 @@ object CommonExecutor {
             } else {
                 DockerRunLogResponse(
                     log = trimLogs(logResult.logs),
-                    status = DockerStatus.error,
+                    status = DockerStatus.failure,
                     message = "the Docker Run Log is listed as follows:",
                     extraOptions = request.extraOptions
                 )

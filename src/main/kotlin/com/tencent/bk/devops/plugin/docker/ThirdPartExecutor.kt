@@ -51,6 +51,7 @@ object ThirdPartExecutor {
         return ScriptUtils.execute(command, param.workspace)
     }
 
+    @Synchronized
     private fun doDockerPull(param: DockerRunRequest) {
         try {
             val pullCmd = "docker pull ${param.imageName}"
@@ -129,6 +130,7 @@ object ThirdPartExecutor {
         ScriptUtils.execute(script = cmd, dir = workspace, failExit = false)
     }
 
+    @Synchronized
     private fun dockerLogin(param: DockerRunRequest) {
         if (param.dockerLoginUsername.isNullOrBlank()) return
 
@@ -141,6 +143,7 @@ object ThirdPartExecutor {
         ScriptUtils.execute(commandStr, param.workspace)
     }
 
+    @Synchronized
     private fun dockerLogout(param: DockerRunRequest) {
         if (param.dockerLoginUsername.isNullOrBlank()) return
 
