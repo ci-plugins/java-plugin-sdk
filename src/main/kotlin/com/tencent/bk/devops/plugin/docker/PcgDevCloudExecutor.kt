@@ -6,11 +6,9 @@ import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
 import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobParam
-import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobRequest
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.PcgJobRequest
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.Registry
 import com.tencent.bk.devops.plugin.docker.pojo.status.JobStatusResponse
-import com.tencent.bk.devops.plugin.docker.utils.DevCloudClient
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
 import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
 import com.tencent.bk.devops.plugin.docker.utils.PcgDevCloudClient
@@ -21,7 +19,7 @@ object PcgDevCloudExecutor {
     private val VOLUME_SERVER = "volume_server"
     private val VOLUME_PATH = "volume_path"
     private val VOLUME_MOUNT_PATH = "volume_mount_path"
-    val PCG_TOKEN_SECRET_HOST = "pcg_token_secret_host"
+    val PCG_REQUEST_HOST = "pcg_request_host"
     val PCG_TOKEN_SECRET_ID = "pcg_token_secret_id"
     val PCG_TOKEN_SECRET_KEY = "pcg_token_secret_key"
 
@@ -30,7 +28,7 @@ object PcgDevCloudExecutor {
         val jobRequest = getJobRequest(request)
         val secretId = request.extraOptions?.get(PCG_TOKEN_SECRET_ID) ?: throw RuntimeException("pcg secret id is not set")
         val secretKey = request.extraOptions[PCG_TOKEN_SECRET_KEY] ?: throw RuntimeException("pcg secret key is not set")
-        val host = request.extraOptions[PCG_TOKEN_SECRET_HOST] ?: throw RuntimeException("pcg request host is not set")
+        val host = request.extraOptions[PCG_REQUEST_HOST] ?: throw RuntimeException("pcg request host is not set")
         val devCloudClient = PcgDevCloudClient(executeUser = request.userId, secretId = secretId, secretKey = secretKey, host = host)
 
         val task = devCloudClient.createJob(jobRequest)
@@ -50,7 +48,7 @@ object PcgDevCloudExecutor {
 
         val secretId = extraOptions[PCG_TOKEN_SECRET_ID] ?: throw RuntimeException("pcg secret id is not set")
         val secretKey = extraOptions[PCG_TOKEN_SECRET_KEY] ?: throw RuntimeException("pcg secret key is not set")
-        val host = extraOptions[PCG_TOKEN_SECRET_HOST] ?: throw RuntimeException("pcg request host is not set")
+        val host = extraOptions[PCG_REQUEST_HOST] ?: throw RuntimeException("pcg request host is not set")
         val devCloudClient = PcgDevCloudClient(executeUser = param.userId, secretId = secretId, secretKey = secretKey, host = host)
 
         // get task status
