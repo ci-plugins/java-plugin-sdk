@@ -18,14 +18,13 @@ import java.io.IOException
 class PcgDevCloudClient(
     private val executeUser: String,
     private val secretId: String,
-    private val secretKey: String
+    private val secretKey: String,
+    private val host: String
 ){
 
     companion object {
         private val logger = LoggerFactory.getLogger(PcgDevCloudClient::class.java)!!
     }
-
-    private val host = "http://api.apigw.oa.com/mita_container"
 
     fun createJob(
         jobReq: PcgJobRequest
