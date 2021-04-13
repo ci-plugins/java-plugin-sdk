@@ -9,7 +9,7 @@
         <version>1.0.1</version>
     </parent>
     <artifactId>java-atom-sdk</artifactId>
-    <version>1.1.11</version>
+    <version>1.1.12</version>
 
     <inceptionYear>2018-2118</inceptionYear>
     <name>BK-ATOM-JAVA-SDK</name>
@@ -115,8 +115,8 @@
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk16</artifactId>
-            <version>1.46</version>
+            <artifactId>bcprov-jdk15to18</artifactId>
+            <version>1.68</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
