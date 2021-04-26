@@ -14,6 +14,6 @@ data class DevCloudJobRes (
         @JsonProperty("name")
         val name: String,
         @JsonProperty("taskId")
-        val taskId: Int
+        val taskId: String
     )
 }
