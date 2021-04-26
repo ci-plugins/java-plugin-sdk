@@ -6,7 +6,6 @@ import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.docker.pojo.job.response.JobResponse
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
-import com.tencent.bk.devops.plugin.pojo.Result
 import com.tencent.bk.devops.plugin.pojo.devcloud.DevCloudJobReq
 import okhttp3.RequestBody
 import org.apache.commons.io.FileUtils
@@ -17,7 +16,7 @@ import java.nio.charset.Charset
 
 class DevCloudBuildApi : BaseApi() {
 
-    fun createJob(devCloudJobReq: DevCloudJobReq): Result<JobResponse?> {
+    fun createJob(devCloudJobReq: DevCloudJobReq): JobResponse? {
         val path = "/dispatch-devcloud/api/build/devcloud/job"
         devCloudJobReq.podNameSelector = EnvUtils.getHostName()
         val requestBody = RequestBody.create(JSON_CONTENT_TYPE, JsonUtil.toJson(devCloudJobReq))
@@ -25,31 +24,31 @@ class DevCloudBuildApi : BaseApi() {
         val request = buildPost(path, requestBody, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "创建devCloud job失败")
         logger.info("create job response: $responseContent")
-        return JsonUtil.fromJson(responseContent, object : TypeReference<Result<JobResponse?>>() {})
+        return JsonUtil.fromJson(responseContent, JobResponse::class.java)
     }
 
-    fun getJobStatus(jobName: String): Result<String> {
+    fun getJobStatus(jobName: String): String {
         val path = "/dispatch-devcloud/api/build/devcloud/job/" + jobName + "status"
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "获取job状态失败")
         logger.info("get job status response: $responseContent")
-        return JsonUtil.fromJson(responseContent, object : TypeReference<Result<String>>() {})
+        return responseContent
     }
 
-    fun getJobLogs(jobName: String): Result<String> {
+    fun getJobLogs(jobName: String): String {
         val path = "/dispatch-devcloud/api/build/devcloud/job/" + jobName + "logs"
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "获取job日志失败")
         logger.info("get job logs response: $responseContent")
-        return JsonUtil.fromJson(responseContent, object : TypeReference<Result<String>>() {})
+        return responseContent
     }
 
-    fun getTask(taskId: String): Result<String> {
+    fun getTask(taskId: String): String {
         val path = "/dispatch-devcloud/api/build/devcloud/task/" + taskId
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "获取task信息失败")
         logger.info("get task response: $responseContent")
-        return JsonUtil.fromJson(responseContent, object : TypeReference<Result<String>>() {})
+        return responseContent
     }
 
     private fun getUserId(): String {
