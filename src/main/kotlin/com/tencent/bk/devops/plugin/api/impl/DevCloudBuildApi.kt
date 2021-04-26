@@ -15,6 +15,9 @@ import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
 
+/**
+ * DevCloud接口类
+ */
 class DevCloudBuildApi : BaseApi() {
 
     fun createJob(devCloudJobReq: DevCloudJobReq): Result<DevCloudJobRes?> {
@@ -54,7 +57,7 @@ class DevCloudBuildApi : BaseApi() {
     }
 
     private fun getUserId(): String {
-        var inputJson: String? = null
+        val inputJson: String?
         try {
             inputJson = FileUtils.readFileToString(
                 File(SdkUtils.getDataDir() + "/" + SdkUtils.getInputFile()),
@@ -62,6 +65,7 @@ class DevCloudBuildApi : BaseApi() {
             )
         } catch (e: IOException) {
             logger.error("parse inputJson throw Exception", e)
+            return ""
         }
 
         val inputMap: Map<String, Any> = JsonUtil.fromJson(inputJson, object : TypeReference<MutableMap<String, Any>>() {})
