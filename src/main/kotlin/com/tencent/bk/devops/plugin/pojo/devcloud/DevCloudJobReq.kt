@@ -4,11 +4,11 @@ import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobParam
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.Registry
 
 data class DevCloudJobReq(
-    val alias: String? = null,
-    val activeDeadlineSeconds: Int? = null,
-    val image: String? = null,
-    val registry: Registry? = null,
-    val params: JobParam? = null,
-    val podNameSelector: String? = null,
-    val mountPath: String? = null
+    @JvmField var alias: String? = null,
+    @JvmField var activeDeadlineSeconds: Int? = null,
+    @JvmField var image: String? = null,
+    @JvmField var registry: Registry? = null,
+    @JvmField var params: JobParam? = null,
+    @JvmField var podNameSelector: String? = null,
+    @JvmField var mountPath: String? = null
 )
