@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
-import com.tencent.bk.devops.plugin.docker.pojo.job.response.JobResponse
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
 import com.tencent.bk.devops.plugin.pojo.devcloud.DevCloudJobReq
+import com.tencent.bk.devops.plugin.pojo.devcloud.DevCloudJobRes
 import okhttp3.RequestBody
 import org.apache.commons.io.FileUtils
 import org.slf4j.LoggerFactory
@@ -16,7 +16,7 @@ import java.nio.charset.Charset
 
 class DevCloudBuildApi : BaseApi() {
 
-    fun createJob(devCloudJobReq: DevCloudJobReq): JobResponse? {
+    fun createJob(devCloudJobReq: DevCloudJobReq): DevCloudJobRes? {
         val path = "/dispatch-devcloud/api/build/devcloud/job"
         devCloudJobReq.podNameSelector = EnvUtils.getHostName()
         val requestBody = RequestBody.create(JSON_CONTENT_TYPE, JsonUtil.toJson(devCloudJobReq))
@@ -24,7 +24,7 @@ class DevCloudBuildApi : BaseApi() {
         val request = buildPost(path, requestBody, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "创建devCloud job失败")
         logger.info("create job response: $responseContent")
-        return JsonUtil.fromJson(responseContent, JobResponse::class.java)
+        return JsonUtil.fromJson(responseContent, DevCloudJobRes::class.java)
     }
 
     fun getJobStatus(jobName: String): String {
