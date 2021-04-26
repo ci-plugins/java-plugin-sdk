@@ -30,7 +30,7 @@ class DevCloudBuildApi : BaseApi() {
     }
 
     fun getJobStatus(jobName: String): Result<String> {
-        val path = "/dispatch-devcloud/api/build/devcloud/job/" + jobName + "status"
+        val path = "/dispatch-devcloud/api/build/devcloud/job/" + jobName + "/status"
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "获取job状态失败")
         logger.info("get job status response: $responseContent")
@@ -38,7 +38,7 @@ class DevCloudBuildApi : BaseApi() {
     }
 
     fun getJobLogs(jobName: String): Result<String> {
-        val path = "/dispatch-devcloud/api/build/devcloud/job/" + jobName + "logs"
+        val path = "/dispatch-devcloud/api/build/devcloud/job/" + jobName + "/logs"
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "获取job日志失败")
         logger.info("get job logs response: $responseContent")
