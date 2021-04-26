@@ -21,7 +21,7 @@ class DevCloudBuildApi : BaseApi() {
         val path = "/dispatch-devcloud/api/build/devcloud/job"
         devCloudJobReq.podNameSelector = EnvUtils.getHostName()
         val requestBody = RequestBody.create(JSON_CONTENT_TYPE, JsonUtil.toJson(devCloudJobReq))
-        logger.info("create job request: $requestBody")
+        logger.info("create job request: ${JsonUtil.toJson(requestBody)}")
         val request = buildPost(path, requestBody, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "创建devCloud job失败")
         logger.info("create job response: $responseContent")
@@ -64,6 +64,7 @@ class DevCloudBuildApi : BaseApi() {
         }
 
         val inputMap: Map<String, Any> = JsonUtil.fromJson(inputJson, object : TypeReference<MutableMap<String, Any>>() {})
+        logger.info("inputMap: $inputMap")
         return inputMap["pipeline.start.user.name"] as String
     }
 
