@@ -75,6 +75,13 @@ public class AtomBaseParam {
     @JsonProperty("BK_CI_BUILD_START_TIME")
     private String pipelineStartTimeMills;
 
+
+    /**
+     * 流水线执行人
+     */
+    @JsonProperty("BK_CI_START_USER_ID")
+    private String pipelineStartUserId;
+
     /**
      * 流水线触发人
      */
