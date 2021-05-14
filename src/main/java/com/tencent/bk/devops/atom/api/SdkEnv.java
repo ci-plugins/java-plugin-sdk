@@ -35,6 +35,10 @@ public class SdkEnv {
 
     private static SdkEnv instance;
 
+    private static final String HTTP_PROTOCOL = "http://";
+
+    private static final String HTTPS_PROTOCOL = "https://";
+
 
     public static Map<String, String> getSdkHeader() {
         Map<String, String> map = Maps.newHashMap();
@@ -73,23 +77,28 @@ public class SdkEnv {
 
     public static String genUrl(String path) {
         String newPath = path.trim();
-        if (newPath.startsWith("http://") || newPath.startsWith("https://")) {
+        if (newPath.startsWith(HTTP_PROTOCOL) || newPath.startsWith(HTTPS_PROTOCOL)) {
             return newPath;
         } else {
-            return getGatewayHost() + "/" + StringUtils.removeStart(newPath, "/");
+            String urlPrefix = instance.gateway;
+            if (!SdkUtils.hasProtocol(instance.gateway)) {
+                urlPrefix = HTTP_PROTOCOL + instance.gateway;
+            }
+            return urlPrefix + "/" + StringUtils.removeStart(newPath, "/");
         }
     }
 
     public static String getGatewayHost() {
-        if (SdkUtils.hasProtocol(instance.gateway)) {
-            return instance.gateway;
-        } else {
-            return "http://" + instance.gateway;
+        String host = instance.gateway;
+        if (host.startsWith(HTTP_PROTOCOL)) {
+            host = host.replace(HTTP_PROTOCOL, "");
+        } else if (host.startsWith(HTTPS_PROTOCOL)) {
+            host = host.replace(HTTPS_PROTOCOL, "");
         }
+        return host;
     }
 
     public static String getVmSeqId() {
         return instance.vmSeqId;
     }
-
 }
