@@ -36,8 +36,7 @@ public class SdkUtils {
     }
 
     public static Boolean hasProtocol(String url) {
-        Matcher matcher = Pattern.compile("(http[s]?://)([-.a-z0-9A-Z]+)([/]?.*)").matcher(url);
-        return matcher.matches();
+        return url.startsWith("http://") || url.startsWith("https://");
     }
 
     /**

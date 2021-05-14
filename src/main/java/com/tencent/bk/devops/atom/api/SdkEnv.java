@@ -36,6 +36,10 @@ public class SdkEnv {
 
     private static SdkEnv instance;
 
+    private static final String HTTP_PROTOCOL = "http://";
+
+    private static final String HTTPS_PROTOCOL = "https://";
+
     public static Map<String, String> getSdkHeader() {
         Map<String, String> map = Maps.newHashMap();
         map.put(Header.AUTH_HEADER_DEVOPS_BUILD_TYPE, instance.buildType.name());
@@ -81,25 +85,20 @@ public class SdkEnv {
         File file = new File(dataDir + "/" + sdkFile);
         String json = FileUtils.readFileToString(file, Charset.defaultCharset());
         boolean flag = file.delete(); //读取完后删除文件
-        logger.info("delete file result is:{}", flag);
+        logger.info("[java-atom-sdk] delete sdkFile result is:{}", flag);
         instance = JsonUtil.fromJson(json, SdkEnv.class);
     }
 
     public static String genUrl(String path) {
         String newPath = path.trim();
-        if (newPath.startsWith("http://") || newPath.startsWith("https://")) {
+        if (newPath.startsWith(HTTP_PROTOCOL) || newPath.startsWith(HTTPS_PROTOCOL)) {
             return newPath;
         } else {
-            return getGatewayHost() + "/" + StringUtils.removeStart(newPath, "/");
+            String urlPrefix = instance.gateway;
+            if (!SdkUtils.hasProtocol(instance.gateway)) {
+                urlPrefix = HTTP_PROTOCOL + instance.gateway;
+            }
+            return urlPrefix + "/" + StringUtils.removeStart(newPath, "/");
         }
     }
-
-    public static String getGatewayHost() {
-        if (SdkUtils.hasProtocol(instance.gateway)) {
-            return instance.gateway;
-        } else {
-            return "http://" + instance.gateway;
-        }
-    }
-
 }
