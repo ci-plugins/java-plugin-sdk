@@ -7,9 +7,9 @@ import java.net.URLEncoder
  * @version 1.0
  */
 object EncodeUtil {
-    //判断汉字的方法,只要编码在\u4e00到\u9fa5之间的都是汉字
+    //判断汉字的方法,只要编码在\u0080到\uFFFF之间的都是汉字或特殊字符
     fun isChineseChar(ch: Char): Boolean {
-        return ch.toString().matches(Regex("[\u4e00-\u9fa5]"))
+        return ch.toString().matches(Regex("[\u0080-\uFFFF]"))
     }
 
     fun encodeChinese(str: String): String {
