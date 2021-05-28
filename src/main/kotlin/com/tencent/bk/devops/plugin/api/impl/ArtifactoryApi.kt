@@ -189,6 +189,7 @@ class ArtifactoryApi : BaseApi() {
             }
         } catch (e: Exception) {
             logger.error("download all files to local error!", e)
+            throw RuntimeException("文件下载失败：$srcUrl", e)
         }
         return File(saveFilePath)
     }
