@@ -8,8 +8,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -21,6 +22,8 @@ public class JsonMapper {
 
     private ObjectMapper mapper;
 
+    private final static Logger logger = LoggerFactory.getLogger(JsonMapper.class);
+
     private JsonMapper(Include include) {
         mapper = new ObjectMapper();
         if (include != null) {
@@ -28,7 +31,6 @@ public class JsonMapper {
         }
         // 遇到在Bean类中没有的Json字段时不报错。
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.registerModule(new KotlinModule());
     }
 
     /**
@@ -82,6 +84,7 @@ public class JsonMapper {
         try {
             return mapper.writeValueAsString(object);
         } catch (IOException e) {
+            logger.info("toJson error:", e);
             return null;
         }
     }
@@ -100,6 +103,7 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, clazz);
         } catch (IOException e) {
+            logger.info("fromJson error:", e);
             return null;
         }
     }
@@ -118,6 +122,7 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, typeReference);
         } catch (IOException e) {
+            logger.info("fromJson error:", e);
             return null;
         }
     }

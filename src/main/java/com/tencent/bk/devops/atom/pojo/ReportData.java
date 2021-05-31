@@ -1,7 +1,7 @@
 package com.tencent.bk.devops.atom.pojo;
 
 import com.tencent.bk.devops.atom.common.DataType;
-import com.tencent.bk.devops.atom.common.ReportType;
+import com.tencent.bk.devops.plugin.common.ReportType;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,8 +1,6 @@
 package com.tencent.bk.devops.atom.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.tencent.bk.devops.atom.utils.json.annotation.SkipLogField;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
