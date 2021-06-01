@@ -138,11 +138,25 @@ public class BaseApi {
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).put(requestBody).build();
     }
 
+    /**
+     * delete请求，返回request对象
+     *
+     * @param path 请求路径
+     * @param headers 请求头
+     */
     public Request buildDelete(String path, Map<String, String> headers) {
         String url = buildUrl(path);
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).delete().build();
     }
 
+    /**
+     * delete请求，返回request对象
+     *
+     * @param path 请求路径
+     * @param requestBody 请求体
+     * @param headers 请求头
+     * @return request对象
+     */
     public Request buildDelete(String path, RequestBody requestBody, Map<String, String> headers) {
         String url = buildUrl(path);
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).delete(requestBody).build();
