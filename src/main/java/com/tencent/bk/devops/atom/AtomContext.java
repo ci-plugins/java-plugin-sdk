@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 /**
- * 原子上下文
+ * 插件上下文
  *
  * @version 1.0
  */
@@ -35,7 +35,7 @@ public class AtomContext<T extends AtomBaseParam> {
     private static final Logger logger = LoggerFactory.getLogger(AtomContext.class);
 
     /**
-     * 原子定义的参数类
+     * 插件定义的参数类
      *
      * @param paramClazz 参数类
      * @throws IOException 如果环境问题导致读不到参数类

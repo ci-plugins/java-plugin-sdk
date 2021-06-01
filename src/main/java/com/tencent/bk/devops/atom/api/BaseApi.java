@@ -19,6 +19,13 @@ public class BaseApi {
     protected static final MediaType JSON_CONTENT_TYPE = MediaType.parse("application/json; charset=utf-8");
     private static final Logger logger = LoggerFactory.getLogger(BaseApi.class);
 
+    /**
+     * request请求，返回json格式响应报文
+     *
+     * @param request request对象
+     * @param errorMessage 请求错误信息
+     * @return json格式响应报文
+     */
     protected String request(Request request, String errorMessage) throws IOException {
         OkHttpClient httpClient = okHttpClient.newBuilder().build();
         try (Response response = httpClient.newCall(request).execute()) {
@@ -39,38 +46,93 @@ public class BaseApi {
             .writeTimeout(60L, TimeUnit.SECONDS)
             .build();
 
+    /**
+     * get请求，返回request对象
+     *
+     * @param path 请求路径
+     * @param headers 请求头
+     * @return request对象
+     */
     public Request buildGet(String path, Map<String, String> headers) {
         String url = buildUrl(path);
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).get().build();
     }
 
+    /**
+     * get请求，返回request对象
+     *
+     * @param path 请求路径
+     * @return request对象
+     */
     public Request buildGet(String path) {
         return buildGet(path, Maps.newHashMap());
     }
 
+    /**
+     * post请求，返回request对象
+     *
+     * @param path 请求路径
+     * @return request对象
+     */
     public Request buildPost(String path) {
         return buildPost(path, Maps.newHashMap());
     }
 
+    /**
+     * post请求，返回request对象
+     *
+     * @param path 请求路径
+     * @param headers 请求头
+     * @return request对象
+     */
     public Request buildPost(String path, Map<String, String> headers) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), "");
         return buildPost(path, requestBody, headers);
     }
 
+    /**
+     * post请求，返回request对象
+     *
+     * @param path 请求路径
+     * @param requestBody 请求报文体
+     * @param headers 请求头
+     * @return request对象
+     */
     public Request buildPost(String path, RequestBody requestBody, Map<String, String> headers) {
         String url = buildUrl(path);
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).post(requestBody).build();
     }
 
+    /**
+     * put请求，返回request对象
+     *
+     * @param path 请求路径
+     * @return request对象
+     */
     public Request buildPut(String path) {
         return buildPut(path, Maps.newHashMap());
     }
 
+    /**
+     * put请求，返回request对象
+     *
+     * @param path 请求路径
+     * @param headers 请求头
+     * @return request对象
+     */
     public Request buildPut(String path, Map<String, String> headers) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), "");
         return buildPut(path, requestBody, headers);
     }
 
+    /**
+     * post请求，返回request对象
+     *
+     * @param path 请求路径
+     * @param requestBody 请求报文体
+     * @param headers 请求头
+     * @return request对象
+     */
     public Request buildPut(String path, RequestBody requestBody, Map<String, String> headers) {
         String url = buildUrl(path);
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).put(requestBody).build();
@@ -86,6 +148,12 @@ public class BaseApi {
         return new Request.Builder().url(url).headers(Headers.of(getAllHeaders(headers))).delete(requestBody).build();
     }
 
+    /**
+     * 生成json形式请求报文体，返回请求报文体
+     *
+     * @param data 请求数据对象
+     * @return json形式请求报文体
+     */
     public RequestBody getJsonRequest(Object data) {
         return RequestBody.create(MediaType.parse("application/json; charset=utf-8"), JsonUtil.toJson(data));
     }
@@ -102,6 +170,5 @@ public class BaseApi {
         headers.putAll(SdkEnv.getSdkHeader());
         return headers;
     }
-
 
 }

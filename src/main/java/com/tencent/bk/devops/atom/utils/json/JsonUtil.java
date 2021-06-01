@@ -91,6 +91,18 @@ public class JsonUtil {
     }
 
     /**
+     * 从Json串中解析成bean对象
+     *
+     * @param jsonString Json字符串
+     * @param beanClass  对象类
+     * @param <T>        对象类型
+     * @return 对象
+     */
+    public static <T> T fromJson(String jsonString) {
+        return jsonMappers.computeIfAbsent("__all__", s -> JsonMapper.allOutPutMapper()).fromJson(jsonString, new TypeReference<T>() {});
+    }
+
+    /**
      * 创建输出所有字段的Json，不管字段值是默认值 还是等于 null 还是空集合的字段，全输出,可用于外部接口协议输出
      *
      * @param bean 对象
