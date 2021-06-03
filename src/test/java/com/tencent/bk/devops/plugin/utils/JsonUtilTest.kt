@@ -1,11 +1,9 @@
 package com.tencent.bk.devops.plugin.utils
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.tencent.bk.devops.atom.utils.json.JsonUtil
-import org.junit.Assert
 import org.junit.Test
 
 /**
+ * Json工具单元测试类
  * @version 1.0
  */
 class JsonUtilTest {

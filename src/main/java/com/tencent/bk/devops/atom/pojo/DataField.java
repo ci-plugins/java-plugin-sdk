@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- *
+ * 插件字段抽象类
  * @version 1.0
  */
 @Setter

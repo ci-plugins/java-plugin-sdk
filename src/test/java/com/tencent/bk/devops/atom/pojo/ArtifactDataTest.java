@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * 构建归档数据单元测试类
+ *
  * @version 1.0
  */
 public class ArtifactDataTest {
@@ -19,7 +21,7 @@ public class ArtifactDataTest {
         Set<String> values = Sets.newHashSet("artifact1");
         ArtifactData data = new ArtifactData(values);
         assertEquals(values, data.getValue());
-        values.forEach( key-> assertTrue(data.getValue().contains(key)));
+        values.forEach(key -> assertTrue(data.getValue().contains(key)));
         assertEquals(DataType.artifact, data.getType());
     }
 }

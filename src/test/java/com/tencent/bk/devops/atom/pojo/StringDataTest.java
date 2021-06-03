@@ -3,9 +3,11 @@ package com.tencent.bk.devops.atom.pojo;
 import com.tencent.bk.devops.atom.common.DataType;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
+ * 字符串数据单元测试类
+ *
  * @version 1.0
  */
 public class StringDataTest {

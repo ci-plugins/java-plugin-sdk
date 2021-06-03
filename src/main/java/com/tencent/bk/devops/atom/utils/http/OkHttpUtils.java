@@ -9,7 +9,6 @@ import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
@@ -31,17 +30,17 @@ import java.util.concurrent.TimeUnit;
  */
 public class OkHttpUtils {
 
-    private final static String CONTENT_TYPE_JSON = "application/json; charset=utf-8";
+    private static final String CONTENT_TYPE_JSON = "application/json; charset=utf-8";
 
-    private final static Logger logger = LoggerFactory.getLogger(OkHttpUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(OkHttpUtils.class);
 
     private static long finalConnectTimeout = 5L;
     private static long finalWriteTimeout = 60L;
     private static long finalReadTimeout = 60L;
 
-    private static long finalLongConnectTimeout = 30L;
-    private static long finalLongWriteTimeout = 60L * 30;
-    private static long finalLongReadTimeout = 60L * 30;
+    private static final long finalLongConnectTimeout = 30L;
+    private static final long finalLongWriteTimeout = 60L * 30;
+    private static final long finalLongReadTimeout = 60L * 30;
 
     private static OkHttpClient createClient(long connectTimeout, long writeTimeout, long readTimeout) {
         return createRetryOptionClient(connectTimeout, writeTimeout, readTimeout, true);
@@ -51,14 +50,22 @@ public class OkHttpUtils {
         return createRetryOptionClient(finalLongConnectTimeout, finalLongWriteTimeout, finalLongReadTimeout, true);
     }
 
-    private static OkHttpClient createRetryOptionClient(long connectTimeout, long writeTimeout, long readTimeout, boolean isRetry) {
-        OkHttpClient.Builder builder = new okhttp3.OkHttpClient.Builder();
-        if (connectTimeout > 0)
+    private static OkHttpClient createRetryOptionClient(
+        long connectTimeout,
+        long writeTimeout,
+        long readTimeout,
+        boolean isRetry
+    ) {
+        if (connectTimeout > 0) {
             finalConnectTimeout = connectTimeout;
-        if (writeTimeout > 0)
+        }
+        if (writeTimeout > 0) {
             finalWriteTimeout = writeTimeout;
-        if (readTimeout > 0)
+        }
+        if (readTimeout > 0) {
             finalReadTimeout = readTimeout;
+        }
+        OkHttpClient.Builder builder = new okhttp3.OkHttpClient.Builder();
         builder.sslSocketFactory(sslSocketFactory(), trustAllCerts[0]);
         builder.writeTimeout(finalConnectTimeout, TimeUnit.SECONDS);
         builder.writeTimeout(finalWriteTimeout, TimeUnit.SECONDS);
@@ -67,7 +74,7 @@ public class OkHttpUtils {
         return builder.build();
     }
 
-    private static X509TrustManager[] trustAllCerts = new X509TrustManager[1];
+    private static final X509TrustManager[] trustAllCerts = new X509TrustManager[1];
 
     static {
         trustAllCerts[0] = new X509TrustManager() {
@@ -151,7 +158,13 @@ public class OkHttpUtils {
      * @param readTimeout    读超时时间
      * @return json格式响应报文
      */
-    public static String doGet(String url, Map<String, String> headers, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doGet(
+        String url,
+        Map<String, String> headers,
+        long connectTimeout,
+        long writeTimeout,
+        long readTimeout
+    ) {
         Request.Builder builder = getBuilder(url, headers);
         Request request = builder.get().build();
         return doHttp(request, connectTimeout, writeTimeout, readTimeout);
@@ -178,7 +191,13 @@ public class OkHttpUtils {
      * @param readTimeout    读超时时间
      * @return json格式响应报文
      */
-    public static String doPost(String url, String jsonParam, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doPost(
+        String url,
+        String jsonParam,
+        long connectTimeout,
+        long writeTimeout,
+        long readTimeout
+    ) {
         return doPost(url, jsonParam, null, connectTimeout, writeTimeout, readTimeout);
     }
 
@@ -205,7 +224,14 @@ public class OkHttpUtils {
      * @param readTimeout    读超时时间
      * @return json格式响应报文
      */
-    public static String doPost(String url, String jsonParam, Map<String, String> headers, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doPost(
+        String url,
+        String jsonParam,
+        Map<String, String> headers,
+        long connectTimeout,
+        long writeTimeout,
+        long readTimeout
+    ) {
         Request.Builder builder = getBuilder(url, headers);
         RequestBody body = RequestBody.create(MediaType.parse(CONTENT_TYPE_JSON), jsonParam);
         Request request = builder.post(body).build();
@@ -233,7 +259,13 @@ public class OkHttpUtils {
      * @param readTimeout    读超时时间
      * @return json格式响应报文
      */
-    public static String doPut(String url, String jsonParam, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doPut(
+        String url,
+        String jsonParam,
+        long connectTimeout,
+        long writeTimeout,
+        long readTimeout
+    ) {
         return doPut(url, jsonParam, null, connectTimeout, writeTimeout, readTimeout);
     }
 
@@ -260,7 +292,14 @@ public class OkHttpUtils {
      * @param readTimeout    读超时时间
      * @return json格式响应报文
      */
-    public static String doPut(String url, String jsonParam, Map<String, String> headers, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doPut(
+        String url,
+        String jsonParam,
+        Map<String, String> headers,
+        long connectTimeout,
+        long writeTimeout,
+        long readTimeout
+    ) {
         Request.Builder builder = getBuilder(url, headers);
         RequestBody body = RequestBody.create(MediaType.parse(CONTENT_TYPE_JSON), jsonParam);
         Request request = builder.put(body).build();
@@ -316,11 +355,21 @@ public class OkHttpUtils {
      * @param readTimeout    读超时时间
      * @return json格式响应报文
      */
-    public static String doDelete(String url, Map<String, String> headers, String body, long connectTimeout, long writeTimeout, long readTimeout) {
+    public static String doDelete(
+        String url,
+        Map<String, String> headers,
+        String body,
+        long connectTimeout,
+        long writeTimeout,
+        long readTimeout
+    ) {
         Request.Builder builder = getBuilder(url, headers);
         Request request;
-        if (StringUtils.isBlank(body)) request = builder.delete().build();
-        else request = builder.delete(RequestBody.create(MediaType.parse(CONTENT_TYPE_JSON), body)).build();
+        if (StringUtils.isBlank(body)) {
+            request = builder.delete().build();
+        } else {
+            request = builder.delete(RequestBody.create(MediaType.parse(CONTENT_TYPE_JSON), body)).build();
+        }
         return doHttp(request, connectTimeout, writeTimeout, readTimeout);
     }
 
@@ -334,6 +383,15 @@ public class OkHttpUtils {
         return doHttp(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout);
     }
 
+    /**
+     * http方式请求，返回响应报文
+     *
+     * @param request    okhttp请求体
+     * @param connectTimeout 连接超时时间
+     * @param writeTimeout   写超时时间
+     * @param readTimeout    读超时时间
+     * @return json格式响应报文
+     */
     public static String doHttp(Request request, long connectTimeout, long writeTimeout, long readTimeout) {
         OkHttpClient httpClient = createClient(connectTimeout, writeTimeout, readTimeout);
         Response response = null;
@@ -361,17 +419,40 @@ public class OkHttpUtils {
      * http方式请求，返回response响应对象
      *
      * @param request    okhttp请求体
-     * @return json格式响应报文
+     * @return response响应对象
      */
     public static Response doHttpRaw(Request request) {
         return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout, false);
     }
 
+    /**
+     * http方式请求，返回response响应对象
+     *
+     * @param request    okhttp请求体
+     * @param isRetry    是否重试
+     * @return response响应对象
+     */
     public static Response doHttpRaw(Request request, boolean isRetry) {
         return doHttpRaw(request, finalConnectTimeout, finalWriteTimeout, finalReadTimeout, isRetry);
     }
 
-    public static Response doHttpRaw(Request request, long connectTimeout, long writeTimeout, long readTimeout, boolean isRetry) {
+    /**
+     * http方式请求，返回response响应对象
+     *
+     * @param request    okhttp请求体
+     * @param connectTimeout 连接超时时间
+     * @param writeTimeout   写超时时间
+     * @param readTimeout    读超时时间
+     * @param isRetry    是否重试
+     * @return response响应对象
+     */
+    public static Response doHttpRaw(
+        Request request,
+        long connectTimeout,
+        long writeTimeout,
+        long readTimeout,
+        boolean isRetry
+    ) {
         OkHttpClient httpClient = createRetryOptionClient(connectTimeout, writeTimeout, readTimeout, isRetry);
         try {
             return httpClient.newCall(request).execute();
@@ -391,15 +472,19 @@ public class OkHttpUtils {
             .build();
         OkHttpClient httpClient = createLongClient();
         try (Response response = httpClient.newCall(request).execute()) {
-            if (response.code() == 404) {
-                logger.warn("The file $url is not exist");
+            int code = response.code();
+            if (code == 404) {
+                logger.warn("The file {} is not exist", url);
                 throw new RuntimeException("文件不存在");
             }
             if (!response.isSuccessful()) {
-                logger.warn("fail to download the file from $url because of ${response.message()} and code ${response.code()}");
+                String message = response.message();
+                logger.warn("fail to download the file from {} because of {} and code {}", url, message, code);
                 throw new RuntimeException("获取文件失败");
             }
-            if (!destPath.getParentFile().exists()) destPath.getParentFile().mkdirs();
+            if (!destPath.getParentFile().exists()) {
+                destPath.getParentFile().mkdirs();
+            }
             byte[] buf = new byte[4096];
             try (InputStream bs = Objects.requireNonNull(response.body()).byteStream()) {
                 int len = bs.read(buf);
@@ -415,16 +500,26 @@ public class OkHttpUtils {
         }
     }
 
+    /**
+     * 下载文件到目标路径
+     *
+     * @param response  响应对象
+     * @param destPath 目标路径
+     */
     public static void downloadFile(Response response, File destPath) {
+        int code = response.code();
         if (response.code() == 304) {
-            logger.info("file is newest, do not download to $destPath");
+            logger.info("file is newest, do not download to {}", destPath);
             return;
         }
         if (!response.isSuccessful()) {
-            logger.warn("fail to download the file because of ${response.message()} and code ${response.code()}");
+            String message = response.message();
+            logger.warn("fail to download the file because of {} and code {}", message, code);
             throw new RuntimeException("获取文件失败");
         }
-        if (!destPath.getParentFile().exists()) destPath.getParentFile().mkdirs();
+        if (!destPath.getParentFile().exists()) {
+            destPath.getParentFile().mkdirs();
+        }
         byte[] buf = new byte[4096];
 
         try (InputStream bs = Objects.requireNonNull(response.body()).byteStream()) {
