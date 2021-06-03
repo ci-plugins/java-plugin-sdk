@@ -10,7 +10,6 @@ import java.util.Map;
 
 /**
  * 流水线插件输出结果
- * <p>
  * {
  * "status": "",     # 插件执行结果，值可以为success、failure、error
  * "message": "",    # 插件执行结果说明，支持markdown格式
@@ -32,7 +31,6 @@ import java.util.Map;
  * }
  * }
  * }
- *
  * @version 1.0
  */
 @Data

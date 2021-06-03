@@ -1,6 +1,7 @@
 package com.tencent.bk.devops.atom.common;
 
 /**
+ * 常量类
  * @version 1.0
  */
 public class Constants {

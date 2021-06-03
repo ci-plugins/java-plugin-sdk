@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
+ * 插件执行入口类
  * @version 1.0
  */
 @SuppressWarnings("all")

@@ -29,9 +29,9 @@ public class AtomContext<T extends AtomBaseParam> {
 
     private final AtomResult result;
 
-    private final static String ATOM_FILE_ENCODING = "UTF-8";
+    private static final String ATOM_FILE_ENCODING = "UTF-8";
 
-    private final static Logger logger = LoggerFactory.getLogger(AtomContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(AtomContext.class);
 
     /**
      * 插件定义的参数类
@@ -70,14 +70,15 @@ public class AtomContext<T extends AtomBaseParam> {
 
     /**
      * 获取敏感信息参数
+     *
      * @param filedName 字段名
      * @return 敏感信息参数
      */
-    public String getSensitiveConfParam(String filedName){
-        Map<String,String> bkSensitiveConfInfo = param.getBkSensitiveConfInfo();
-        if(null != bkSensitiveConfInfo){
+    public String getSensitiveConfParam(String filedName) {
+        Map<String, String> bkSensitiveConfInfo = param.getBkSensitiveConfInfo();
+        if (null != bkSensitiveConfInfo) {
             return bkSensitiveConfInfo.get(filedName);
-        }else{
+        } else {
             return null;
         }
     }
@@ -96,9 +97,10 @@ public class AtomContext<T extends AtomBaseParam> {
         return JsonUtil.fromJson(json, paramClazz);
     }
 
-    public Map<String,Object>  getAllParameters() throws IOException {
+    public Map<String, Object> getAllParameters() throws IOException {
         String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
-        return JsonUtil.fromJson(json, new TypeReference<Map<String, Object>>(){});
+        return JsonUtil.fromJson(json, new TypeReference<Map<String, Object>>() {
+        });
     }
 
     void persistent() throws IOException {

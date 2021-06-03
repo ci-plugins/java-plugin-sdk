@@ -1,6 +1,7 @@
 package com.tencent.bk.devops.atom.api;
 
 /**
+ * 请求头
  * @version 1.0
  */
 class Header {

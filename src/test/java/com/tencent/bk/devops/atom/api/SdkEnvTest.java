@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
+ * sdk环境变量单元测试类
+ *
  * @version 1.0
  */
 public class SdkEnvTest {

@@ -18,13 +18,14 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
+ * sdk环境信息
  * @version 1.0
  */
 @Setter
 @Getter
 public class SdkEnv {
 
-    private final static Logger logger = LoggerFactory.getLogger(SdkEnv.class);
+    private static final Logger logger = LoggerFactory.getLogger(SdkEnv.class);
 
     private BuildType buildType;
     private String projectId;

@@ -1,19 +1,26 @@
 package com.tencent.bk.devops.atom.spi;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class ServiceLoader {
 
     private static final Map<String, Object> CACHE = new ConcurrentHashMap<>();
 
-    @SuppressWarnings("unused")
+    /**
+     * 清除缓存
+     */
     public static void clear() {
         CACHE.clear();
     }
 
 
     /**
+     * 加载class类
+     *
      * @param clazz 接口
      * @param <T>  接口类型
      * @return 接口 实现实例
@@ -24,11 +31,12 @@ public final class ServiceLoader {
 
 
     /**
+     * 根据名称加载class类（优先从缓存中获取，如有多线程调用，接口实现需要自己实现线程安全）
+     *
      * @param clazz 接口
      * @param name 利用spi 注解中的名字获取实例
      * @param <T> 接口 类型
      * @return 接口 实现实例
-     * 优先从缓存中获取，如有多线程调用，接口实现需要自己实现线程安全
      */
     @SuppressWarnings("all")
     public static <T> T load(Class<T> clazz, String name) {
@@ -72,12 +80,13 @@ public final class ServiceLoader {
         Iterator<T> it = factories.iterator();
         if (name == null) {
             List<T> list = findList(it);
-            if (list.size() > 0) return list.get(0);
+            if (list.size() > 0) {
+                return list.get(0);
+            }
         } else {
             while (it.hasNext()) {
                 T t = it.next();
-                if (name.equals(t.getClass().getName()) ||
-                        name.equals(t.getClass().getSimpleName())) {
+                if (name.equals(t.getClass().getName()) || name.equals(t.getClass().getSimpleName())) {
                     return t;
                 }
             }
@@ -85,7 +94,7 @@ public final class ServiceLoader {
         return null;
     }
 
-    private static <T> List<T> findList(Iterator<T> it){
+    private static <T> List<T> findList(Iterator<T> it) {
         List<T> list = new ArrayList<>(2);
         while (it.hasNext()) {
             list.add(it.next());

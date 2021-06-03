@@ -1,6 +1,7 @@
 package com.tencent.bk.devops.atom.exception;
 
 /**
+ * 插件自定义异常
  * @version 1.0
  */
 @SuppressWarnings("unused")
