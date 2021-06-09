@@ -13,7 +13,6 @@ public class SdkUtils {
 
     /**
      * 获取插件文件路径前缀
-     *
      * @return 插件文件路径前缀
      */
     public static String getDataDir() {
@@ -22,21 +21,6 @@ public class SdkUtils {
             dataDir = System.getProperty("user.dir");
         }
         return dataDir;
-    }
-
-    public static String trimProtocol(String url) {
-        String host = url;
-        if (url.startsWith("http")) {
-            Matcher matcher = Pattern.compile("(http[s]?://)([-.a-z0-9A-Z]+)([/]?.*)").matcher(host);
-            if (matcher.matches()) {
-                host = matcher.group(2);
-            }
-        }
-        return host;
-    }
-
-    public static Boolean hasProtocol(String url) {
-        return url.startsWith("http://") || url.startsWith("https://");
     }
 
     /**
@@ -61,5 +45,20 @@ public class SdkUtils {
             value = "output.json";
         }
         return value;
+    }
+
+    public static String trimProtocol(String url) {
+        String host = url;
+        if (url.startsWith("http")) {
+            Matcher matcher = Pattern.compile("(http[s]?://)([-.a-z0-9A-Z]+)([/]?.*)").matcher(host);
+            if (matcher.matches()) {
+                host = matcher.group(2);
+            }
+        }
+        return host;
+    }
+
+    public static Boolean hasProtocol(String url) {
+        return url.startsWith("http://") || url.startsWith("https://");
     }
 }

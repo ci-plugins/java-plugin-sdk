@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -20,6 +22,8 @@ import java.io.IOException;
 public class JsonMapper {
 
     private ObjectMapper mapper;
+
+    private final static Logger logger = LoggerFactory.getLogger(JsonMapper.class);
 
     private JsonMapper(Include include) {
         mapper = new ObjectMapper();
@@ -82,6 +86,7 @@ public class JsonMapper {
         try {
             return mapper.writeValueAsString(object);
         } catch (IOException e) {
+            logger.info("toJson error:", e);
             return null;
         }
     }
@@ -100,6 +105,7 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, clazz);
         } catch (IOException e) {
+            logger.info("fromJson error:", e);
             return null;
         }
     }
@@ -118,6 +124,7 @@ public class JsonMapper {
         try {
             return mapper.readValue(jsonString, typeReference);
         } catch (IOException e) {
+            logger.info("fromJson error:", e);
             return null;
         }
     }

@@ -90,6 +90,14 @@ public class JsonUtil {
         return jsonMappers.computeIfAbsent("__all__", s -> JsonMapper.allOutPutMapper()).fromJson(jsonString, beanClass);
     }
 
+    /**
+     * 从Json串中解析成bean对象
+     *
+     * @param jsonString Json字符串
+     * @param beanClass  对象类
+     * @param <T>        对象类型
+     * @return 对象
+     */
     public static <T> T fromJson(String jsonString) {
         return jsonMappers.computeIfAbsent("__all__", s -> JsonMapper.allOutPutMapper()).fromJson(jsonString, new TypeReference<T>() {});
     }
