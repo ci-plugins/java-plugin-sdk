@@ -2,7 +2,7 @@ package com.tencent.bk.devops.plugin.utils
 
 /**
  *
- * @version 1.0
+ * @version 1.1
  */
 object ReflectUtil {
 
