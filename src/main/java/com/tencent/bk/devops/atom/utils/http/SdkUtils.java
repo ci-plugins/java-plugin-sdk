@@ -47,17 +47,6 @@ public class SdkUtils {
         return value;
     }
 
-    public static String trimProtocol(String url) {
-        String host = url;
-        if (url.startsWith("http")) {
-            Matcher matcher = Pattern.compile("(http[s]?://)([-.a-z0-9A-Z]+)([/]?.*)").matcher(host);
-            if (matcher.matches()) {
-                host = matcher.group(2);
-            }
-        }
-        return host;
-    }
-
     public static Boolean hasProtocol(String url) {
         return url.startsWith("http://") || url.startsWith("https://");
     }
