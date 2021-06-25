@@ -10,7 +10,8 @@ object CommandLineUtils {
 
     private val logger = LoggerFactory.getLogger(CommandLineUtils::class.java)
 
-    fun execute(command: String, workspace: File?, print2Logger: Boolean, prefix: String = "", printException: Boolean = false): String {
+    fun execute(command: String, workspace: File?, print2Logger: Boolean,
+                prefix: String = "", printException: Boolean = false): String {
 
         val result = StringBuffer()
 

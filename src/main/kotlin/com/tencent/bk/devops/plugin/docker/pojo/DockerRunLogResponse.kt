@@ -9,6 +9,7 @@ data class DockerRunLogResponse(
     val extraOptions: Map<String, String>
 ) {
     override fun toString(): String {
-        return "log: $log, status: $status, message: $message, extraOptions: ${extraOptions.filter { !it.key.contains("token", ignoreCase = true) }}"
+        return "log: $log, status: $status, message: $message, " +
+            "extraOptions: ${extraOptions.filter { !it.key.contains("token", ignoreCase = true) }}"
     }
 }

@@ -9,6 +9,7 @@ data class DockerRunLogRequest (
     val extraOptions: Map<String, String> = mapOf()
 ) {
     override fun toString(): String {
-        return "userId: $userId, workspace: $workspace, timeGap: $timeGap, extraOptions: ${extraOptions.filter { !it.key.contains("token", ignoreCase = true) }}"
+        return "userId: $userId, workspace: $workspace, timeGap: $timeGap, " +
+            "extraOptions: ${extraOptions.filter { !it.key.contains("token", ignoreCase = true) }}"
     }
 }
