@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2017. Tencent BlueKing
- */
-
 package com.tencent.bk.devops.atom.utils.json;
 
 import com.fasterxml.jackson.annotation.JsonFilter;

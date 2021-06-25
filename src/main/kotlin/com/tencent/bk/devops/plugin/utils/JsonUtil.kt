@@ -12,13 +12,8 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.google.common.collect.Maps
-import com.tencent.bk.devops.atom.utils.json.JsonMapper
 import com.tencent.bk.devops.atom.utils.json.annotation.SkipLogField
 
-/**
- * Created by liangyuzhou on 2017/9/21.
- * Powered By Tencent
- */
 object JsonUtil {
     private val objectMapper = ObjectMapper().apply {
         registerModule(KotlinModule())

@@ -1,10 +1,7 @@
 package com.tencent.bk.devops.plugin.utils
 
-import com.tencent.bk.devops.atom.utils.http.OkHttpUtils
 import okhttp3.ConnectionPool
-import okhttp3.Headers
 import okhttp3.Headers.Companion.toHeaders
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -99,7 +96,8 @@ object OkhttpUtils {
                 throw RuntimeException("文件不存在")
             }
             if (!response.isSuccessful) {
-                logger.warn("fail to download the file from $url because of ${response.message} and code ${response.code}")
+                logger.warn("fail to download the file from $url " +
+                    "because of ${response.message} and code ${response.code}")
                 throw RuntimeException("获取文件失败")
             }
             if (!destPath.parentFile.exists()) destPath.parentFile.mkdirs()
