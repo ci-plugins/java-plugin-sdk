@@ -75,11 +75,30 @@ public class AtomBaseParam {
     @JsonProperty("BK_CI_BUILD_START_TIME")
     private String pipelineStartTimeMills;
 
+
+    /**
+     * 流水线执行人
+     */
+    @JsonProperty("BK_CI_START_USER_ID")
+    private String pipelineStartUserId;
+
     /**
      * 流水线触发人
      */
     @JsonProperty("BK_CI_START_USER_NAME")
     private String pipelineStartUserName;
+
+    /**
+     * 流水线创建人
+     */
+    @JsonProperty("BK_CI_PIPELINE_CREATE_USER")
+    private String pipelineCreateUserName;
+
+    /**
+     * 流水线修改人
+     */
+    @JsonProperty("BK_CI_PIPELINE_UPDATE_USER")
+    private String pipelineUpdateUserName;
 
     /**
      * 插件敏感信息
@@ -93,10 +112,8 @@ public class AtomBaseParam {
     @JsonProperty("BK_CI_BUILD_TASK_ID")
     private String pipelineTaskId;
 
-    @JsonProperty("BK_CI_PIPELINE_UPDATE_USER")
-    private String pipelineUpdateUserName;
-
-    public String getPipelineUpdateUserName() {
-        return this.pipelineUpdateUserName;
-    }
+    /**
+     * 插件后置动作标识
+     */
+    private String postEntryParam = System.getProperty("postEntryParam");
 }
