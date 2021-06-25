@@ -69,8 +69,10 @@ object ThirdPartExecutor {
     }
 
     fun getLogs(param: DockerRunLogRequest): DockerRunLogResponse {
-        val startTimestamp = param.extraOptions["startTimestamp"]?.toLong() ?: throw RuntimeException("startTimestamp is null")
-        val containerId = param.extraOptions["dockerContainerId"] ?: throw RuntimeException("dockerContainerId is null")
+        val startTimestamp = param.extraOptions["startTimestamp"]?.toLong()
+            ?: throw RuntimeException("startTimestamp is null")
+        val containerId = param.extraOptions["dockerContainerId"]
+            ?: throw RuntimeException("dockerContainerId is null")
 
         val statusPair = getContainerStatus(containerId, param.workspace)
         val status = statusPair.first
@@ -109,7 +111,8 @@ object ThirdPartExecutor {
     }
 
     private fun getContainerStatus(containerId: String, workspace: File): Pair<String, String> {
-        val inspectResult = ScriptUtils.execute(script = "docker inspect $containerId", dir = workspace, printLog = false)
+        val inspectResult =
+            ScriptUtils.execute(script = "docker inspect $containerId", dir = workspace, printLog = false)
         val inspectMap = JsonUtil.fromJson<List<Map<String, Any>>>(inspectResult).first()
         val state = inspectMap["State"] as Map<String, Any>
         val status = state["Status"] as String
@@ -138,7 +141,8 @@ object ThirdPartExecutor {
         val loginHost = param.imageName.split("/").first()
         // WARNING! Using --password via the CLI is insecure. Use --password-stdin.
         val commandStr = "docker login $loginHost --username $username --password $password"
-        logger.info("[execute script]: " + String.format("docker login %s --username %s  --password ***", loginHost, username))
+        logger.info("[execute script]: " +
+            String.format("docker login %s --username %s  --password ***", loginHost, username))
         ScriptUtils.execute(commandStr, param.workspace)
     }
 

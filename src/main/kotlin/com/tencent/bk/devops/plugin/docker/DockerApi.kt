@@ -35,7 +35,8 @@ open class DockerApi : BaseApi() {
         }
     }
 
-    open fun dockerRunCustomize(projectId: String, pipelineId: String, buildId: String, param: DockerRunRequest): DockerRunResponse? {
+    open fun dockerRunCustomize(
+        projectId: String, pipelineId: String, buildId: String, param: DockerRunRequest): DockerRunResponse? {
         return null
     }
 
@@ -59,7 +60,8 @@ open class DockerApi : BaseApi() {
         }
     }
 
-    open fun dockerRunGetLogCustomize(projectId: String, pipelineId: String, buildId: String, param: DockerRunLogRequest): DockerRunLogResponse? {
+    open fun dockerRunGetLogCustomize(
+        projectId: String, pipelineId: String, buildId: String, param: DockerRunLogRequest): DockerRunLogResponse? {
         return null
     }
 }
