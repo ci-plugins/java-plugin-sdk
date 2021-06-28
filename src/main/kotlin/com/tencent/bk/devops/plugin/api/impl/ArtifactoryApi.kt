@@ -181,6 +181,7 @@ class ArtifactoryApi : BaseApi() {
             val conn = netUrl.openConnection() as HttpURLConnection
             conn.requestMethod = "GET"
             conn.connectTimeout = 5 * 1000
+            conn.readTimeout = 5 * 60 * 1000
             // 把文件下载到saveFilePath目录下面
             conn.inputStream.use { inputStream ->
                 BufferedOutputStream(FileOutputStream(saveFilePath), 8192).use { outputStream ->
