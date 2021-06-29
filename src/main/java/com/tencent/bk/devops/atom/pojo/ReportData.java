@@ -4,6 +4,9 @@ import com.tencent.bk.devops.atom.common.DataType;
 import com.tencent.bk.devops.atom.common.ReportType;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * "out_var_3": {
@@ -27,6 +30,11 @@ public class ReportData extends DataField {
     private String target;
     private String url;
     private ReportType reportType;
+    private boolean enableEmail;
+    @Nullable
+    private List<String> emailReceivers;
+    @Nullable
+    private String emailTitle;
 
     public ReportData(String label, String url) {
         super(DataType.report);
