@@ -29,6 +29,14 @@ class BuildResourceApi : BaseApi() {
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<BuildHistory?>>() {})
     }
 
+    fun getHostUrl(projectId: String): Result<String?> {
+        val path = "/gitci/api/build/ci/url/$projectId"
+        val request = buildGet(path)
+        val responseContent = request(request, "获取URL失败")
+        logger.info("get host url result: $responseContent")
+        return JsonUtil.fromJson(responseContent, object : TypeReference<Result<String?>>() {})
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(BuildResourceApi::class.java)
     }
