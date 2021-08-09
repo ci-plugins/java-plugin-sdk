@@ -12,7 +12,8 @@ data class DockerRunRequest(
     val workspace: File,
     val extraOptions: Map<String, String>? = null,
     var labels: Map<String, String>? = emptyMap(),
-    var ipEnabled: Boolean? = true
+    var ipEnabled: Boolean? = true,
+    var readOnly: Boolean? = false
 ) {
     override fun toString(): String {
         return "userId: $userId, imageName: $imageName, dockerLoginUsername: $dockerLoginUsername, " +
