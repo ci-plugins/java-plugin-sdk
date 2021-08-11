@@ -58,17 +58,17 @@ object DevCloudExecutor {
         val taskStatusFlag = param.extraOptions["taskStatusFlag"]
         if (taskStatusFlag.isNullOrBlank() || taskStatusFlag == DockerStatus.running) {
             val taskStatus = devCloudClient.getTaskStatus(taskId.toInt())
-            if (taskStatus.status == "waiting" || taskStatus.status == "running") {
+            if (taskStatus.status == "failed") {
                 return DockerRunLogResponse(
-                    status = DockerStatus.running,
-                    message = "get task status...",
+                    status = DockerStatus.failure,
+                    message = "get task status fail",
                     extraOptions = extraOptions
                 )
             }
             if (taskStatus.status != "succeeded") {
                 return DockerRunLogResponse(
-                    status = DockerStatus.failure,
-                    message = "get task status fail: $taskStatus",
+                    status = DockerStatus.running,
+                    message = "get task status...",
                     extraOptions = extraOptions
                 )
             }
@@ -79,8 +79,10 @@ object DevCloudExecutor {
         val jobStatusFlag = param.extraOptions["jobStatusFlag"]
         val jobName = param.extraOptions["devCloudJobName"] ?: throw RuntimeException("devCloudJobName is null")
         var jobStatusResp: JobStatusResponse? = null
+        var jobIp = ""
         if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == DockerStatus.running) {
             jobStatusResp = devCloudClient.getJobStatus(jobName)
+            jobIp = jobStatusResp.data.pod_result!![0].ip ?: ""
             val jobStatus = jobStatusResp.data.status
             if ("failed" != jobStatus && "succeeded" != jobStatus && "running" != jobStatus) {
                 return DockerRunLogResponse(
@@ -90,6 +92,7 @@ object DevCloudExecutor {
                 )
             }
         }
+        extraOptions["jobIp"] = jobIp
         extraOptions["jobStatusFlag"] = DockerStatus.success
 
         // actual get log logic

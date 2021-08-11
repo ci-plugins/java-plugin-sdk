@@ -34,12 +34,16 @@ object CommonExecutor {
         logger.info("execute docker run response: $responseContent")
 
         val extraOptions = JsonUtil.to(responseContent, object : TypeReference<Result<Map<String, Any>>>() {}).data
-        return DockerRunResponse(
-            extraOptions = mapOf(
-                "containerId" to extraOptions["containerId"].toString(),
-                "startTimeStamp" to extraOptions["startTimeStamp"].toString()
-            )
+
+        val extraOptionsResult = mutableMapOf<String, Any>(
+            "containerId" to extraOptions["containerId"].toString(),
+            "startTimeStamp" to extraOptions["startTimeStamp"].toString()
         )
+        if (extraOptions["dockerRunPortBindings"] != null) {
+            extraOptionsResult["dockerRunPortBindings"] = extraOptions["dockerRunPortBindings"]!!
+        }
+
+        return DockerRunResponse(extraOptions = extraOptionsResult)
     }
 
     fun getLogs(
@@ -110,7 +114,8 @@ object CommonExecutor {
                 registryPwd = param.dockerLoginPassword,
                 command = cmd,
                 env = envMap ?: mapOf(),
-                poolNo = System.getenv("pool_no")
+                poolNo = System.getenv("pool_no"),
+                portList = portList
             )
         }
 
@@ -137,10 +142,11 @@ object CommonExecutor {
         val registryPwd: String?,
         val command: List<String>,
         val env: Map<String, String>,
-        val poolNo: String?
+        val poolNo: String?,
+        val portList: List<Int>?
     ) {
         override fun toString(): String {
-            return "image name: $imageName, registry user: $registryUser, command: $command, env: $env, pool no: $poolNo"
+            return "image name: $imageName, registry user: $registryUser, command: $command, env: $env, pool no: $poolNo, portList: $portList"
         }
     }
 
