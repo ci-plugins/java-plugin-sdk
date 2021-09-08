@@ -113,6 +113,30 @@ public class AtomBaseParam {
     private String pipelineTaskId;
 
     /**
+     * 流水线当前插件标识
+     */
+    @JsonProperty("BK_CI_ATOM_CODE")
+    private String atomCode;
+
+    /**
+     * 流水线当前插件名称
+     */
+    @JsonProperty("BK_CI_ATOM_NAME")
+    private String atomName;
+
+    /**
+     * 流水线当前插件版本
+     */
+    @JsonProperty("BK_CI_ATOM_VERSION")
+    private String version;
+
+    /**
+     * 流水线当前插件任务名称（步骤名称）
+     */
+    @JsonProperty("BK_CI_TASK_NAME")
+    private String taskName;
+
+    /**
      * 插件后置动作标识
      */
     private String postEntryParam = System.getProperty("postEntryParam");
