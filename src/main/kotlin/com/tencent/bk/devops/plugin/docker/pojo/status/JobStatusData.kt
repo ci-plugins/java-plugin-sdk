@@ -6,6 +6,7 @@ data class JobStatusData(
     val pod_result: List<PodResult>?
 ) {
     data class PodResult(
+        val ip: String?,
         val events: List<PodResultEvent>?
     )
 
