@@ -5,6 +5,7 @@ import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.plugin.pojo.Result
 import com.tencent.bk.devops.plugin.pojo.repository.Repository
 import com.tencent.bk.devops.plugin.pojo.repository.RepositoryConfig
+import com.tencent.bk.devops.plugin.pojo.repository.RepositoryType
 import com.tencent.bk.devops.plugin.utils.JsonUtil
 import org.slf4j.LoggerFactory
 
@@ -13,7 +14,12 @@ class RepositoryResourceApi : BaseApi() {
         private val logger = LoggerFactory.getLogger(RepositoryResourceApi::class.java)
     }
 
-    fun get(repositoryConfig: RepositoryConfig): Result<Repository> {
+    fun get(repositoryType: RepositoryType, repositoryHashId: String?, repositoryName: String?): Result<Repository> {
+        val repositoryConfig = RepositoryConfig(
+            repositoryHashId = repositoryHashId,
+            repositoryName = repositoryName,
+            repositoryType = repositoryType
+        )
         val path =
             "/repository/api/build/repositories?" +
                 "repositoryId=${repositoryConfig.getURLEncodeRepositoryId()}&" +
