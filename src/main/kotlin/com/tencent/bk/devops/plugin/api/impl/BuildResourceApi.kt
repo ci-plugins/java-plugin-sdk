@@ -1,7 +1,6 @@
 package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.pojo.artifactory.BuildHistory
@@ -29,10 +28,10 @@ class BuildResourceApi : BaseApi() {
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<BuildHistory?>>() {})
     }
 
-    fun getHostUrl(projectId: String): Result<String?> {
-        val path = "/gitci/api/build/ci/url/$projectId"
+    fun getBuildDetailUrl(): Result<String?> {
+        val path = "/process/api/build/builds/detail_url"
         val request = buildGet(path)
-        val responseContent = request(request, "获取URL失败")
+        val responseContent = request(request, "获取构建详情URL失败")
         logger.info("get host url result: $responseContent")
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<String?>>() {})
     }
