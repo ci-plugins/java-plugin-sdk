@@ -48,7 +48,7 @@ public interface LocationAwareLogger extends Logger {
     final public int ERROR_INT = 40;
     final public int GROUP_START_INT = 50;
     final public int GROUP_END_INT = 51;
-    final public int SUBTAG_FINISH_INT = 51;
+    final public int SUBTAG_FINISH_INT = 55;
 
     /**
      * Printing method with support for location information.
