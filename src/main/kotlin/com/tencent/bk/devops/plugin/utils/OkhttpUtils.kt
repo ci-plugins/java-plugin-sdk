@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
+import javax.print.attribute.standard.PagesPerMinute
 
 object OkhttpUtils {
 
@@ -76,6 +77,21 @@ object OkhttpUtils {
 
     fun doShortHttpNoRetry(request: Request): Response {
         return noRetryShortOkHttpClient.newCall(request).execute()
+    }
+
+    fun doCustomHttp(
+        request: Request,
+        connectTimeoutMinute: Long,
+        readTimeoutMinute: Long,
+        writeTimeout: Long
+    ): Response {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(connectTimeoutMinute, TimeUnit.SECONDS)
+            .readTimeout(readTimeoutMinute, TimeUnit.MINUTES)
+            .writeTimeout(writeTimeout, TimeUnit.MINUTES)
+            .connectionPool(ConnectionPool(64, 5, TimeUnit.MINUTES))
+            .build()
+        return client.newCall(request).execute()
     }
 
     fun doHttp(request: Request): Response {
