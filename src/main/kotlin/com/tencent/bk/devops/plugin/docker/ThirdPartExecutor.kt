@@ -1,6 +1,5 @@
 package com.tencent.bk.devops.plugin.docker
 
-import com.tencent.bk.devops.atom.common.Status
 import com.tencent.bk.devops.plugin.docker.exception.DockerPullException
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
@@ -13,7 +12,6 @@ import com.tencent.bk.devops.plugin.utils.JsonUtil
 import com.tencent.bk.devops.plugin.utils.MachineEnvUtils
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.lang.StringBuilder
 
 object ThirdPartExecutor {
 
@@ -45,8 +43,13 @@ object ThirdPartExecutor {
             param.workspace.canonicalPath
         }
 
-        val command = "docker run -d -v $dockerWorkspace:$dockerWorkspace ${getEnvVar(param.envMap)} " +
-            "${param.imageName} ${param.command.joinToString(" ")}"
+        val readOnlyOpts = if (true == param.readOnly) {
+            ":ro"
+        } else {
+            ""
+        }
+        val command = "docker run -d -v $dockerWorkspace:$dockerWorkspace$readOnlyOpts -v $dockerWorkspace/.temp:$dockerWorkspace/.temp:rw  ${getEnvVar(param.envMap)} " +
+                "${param.imageName} ${param.command.joinToString(" ")}"
         logger.info("execute command: $command")
         return ScriptUtils.execute(command, param.workspace)
     }

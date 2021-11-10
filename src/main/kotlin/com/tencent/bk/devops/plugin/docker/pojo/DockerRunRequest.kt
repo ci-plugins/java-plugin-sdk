@@ -13,6 +13,7 @@ data class DockerRunRequest(
     val extraOptions: Map<String, String>? = null,
     var labels: Map<String, String>? = emptyMap(),
     var ipEnabled: Boolean? = true,
+    var readOnly: Boolean? = false,
     var portList: List<Int>? = emptyList()
 ) {
     override fun toString(): String {
