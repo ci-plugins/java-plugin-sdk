@@ -27,7 +27,7 @@
     <scm>
         <connection>scm:git:https://github.com/ci-plugins/java-plugin-sdk.git</connection>
         <developerConnection>scm:git:https://github.com/ci-plugins/java-plugin-sdk.git</developerConnection>
-        <url>git:https://github.com/songyz0310/java-toolkits.git</url>
+        <url>git:https://github.com/ci-plugins/java-plugin-sdk.git</url>
     </scm>
     <developers>
         <developer>
