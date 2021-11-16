@@ -16,16 +16,22 @@ open class DockerApi : BaseApi() {
         private val logger = LoggerFactory.getLogger(DockerApi::class.java)
     }
 
-    fun dockerRunCommand(projectId: String, pipelineId: String, buildId: String,
-                         param: DockerRunRequest): Result<DockerRunResponse> {
+    fun dockerRunCommand(
+        projectId: String,
+        pipelineId: String,
+        buildId: String,
+        param: DockerRunRequest
+    ): Result<DockerRunResponse> {
         try {
             val property = System.getenv("devops_slave_model")
+            val kubernetesEnv = System.getenv("devops.slave.environment")
 
             var response = dockerRunCustomize(projectId, pipelineId, buildId, param)
 
             if (response == null) {
                 response = when {
                     "docker" == property -> CommonExecutor.execute(projectId, pipelineId, buildId, param)
+                    "Kubernetes" == kubernetesEnv -> KubernetesExecutor.execute(param)
                     else -> ThirdPartExecutor.execute(param)
                 }
             }
@@ -36,20 +42,30 @@ open class DockerApi : BaseApi() {
     }
 
     open fun dockerRunCustomize(
-        projectId: String, pipelineId: String, buildId: String, param: DockerRunRequest): DockerRunResponse? {
+        projectId: String,
+        pipelineId: String,
+        buildId: String,
+        param: DockerRunRequest
+    ): DockerRunResponse? {
         return null
     }
 
-    fun dockerRunGetLog(projectId: String, pipelineId: String, buildId: String,
-                        param: DockerRunLogRequest): Result<DockerRunLogResponse> {
+    fun dockerRunGetLog(
+        projectId: String,
+        pipelineId: String,
+        buildId: String,
+        param: DockerRunLogRequest
+    ): Result<DockerRunLogResponse> {
         try {
             val property = System.getenv("devops_slave_model")
+            val kubernetesEnv = System.getenv("devops.slave.environment")
 
             var response = dockerRunGetLogCustomize(projectId, pipelineId, buildId, param)
 
             if (response == null) {
                 response = when {
                     "docker" == property -> CommonExecutor.getLogs(projectId, pipelineId, buildId, param)
+                    "Kubernetes" == kubernetesEnv -> KubernetesExecutor.getLogs(param)
                     else -> ThirdPartExecutor.getLogs(param)
                 }
             }
@@ -61,7 +77,11 @@ open class DockerApi : BaseApi() {
     }
 
     open fun dockerRunGetLogCustomize(
-        projectId: String, pipelineId: String, buildId: String, param: DockerRunLogRequest): DockerRunLogResponse? {
+        projectId: String,
+        pipelineId: String,
+        buildId: String,
+        param: DockerRunLogRequest
+    ): DockerRunLogResponse? {
         return null
     }
 }

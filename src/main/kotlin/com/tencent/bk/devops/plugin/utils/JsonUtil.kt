@@ -37,7 +37,6 @@ object JsonUtil {
 
     fun getObjectMapper() = objectMapper
 
-
     private val jsonMappers: MutableMap<String, ObjectMapper> = Maps.newConcurrentMap()
 
     /**

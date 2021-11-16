@@ -25,5 +25,4 @@ object ScriptUtils {
             }
         }
     }
-
 }
