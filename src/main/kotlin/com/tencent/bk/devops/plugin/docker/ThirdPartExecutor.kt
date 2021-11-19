@@ -84,7 +84,7 @@ object ThirdPartExecutor {
         var log = try {
             val command = "docker logs --until=\"$startTime\" --since=\"$preStartTime\" $containerId"
             ScriptUtils.execute(command, param.workspace, printLog = false)
-        } catch (e :Exception) {
+        } catch (e: Exception) {
             errorMessage = e.message ?: ""
             failToGetLog = true
             ""
