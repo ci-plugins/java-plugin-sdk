@@ -24,7 +24,7 @@ open class DockerApi : BaseApi() {
     ): Result<DockerRunResponse> {
         try {
             val property = System.getenv("devops_slave_model")
-            val kubernetesEnv = System.getenv("devops.slave.environment")
+            val kubernetesEnv = System.getenv("devops.build.node.environment")
 
             var response = dockerRunCustomize(projectId, pipelineId, buildId, param)
 
@@ -58,7 +58,7 @@ open class DockerApi : BaseApi() {
     ): Result<DockerRunLogResponse> {
         try {
             val property = System.getenv("devops_slave_model")
-            val kubernetesEnv = System.getenv("devops.slave.environment")
+            val kubernetesEnv = System.getenv("devops.build.node.environment")
 
             var response = dockerRunGetLogCustomize(projectId, pipelineId, buildId, param)
 
