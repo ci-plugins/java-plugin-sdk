@@ -6,12 +6,12 @@ import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
 import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
+import com.tencent.bk.devops.plugin.docker.pojo.common.KubernetesPodStatus
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobParam
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.JobRequest
 import com.tencent.bk.devops.plugin.docker.pojo.job.request.Registry
 import com.tencent.bk.devops.plugin.docker.pojo.job.response.JobStatusResp
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
-import com.tencent.bk.devops.plugin.docker.utils.ParamUtils
 import org.apache.commons.lang3.RandomUtils
 import org.apache.tools.ant.types.Commandline
 import org.slf4j.LoggerFactory
@@ -29,10 +29,20 @@ object KubernetesExecutor {
         val jobRequest = getJobRequest(request)
 
         val result = KubernetesBuildApi().createJob(jobRequest)
+        if (result.isNotOk()) {
+            throw RuntimeException("创建kubernetes job失败")
+        }
+
         return DockerRunResponse(
-            extraOptions = request.extraOptions!!.plus(
+            extraOptions = request.extraOptions.let {
+                if (it.isNullOrEmpty()) {
+                    mapOf()
+                } else {
+                    it
+                }
+            }.plus(
                 mapOf(
-                    "kubernetesJobName" to result.data.name,
+                    "kubernetesJobName" to result.data!!.name,
                     "startTimeStamp" to startTimeStamp.toString()
                 )
             )
@@ -51,9 +61,12 @@ object KubernetesExecutor {
         var jobIp = ""
         if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == DockerStatus.running) {
             jobStatusResp = api.getJobStatus(jobName).data
-            jobIp = jobStatusResp.pod_result!![0].ip ?: ""
+            jobIp = jobStatusResp?.pod_result!![0].ip ?: ""
             val jobStatus = jobStatusResp.status
-            if ("failed" != jobStatus && "succeeded" != jobStatus && "running" != jobStatus) {
+            if (KubernetesPodStatus.failed != jobStatus &&
+                KubernetesPodStatus.successed != jobStatus &&
+                KubernetesPodStatus.running != jobStatus
+            ) {
                 return DockerRunLogResponse(
                     status = DockerStatus.running,
                     message = "get job status...",
@@ -65,10 +78,16 @@ object KubernetesExecutor {
         extraOptions["jobStatusFlag"] = DockerStatus.success
 
         // actual get log logic
-        val startTimeStamp = extraOptions["startTimeStamp"]?.toLong() ?: System.currentTimeMillis()
+        val startTimeStamp = extraOptions["startTimeStamp"]?.apply {
+            if (trim().length == 13) {
+                toLong() / 1000
+            } else {
+                toLong()
+            }
+        }?.toLong() ?: (System.currentTimeMillis() / 1000)
         val logs = mutableListOf<String>()
 
-        val logResult = api.getLog(jobName, ParamUtils.beiJ2UTC(startTimeStamp))
+        val logResult = api.getLog(jobName, startTimeStamp)
 
         // only if not blank then add start time
         val isNotBlank = logResult.isNullOrBlank()
@@ -89,11 +108,10 @@ object KubernetesExecutor {
             }
         }
 
-        if (finalStatus?.status in listOf("failed", "succeeded")) {
-            logger.info("final job status data: $jobStatusResp")
+        if (finalStatus?.status in listOf(KubernetesPodStatus.failed, KubernetesPodStatus.successed)) {
             Thread.sleep(6000)
-            val finalLogs = api.getLog(jobName, ParamUtils.beiJ2UTC(startTimeStamp + 6000))
-            if (finalStatus?.status == "failed") {
+            val finalLogs = api.getLog(jobName, startTimeStamp + 6000)
+            if (finalStatus?.status == KubernetesPodStatus.failed) {
                 return DockerRunLogResponse(
                     log = logs.plus(finalLogs ?: ""),
                     status = DockerStatus.failure,
@@ -159,8 +177,8 @@ object KubernetesExecutor {
                 password = param.dockerLoginPassword
             )
 
-            return JobRequest(
-                alias = "bkdevops_job_${System.currentTimeMillis()}_${RandomUtils.nextLong()}",
+            val request = JobRequest(
+                alias = "bkdevops-job-${System.currentTimeMillis()}-${RandomUtils.nextLong()}",
                 activeDeadlineSeconds = 86400,
                 image = imagePair.second,
                 registry = registry,
@@ -169,6 +187,7 @@ object KubernetesExecutor {
                 params = jobParam,
                 podNameSelector = EnvUtils.getHostName()
             )
+            return request
         }
     }
 

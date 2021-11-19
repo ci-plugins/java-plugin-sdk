@@ -1,7 +1,7 @@
 package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.tencent.bk.devops.atom.pojo.Result
+import com.tencent.bk.devops.plugin.pojo.Result
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
@@ -35,7 +35,7 @@ class KubernetesBuildApi : BaseApi() {
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<JobCreateResp>>() {})
     }
 
-    fun getJobStatus(jobName: String): Result<JobStatusResp> {
+    fun getJobStatus(jobName: String): Result<JobStatusResp?> {
         var countFailed = 0
         while (true) {
             if (countFailed > 3) {
@@ -47,8 +47,8 @@ class KubernetesBuildApi : BaseApi() {
                 val request = buildGet(url, mutableMapOf("X-DEVOPS-UID" to getUserId()))
                 val responseContent = request(request, "获取kubernetes job status 失败")
                 val jobStatusRep =
-                    JsonUtil.fromJson(responseContent, object : TypeReference<Result<JobStatusResp>>() {})
-                if (jobStatusRep.status != 200) {
+                    JsonUtil.fromJson(responseContent, object : TypeReference<Result<JobStatusResp?>>() {})
+                if (jobStatusRep.isNotOk() || jobStatusRep.data == null) {
                     throw RuntimeException("get job status fail: $url, $responseContent")
                 }
                 return jobStatusRep
@@ -61,7 +61,7 @@ class KubernetesBuildApi : BaseApi() {
 
     fun getLog(
         jobName: String,
-        sinceTime: String
+        sinceTime: Long
     ): String? {
         var countFailed = 0
         while (true) {
@@ -70,11 +70,11 @@ class KubernetesBuildApi : BaseApi() {
                 throw RuntimeException("Request kubernetes get log failed 3 times, exit with exception")
             }
             try {
-                val url = "$urlPrefix/$jobName/logs?sinceTime=$sinceTime"
+                val url = "$urlPrefix/$jobName/logs?since=$sinceTime"
                 val request = buildGet(url, mutableMapOf("X-DEVOPS-UID" to getUserId()))
                 val responseContent = request(request, "获取kubernetes job logs 失败")
                 val jobLogRep = JsonUtil.fromJson(responseContent, object : TypeReference<Result<String>>() {})
-                if (jobLogRep.status != 200) {
+                if (jobLogRep.isNotOk()) {
                     return null
                 }
                 val logs = jobLogRep.data
