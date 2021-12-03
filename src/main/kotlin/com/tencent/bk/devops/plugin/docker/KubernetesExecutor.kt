@@ -182,8 +182,8 @@ object KubernetesExecutor {
                 activeDeadlineSeconds = 86400,
                 image = imagePair.second,
                 registry = registry,
-                cpu = 1,
-                memory = "1024M",
+                cpu = cpu ?: 1,
+                memory = memory ?: "1024M",
                 params = jobParam,
                 podNameSelector = EnvUtils.getHostName()
             )

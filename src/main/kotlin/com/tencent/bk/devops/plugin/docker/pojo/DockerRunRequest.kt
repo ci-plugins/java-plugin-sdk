@@ -12,10 +12,12 @@ data class DockerRunRequest(
     val workspace: File,
     val extraOptions: Map<String, String>? = null,
     var labels: Map<String, String>? = emptyMap(),
-    var ipEnabled: Boolean? = true
+    var ipEnabled: Boolean? = true,
+    val cpu: Int? = 1,
+    val memory: String? = "1024M"
 ) {
     override fun toString(): String {
         return "userId: $userId, imageName: $imageName, dockerLoginUsername: $dockerLoginUsername, " +
-            "extraOptions: ${extraOptions?.filter { !it.key.contains("token", ignoreCase = true) }}"
+                "extraOptions: ${extraOptions?.filter { !it.key.contains("token", ignoreCase = true) }}"
     }
 }
