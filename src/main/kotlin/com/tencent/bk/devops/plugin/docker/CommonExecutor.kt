@@ -19,19 +19,28 @@ object CommonExecutor {
 
     private const val ONE_MILL_SECONDS = 1000
 
+    /**
+     *  保持java abi兼容
+     */
+    @JvmOverloads
     fun execute(
         projectId: String,
         pipelineId: String,
         buildId: String,
-        request: DockerRunRequest
+        request: DockerRunRequest,
+        taskId: String? = null
     ): DockerRunResponse {
         // start to run
         val runParam = getRunParamJson(request)
         val dockerHostIP = System.getenv("docker_host_ip")
         val dockerHostPort = System.getenv("docker_host_port") ?: "80"
         val vmSeqId = SdkEnv.getVmSeqId()
-        val dockerRunUrl =
-            "http://$dockerHostIP:$dockerHostPort/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
+        val dockerRunUrl = when (taskId) {
+            null -> "http://$dockerHostIP:$dockerHostPort/api/docker/run/$projectId/$pipelineId/$vmSeqId/$buildId"
+            else -> "http://$dockerHostIP:$dockerHostPort/api/docker/run/$projectId/$pipelineId" +
+                "/$vmSeqId/$buildId?taskId=$taskId"
+        }
+
         logger.info("execute docker run url: $dockerRunUrl")
         val responseContent = OkHttpUtils.doPost(dockerRunUrl, runParam)
         logger.info("execute docker run response: $responseContent")
@@ -94,7 +103,6 @@ object CommonExecutor {
                 ))
             )
         }
-
     }
 
     private fun getRunParamJson(param: DockerRunRequest): String {
