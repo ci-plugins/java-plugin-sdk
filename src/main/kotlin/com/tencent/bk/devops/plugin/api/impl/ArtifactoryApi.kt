@@ -1,12 +1,14 @@
 package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.api.SdkEnv
 import com.tencent.bk.devops.atom.pojo.artifactory.FileDetail
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.pojo.Result
+import com.tencent.bk.devops.plugin.pojo.artifactory.FileGatewayInfo
 import com.tencent.bk.devops.plugin.pojo.artifactory.JfrogFilesData
 import com.tencent.bk.devops.plugin.utils.EncodeUtil
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
@@ -44,13 +46,20 @@ class ArtifactoryApi : BaseApi() {
         }
 
         return if (null != responseContent) {
+            val fileGateway = getFileGateway()
+            logger.info("fileGateway: $fileGateway")
             val srcUrlResult = JsonUtil.fromJson(responseContent, object : TypeReference<Result<List<String>>>() {
             })
             val srcUrlList = srcUrlResult.data
             val finalSrcUrlList = ArrayList<String>()
             if (srcUrlList != null) {
                 for (srcUrl in srcUrlList) {
-                    val finalSrcUrl = srcUrl.replace(getUrlHost(srcUrl), SdkEnv.getGatewayHost())
+                    val finalSrcUrl = if (fileGateway.isBlank()) {
+                        srcUrl.replace(getUrlHost(srcUrl), SdkEnv.getGatewayHost())
+                    } else {
+                        val uri = srcUrl.substringAfter("external")
+                        "$fileGateway$uri"
+                    }
                     finalSrcUrlList.add(finalSrcUrl)
                 }
             }
@@ -231,6 +240,26 @@ class ArtifactoryApi : BaseApi() {
             host = matcher.group()
         }
         return host
+    }
+
+    private fun getFileGateway(): String {
+        logger.info("start to obtain gateway url")
+        return try {
+            var fileGateway: String
+            val path = "/artifactory/api/build/fileGateway/get"
+            val request = buildGet(path)
+            val response = request(request, "get file gateway failed")
+            logger.info("response: $response")
+            val fileGatewayInfo = com.tencent.bk.devops.plugin.utils.JsonUtil.getObjectMapper().readValue<com.tencent.bk.devops.atom.pojo.Result<FileGatewayInfo>>(response).data
+            fileGateway = if (SdkEnv.getVmBuildEnv()) fileGatewayInfo.fileDevnetGateway else fileGatewayInfo.fileIdcGateway
+            if (!fileGateway.startsWith("https://") && !fileGateway.startsWith("http://")) {
+                fileGateway = "http://$fileGateway"
+            }
+            fileGateway
+        } catch (e: Exception) {
+            logger.warn("get file gateway exception: {}", e)
+            ""
+        }
     }
 
     companion object {
