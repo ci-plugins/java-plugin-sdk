@@ -1,7 +1,6 @@
 package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.api.SdkEnv
 import com.tencent.bk.devops.atom.exception.AtomException
@@ -10,10 +9,8 @@ import com.tencent.bk.devops.atom.pojo.artifactory.FileDetail
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.pojo.Result
-import com.tencent.bk.devops.plugin.pojo.artifactory.FileGatewayInfo
 import com.tencent.bk.devops.plugin.pojo.artifactory.JfrogFilesData
 import com.tencent.bk.devops.plugin.utils.EncodeUtil
-import com.tencent.bk.devops.plugin.utils.JsonUtil.getObjectMapper
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
 import okhttp3.Request
 import org.apache.commons.io.IOUtils
@@ -71,6 +68,17 @@ class ArtifactoryApi : BaseApi() {
             logger.info("getArtifactoryFileUrl responseContent is null")
             Result(emptyList())
         }
+    }
+
+    private fun getFileGateway(): String {
+        var fileGateway = SdkEnv.getFileGateway()
+        if (fileGateway.isNotBlank() &&
+            !fileGateway.startsWith("https://") &&
+            !fileGateway.startsWith("http://")
+        ) {
+            fileGateway = "http://$fileGateway"
+        }
+        return fileGateway
     }
 
     /**
@@ -242,28 +250,6 @@ class ArtifactoryApi : BaseApi() {
             host = matcher.group()
         }
         return host
-    }
-
-    private fun getFileGateway(): String {
-        logger.info("start to obtain gateway url")
-        return try {
-            var fileGateway: String?
-            val path = "/artifactory/api/build/fileGateway/get"
-            val request = buildGet(path)
-            val response = request(request, "get file gateway failed")
-            val fileGatewayInfo = getObjectMapper().readValue<Result<FileGatewayInfo>>(response).data
-            fileGateway = if (SdkEnv.getVmBuildEnv()) fileGatewayInfo?.fileDevnetGateway else fileGatewayInfo?.fileIdcGateway
-            if (!fileGateway.isNullOrBlank() &&
-                !fileGateway.startsWith("https://") &&
-                !fileGateway.startsWith("http://")
-            ) {
-                fileGateway = "http://$fileGateway"
-            }
-            fileGateway ?: ""
-        } catch (e: Exception) {
-            logger.warn("get file gateway exception: {}", e)
-            ""
-        }
     }
 
     companion object {

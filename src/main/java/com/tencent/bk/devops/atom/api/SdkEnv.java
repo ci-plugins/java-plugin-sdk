@@ -29,7 +29,7 @@ public class SdkEnv {
     private String gateway;
     private String buildId;
     private String vmSeqId;
-    private Boolean vmBuildEnv;
+    private String fileGateway;
 
     private static SdkEnv instance;
 
@@ -99,7 +99,7 @@ public class SdkEnv {
         return instance.vmSeqId;
     }
 
-    public static Boolean getVmBuildEnv() {
-        return instance.vmBuildEnv;
+    public static String getFileGateway() {
+        return instance.fileGateway;
     }
 }
