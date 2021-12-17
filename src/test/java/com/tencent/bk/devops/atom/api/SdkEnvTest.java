@@ -1,7 +1,7 @@
 package com.tencent.bk.devops.atom.api;
 
 import com.tencent.bk.devops.plugin.api.impl.RepositoryResourceApi;
-import com.tencent.bk.devops.plugin.api.impl.WorkbeeOauthApi;
+import com.tencent.bk.devops.plugin.api.impl.GitOauthApi;
 import com.tencent.bk.devops.plugin.pojo.Result;
 import com.tencent.bk.devops.plugin.pojo.repository.Repository;
 import com.tencent.bk.devops.plugin.pojo.repository.RepositoryType;
@@ -24,12 +24,7 @@ public class SdkEnvTest {
         SdkEnv.init();
     }
 
-    @Test
-    public void getSdkHeader() {
-        RepositoryResourceApi repositoryResourceApi = new RepositoryResourceApi();
-        Result<Repository> result = repositoryResourceApi.get(RepositoryType.NAME, null, "bkdevops/bk-ci");
-        System.out.println(result);
-    }
+
 
     @Test
     public void genUrl() {
@@ -41,11 +36,5 @@ public class SdkEnvTest {
 
     }
 
-    @Test
-    public void getWorkbeeOauth(){
-        WorkbeeOauthApi workbeeOauthApi=new WorkbeeOauthApi();
-        Result<Map<String, String>> oauth = workbeeOauthApi.getOauth("101144");
-        System.out.println(oauth);
-        System.out.println(oauth.getData());
-    }
+
 }
