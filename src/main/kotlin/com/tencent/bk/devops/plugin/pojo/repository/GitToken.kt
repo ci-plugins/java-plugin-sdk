@@ -1,19 +1,15 @@
 package com.tencent.bk.devops.plugin.pojo.repository
 import com.fasterxml.jackson.annotation.JsonProperty
 
-//@ApiModel("Token模型")
+//Token模型
 data class GitToken(
-//    @ApiModelProperty("鉴权token", name = "access_token")
     @JsonProperty("access_token")
-    var accessToken: String = "",
-//    @ApiModelProperty("刷新token", name = "refresh_token")
+    var accessToken: String = "",//鉴权token
     @JsonProperty("refresh_token")
-    var refreshToken: String = "",
-//    @ApiModelProperty("token类型", name = "token_type")
+    var refreshToken: String = "",//刷新token
     @JsonProperty("token_type")
-    val tokenType: String = "",
-//    @ApiModelProperty("过期时间", name = "expires_in")
+    val tokenType: String = "",//token类型
     @JsonProperty("expires_in")
-    val expiresIn: Long = 0L,
+    val expiresIn: Long = 0L,//过期时间
     val createTime: Long? = 0L
 )
