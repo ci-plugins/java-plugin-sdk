@@ -1,8 +1,11 @@
 package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.api.SdkEnv
+import com.tencent.bk.devops.atom.exception.AtomException
+import com.tencent.bk.devops.atom.exception.RemoteServiceException
 import com.tencent.bk.devops.atom.pojo.artifactory.FileDetail
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
@@ -10,6 +13,7 @@ import com.tencent.bk.devops.plugin.pojo.Result
 import com.tencent.bk.devops.plugin.pojo.artifactory.FileGatewayInfo
 import com.tencent.bk.devops.plugin.pojo.artifactory.JfrogFilesData
 import com.tencent.bk.devops.plugin.utils.EncodeUtil
+import com.tencent.bk.devops.plugin.utils.JsonUtil.getObjectMapper
 import com.tencent.bk.devops.plugin.utils.OkhttpUtils
 import okhttp3.Request
 import org.apache.commons.io.IOUtils
@@ -20,7 +24,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
 import java.util.regex.Pattern
 
 class ArtifactoryApi : BaseApi() {
@@ -198,7 +201,7 @@ class ArtifactoryApi : BaseApi() {
             }
         } catch (e: Exception) {
             logger.error("download all files to local error!", e)
-            throw RuntimeException("文件下载失败：$srcUrl", e)
+            throw AtomException("文件下载失败：$srcUrl", e)
         }
         return File(saveFilePath)
     }
@@ -220,13 +223,13 @@ class ArtifactoryApi : BaseApi() {
             val responseBody = response.body()!!.string()
             if (!response.isSuccessful) {
                 logger.error("get jfrog files fail:\n $responseBody")
-                throw RuntimeException("构建分发获取文件失败")
+                throw RemoteServiceException("构建分发获取文件失败", response.code(), responseBody)
             }
             try {
                 return JsonUtil.fromJson(responseBody, JfrogFilesData::class.java)
             } catch (e: Exception) {
                 logger.error("get jfrog files fail\n$responseBody")
-                throw RuntimeException("构建分发获取文件失败")
+                throw AtomException("构建分发获取文件失败", e)
             }
         }
     }
@@ -248,7 +251,7 @@ class ArtifactoryApi : BaseApi() {
             val path = "/artifactory/api/build/fileGateway/get"
             val request = buildGet(path)
             val response = request(request, "get file gateway failed")
-            val fileGatewayInfo = JsonUtil.fromJson(response, object : TypeReference<Result<FileGatewayInfo>>() {}).data
+            val fileGatewayInfo = getObjectMapper().readValue<Result<FileGatewayInfo>>(response).data
             fileGateway = if (SdkEnv.getVmBuildEnv()) fileGatewayInfo?.fileDevnetGateway else fileGatewayInfo?.fileIdcGateway
             if (!fileGateway.isNullOrBlank() &&
                 !fileGateway.startsWith("https://") &&
@@ -264,7 +267,6 @@ class ArtifactoryApi : BaseApi() {
     }
 
     companion object {
-
         private val logger = LoggerFactory.getLogger(ArtifactoryApi::class.java)
     }
 }
