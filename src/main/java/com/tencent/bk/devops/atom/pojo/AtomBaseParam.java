@@ -137,6 +137,12 @@ public class AtomBaseParam {
     private String taskName;
 
     /**
+     * 流水线当前插件自定义ID（上下文标识）
+     */
+    @JsonProperty("BK_CI_STEP_ID")
+    private String stepId;
+
+    /**
      * 插件后置动作标识
      */
     private String postEntryParam = System.getProperty("postEntryParam");
