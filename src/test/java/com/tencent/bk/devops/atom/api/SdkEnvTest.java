@@ -1,5 +1,10 @@
 package com.tencent.bk.devops.atom.api;
 
+import com.tencent.bk.devops.plugin.api.impl.RepositoryResourceApi;
+import com.tencent.bk.devops.plugin.api.impl.GitOauthApi;
+import com.tencent.bk.devops.plugin.pojo.Result;
+import com.tencent.bk.devops.plugin.pojo.repository.Repository;
+import com.tencent.bk.devops.plugin.pojo.repository.RepositoryType;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -19,11 +24,7 @@ public class SdkEnvTest {
         SdkEnv.init();
     }
 
-    @Test
-    public void getSdkHeader() {
-        Map<String, String> sdkHeader = SdkEnv.getSdkHeader();
-        System.out.println(sdkHeader);
-    }
+
 
     @Test
     public void genUrl() {
@@ -32,5 +33,8 @@ public class SdkEnvTest {
         String s1 = SdkEnv.genUrl("/x1/2/3");
         System.out.println(s1);
         assert s.equals(s1);
+
     }
+
+
 }
