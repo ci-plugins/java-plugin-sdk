@@ -3,6 +3,8 @@ package com.tencent.bk.devops.plugin.api.impl
 import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.api.SdkEnv
+import com.tencent.bk.devops.atom.exception.AtomException
+import com.tencent.bk.devops.atom.exception.RemoteServiceException
 import com.tencent.bk.devops.atom.pojo.artifactory.FileDetail
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
@@ -19,7 +21,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.*
 import java.util.regex.Pattern
 
 class ArtifactoryApi : BaseApi() {
@@ -44,13 +45,20 @@ class ArtifactoryApi : BaseApi() {
         }
 
         return if (null != responseContent) {
+            val fileGateway = getFileGateway()
+            logger.info("fileGateway: $fileGateway")
             val srcUrlResult = JsonUtil.fromJson(responseContent, object : TypeReference<Result<List<String>>>() {
             })
             val srcUrlList = srcUrlResult.data
             val finalSrcUrlList = ArrayList<String>()
             if (srcUrlList != null) {
                 for (srcUrl in srcUrlList) {
-                    val finalSrcUrl = srcUrl.replace(getUrlHost(srcUrl), SdkEnv.getGatewayHost())
+                    val finalSrcUrl = if (fileGateway.isBlank()) {
+                        srcUrl.replace(getUrlHost(srcUrl), SdkEnv.getGatewayHost())
+                    } else {
+                        val uri = srcUrl.substringAfter("external")
+                        "$fileGateway$uri"
+                    }
                     finalSrcUrlList.add(finalSrcUrl)
                 }
             }
@@ -60,6 +68,17 @@ class ArtifactoryApi : BaseApi() {
             logger.info("getArtifactoryFileUrl responseContent is null")
             Result(emptyList())
         }
+    }
+
+    private fun getFileGateway(): String {
+        var fileGateway = SdkEnv.getFileGateway()
+        if (fileGateway.isNotBlank() &&
+            !fileGateway.startsWith("https://") &&
+            !fileGateway.startsWith("http://")
+        ) {
+            fileGateway = "http://$fileGateway"
+        }
+        return fileGateway
     }
 
     /**
@@ -190,7 +209,7 @@ class ArtifactoryApi : BaseApi() {
             }
         } catch (e: Exception) {
             logger.error("download all files to local error!", e)
-            throw RuntimeException("文件下载失败：$srcUrl", e)
+            throw AtomException("文件下载失败：$srcUrl", e)
         }
         return File(saveFilePath)
     }
@@ -212,13 +231,13 @@ class ArtifactoryApi : BaseApi() {
             val responseBody = response.body()!!.string()
             if (!response.isSuccessful) {
                 logger.error("get jfrog files fail:\n $responseBody")
-                throw RuntimeException("构建分发获取文件失败")
+                throw RemoteServiceException("构建分发获取文件失败", response.code(), responseBody)
             }
             try {
                 return JsonUtil.fromJson(responseBody, JfrogFilesData::class.java)
             } catch (e: Exception) {
                 logger.error("get jfrog files fail\n$responseBody")
-                throw RuntimeException("构建分发获取文件失败")
+                throw AtomException("构建分发获取文件失败", e)
             }
         }
     }
@@ -234,7 +253,6 @@ class ArtifactoryApi : BaseApi() {
     }
 
     companion object {
-
         private val logger = LoggerFactory.getLogger(ArtifactoryApi::class.java)
     }
 }

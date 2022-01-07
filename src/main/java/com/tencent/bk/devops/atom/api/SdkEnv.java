@@ -4,6 +4,10 @@ import com.google.common.collect.Maps;
 import com.tencent.bk.devops.atom.common.Constants;
 import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
@@ -11,14 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Map;
-
-/**
- * @version 1.0
- */
+/** @version 1.0 */
 @Setter
 @Getter
 public class SdkEnv {
@@ -32,13 +29,13 @@ public class SdkEnv {
     private String gateway;
     private String buildId;
     private String vmSeqId;
+    private String fileGateway;
 
     private static SdkEnv instance;
 
     private static final String HTTP_PROTOCOL = "http://";
 
     private static final String HTTPS_PROTOCOL = "https://";
-
 
     public static Map<String, String> getSdkHeader() {
         Map<String, String> map = Maps.newHashMap();
@@ -70,7 +67,7 @@ public class SdkEnv {
             String json = FileUtils.readFileToString(file, Charset.defaultCharset());
             instance = JsonUtil.fromJson(json, SdkEnv.class);
         } finally {
-            boolean flag = file.delete(); //读取完后删除文件
+            boolean flag = file.delete(); // 读取完后删除文件
             logger.info("[java-atom-sdk] delete sdkFile result is:{}", flag);
         }
     }
@@ -100,5 +97,9 @@ public class SdkEnv {
 
     public static String getVmSeqId() {
         return instance.vmSeqId;
+    }
+
+    public static String getFileGateway() {
+        return instance.fileGateway;
     }
 }
