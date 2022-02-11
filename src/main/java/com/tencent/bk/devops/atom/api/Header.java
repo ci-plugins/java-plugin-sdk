@@ -15,4 +15,6 @@ public class Header {
 
     public static String AUTH_HEADER_DEVOPS_AGENT_ID = "X-DEVOPS-AGENT-ID";
     public static String AUTH_HEADER_DEVOPS_AGENT_SECRET_KEY = "X-DEVOPS-AGENT-SECRET-KEY";
+
+    public static String AUTH_HEADER_DEVOPS_TASK_ID = "X-DEVOPS-TASK-ID";
 }
