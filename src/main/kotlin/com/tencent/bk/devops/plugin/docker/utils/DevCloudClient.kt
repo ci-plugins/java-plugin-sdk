@@ -129,28 +129,33 @@ class DevCloudClient(
     ): String? {
         var countFailed = 0
         while (true) {
-            if (countFailed > 3) {
-                logger.info("Request DevCloud get log failed 3 times, exit with exception")
-                throw RuntimeException("Request DevCloud get log failed 3 times, exit with exception")
-            }
             try {
                 val sendUrl = "$devCloudUrl/api/v2.1/job/$jobName/logs?sinceTime=$sinceTime"
                 val request = Request.Builder().url(sendUrl)
-                        .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
+                    .headers(Headers.of(getHeaders(devCloudAppId, devCloudToken, executeUser))).get().build()
                 val response = OkhttpUtils.doShortHttp(request)
                 val res = response.body()!!.string()
                 if (!response.isSuccessful) {
                     return null
                 }
                 val resultMap: Map<String, Any> =
-                        JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
+                    JsonUtil.getObjectMapper().readValue<HashMap<String, Any>>(res)
                 val data = resultMap["data"] as Map<String, String>?
                 val logs = data?.values?.joinToString("\n")
                 logger.info(logs)
                 return logs
             } catch (e: IOException) {
                 logger.info("Get DevCloud job log exception: ${e.message}")
-                countFailed++
+                if ("timeout" == e.message) {
+                    countFailed++
+                    if (countFailed > 3) {
+                        logger.info("Request DevCloud get log failed 3 times, exit with exception")
+                        return null
+                    }
+                    Thread.sleep(1000L)
+                } else {
+                    throw RuntimeException("Request DevCloud get log failed 3 times, exit with exception")
+                }
             }
         }
     }
