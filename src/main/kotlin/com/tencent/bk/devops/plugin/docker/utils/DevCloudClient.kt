@@ -129,10 +129,6 @@ class DevCloudClient(
     ): String? {
         var countFailed = 0
         while (true) {
-            if (countFailed > 3) {
-                logger.info("Request DevCloud get log failed 3 times, exit with exception")
-                throw RuntimeException("Request DevCloud get log failed 3 times, exit with exception")
-            }
             try {
                 val sendUrl = "$devCloudUrl/api/v2.1/job/$jobName/logs?sinceTime=$sinceTime"
                 val request = Request.Builder().url(sendUrl)
@@ -150,7 +146,16 @@ class DevCloudClient(
                 return logs
             } catch (e: IOException) {
                 logger.info("Get DevCloud job log exception: ${e.message}")
-                countFailed++
+                if ("timeout" == e.message) {
+                    countFailed++
+                    if (countFailed > 3) {
+                        logger.info("Request DevCloud get log failed 3 times, exit with exception")
+                        return null
+                    }
+                    Thread.sleep(1000L)
+                } else {
+                    throw RuntimeException("Request DevCloud get log failed 3 times, exit with exception")
+                }
             }
         }
     }
