@@ -54,7 +54,7 @@ public class SdkEnv {
         map.put(Header.AUTH_HEADER_DEVOPS_BUILD_ID, instance.buildId);
         map.put(Header.AUTH_HEADER_BUILD_ID, instance.buildId);
 
-        map.put(Header.AUTH_HEADER_DEVOPS_TASK_ID, instance.taskId);
+        map.put(Header.AUTH_HEADER_DEVOPS_CI_TASK_ID, instance.taskId);
         return map;
     }
 
