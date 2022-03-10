@@ -5,13 +5,15 @@ import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.pojo.AtomResult;
 import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
+import com.tencent.bk.devops.plugin.api.impl.SensitiveConfApi;
+import com.tencent.bk.devops.plugin.pojo.atom.SensitiveConfResp;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -81,10 +83,25 @@ public class AtomContext<T extends AtomBaseParam> {
         return result;
     }
 
-    private T readParam(Class<T> paramClazz) throws IOException {
-        String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
-        return JsonUtil.fromJson(json, paramClazz);
+  private T readParam(Class<T> paramClazz) throws IOException {
+    String json =
+        FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
+    T param = JsonUtil.fromJson(json, paramClazz);
+    SensitiveConfApi sensitiveConfApi = new SensitiveConfApi();
+    String atomCode = param.getAtomCode();
+    List<SensitiveConfResp> sensitiveConfList =
+        sensitiveConfApi.getAtomSensitiveConf(atomCode).getData();
+    if (sensitiveConfList != null && !sensitiveConfList.isEmpty()) {
+      Map<String, String> bkSensitiveConfInfo = new HashMap<>();
+      for (SensitiveConfResp sensitiveConfResp : sensitiveConfList) {
+        bkSensitiveConfInfo.put(
+            sensitiveConfResp.getFieldName(), sensitiveConfResp.getFieldValue());
+      }
+      // 设置插件敏感信息
+      param.setBkSensitiveConfInfo(bkSensitiveConfInfo);
     }
+    return param;
+  }
 
     public Map<String,Object>  getAllParameters() throws IOException {
         String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
