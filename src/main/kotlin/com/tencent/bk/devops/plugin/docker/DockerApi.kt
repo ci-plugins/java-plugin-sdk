@@ -18,7 +18,7 @@ open class DockerApi : BaseApi() {
 
     open fun dockerRunCommand(projectId: String, pipelineId: String, buildId: String, param: DockerRunRequest): Result<DockerRunResponse> {
         try {
-            val devCloudProperty = System.getenv("devops.slave.environment")
+            val devCloudProperty = System.getenv("JOB_POOL")
             val property = System.getenv("devops_slave_model")
             val newDevCloudProperty = System.getenv("DEVOPS_SLAVE_ENVIRONMENT")
 
@@ -28,7 +28,7 @@ open class DockerApi : BaseApi() {
 
             val response = when {
                 "pcg-devcloud" == newDevCloudProperty -> PcgDevCloudExecutor.execute(param)
-                "DevCloud" == devCloudProperty -> DevCloudExecutor.execute(param)
+                "PUBLIC_DEVCLOUD" == devCloudProperty -> DevCloudExecutor.execute(param)
                 "docker" == property -> CommonExecutor.execute(projectId, pipelineId, buildId, param)
                 else -> ThirdPartExecutor.execute(param)
             }
