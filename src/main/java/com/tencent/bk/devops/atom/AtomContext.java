@@ -83,25 +83,29 @@ public class AtomContext<T extends AtomBaseParam> {
         return result;
     }
 
-  private T readParam(Class<T> paramClazz) throws IOException {
-    String json =
-        FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
-    T param = JsonUtil.fromJson(json, paramClazz);
-    SensitiveConfApi sensitiveConfApi = new SensitiveConfApi();
-    String atomCode = param.getAtomCode();
-    List<SensitiveConfResp> sensitiveConfList =
-        sensitiveConfApi.getAtomSensitiveConf(atomCode).getData();
-    if (sensitiveConfList != null && !sensitiveConfList.isEmpty()) {
-      Map<String, String> bkSensitiveConfInfo = new HashMap<>();
-      for (SensitiveConfResp sensitiveConfResp : sensitiveConfList) {
-        bkSensitiveConfInfo.put(
-            sensitiveConfResp.getFieldName(), sensitiveConfResp.getFieldValue());
-      }
-      // 设置插件敏感信息
-      param.setBkSensitiveConfInfo(bkSensitiveConfInfo);
+    private T readParam(Class<T> paramClazz) throws IOException {
+        String json =
+            FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
+        T param = JsonUtil.fromJson(json, paramClazz);
+        String atomCode = param.getAtomCode();
+        if (atomCode == null || !atomCode.equals(System.getenv("BK_CI_ATOM_CODE"))) {
+            // 本地测试环境不调蓝盾接口设置插件敏感信息
+            return param;
+        }
+        SensitiveConfApi sensitiveConfApi = new SensitiveConfApi();
+        List<SensitiveConfResp> sensitiveConfList =
+            sensitiveConfApi.getAtomSensitiveConf(atomCode).getData();
+        if (sensitiveConfList != null && !sensitiveConfList.isEmpty()) {
+            Map<String, String> bkSensitiveConfInfo = new HashMap<>();
+            for (SensitiveConfResp sensitiveConfResp : sensitiveConfList) {
+                bkSensitiveConfInfo.put(
+                    sensitiveConfResp.getFieldName(), sensitiveConfResp.getFieldValue());
+            }
+            // 设置插件敏感信息
+            param.setBkSensitiveConfInfo(bkSensitiveConfInfo);
+        }
+        return param;
     }
-    return param;
-  }
 
     public Map<String,Object>  getAllParameters() throws IOException {
         String json = FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
