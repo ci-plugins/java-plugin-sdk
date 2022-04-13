@@ -51,7 +51,14 @@ object ThirdPartExecutor {
         val command = "docker run -d -v $dockerWorkspace:$dockerWorkspace$readOnlyOpts -v $dockerWorkspace/.temp:$dockerWorkspace/.temp:rw  ${getEnvVar(param.envMap)} " +
                 "${param.imageName} ${param.command.joinToString(" ")}"
         logger.info("execute command: $command")
-        return ScriptUtils.execute(command, param.workspace)
+        val result = ScriptUtils.execute(command, param.workspace)
+        var warningmsg = "WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested"
+        if (result.contains(warningmsg)) {
+            logger.info(result)
+            return result.split("requested").last()
+        }else {
+            return result
+        }
     }
 
     @Synchronized
