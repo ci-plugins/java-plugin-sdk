@@ -55,7 +55,7 @@ object ThirdPartExecutor {
         var warningmsg = "WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested"
         if (result.contains(warningmsg)) {
             logger.info(result)
-            return result.split("requested").last()
+            return result.split("requested").last().trim()
         }else {
             return result
         }
