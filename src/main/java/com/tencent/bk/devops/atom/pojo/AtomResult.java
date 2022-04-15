@@ -81,6 +81,18 @@ public class AtomResult {
     private Integer errorCode;
 
     /**
+     * 插件对接平台代码
+     */
+    @JsonProperty("platformCode")
+    private String platformCode;
+
+    /**
+     * 插件对接平台错误码
+     */
+    @JsonProperty("platformErrorCode")
+    private Integer platformErrorCode;
+
+    /**
      * 监控数据
      */
     @JsonProperty("monitorData")
