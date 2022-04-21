@@ -2,15 +2,14 @@ package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.tencent.bk.devops.atom.api.BaseApi
-import com.tencent.bk.devops.atom.pojo.Result
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
 import com.tencent.bk.devops.plugin.docker.pojo.bcs.DispatchBuildStatusResp
 import com.tencent.bk.devops.plugin.docker.pojo.bcs.DispatchJobLogResp
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
-import com.tencent.bk.devops.plugin.pojo.devcloud.DevCloudJobRes
 import com.tencent.bk.devops.plugin.docker.pojo.bcs.DispatchJobReq
 import com.tencent.bk.devops.plugin.docker.pojo.bcs.DispatchTaskResp
+import com.tencent.bk.devops.plugin.pojo.Result
 import okhttp3.RequestBody
 import org.apache.commons.io.FileUtils
 import org.slf4j.LoggerFactory
