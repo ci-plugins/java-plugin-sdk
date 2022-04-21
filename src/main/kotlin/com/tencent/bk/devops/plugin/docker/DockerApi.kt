@@ -18,7 +18,7 @@ open class DockerApi : BaseApi() {
 
     open fun dockerRunCommand(projectId: String, pipelineId: String, buildId: String, param: DockerRunRequest): Result<DockerRunResponse> {
         try {
-            val devCloudProperty = System.getenv("JOB_POOL")
+            val jobPoolType = System.getenv("JOB_POOL")
             val property = System.getenv("devops_slave_model")
             val newDevCloudProperty = System.getenv("DEVOPS_SLAVE_ENVIRONMENT")
 
@@ -28,8 +28,9 @@ open class DockerApi : BaseApi() {
 
             val response = when {
                 "pcg-devcloud" == newDevCloudProperty -> PcgDevCloudExecutor.execute(param)
-                "PUBLIC_DEVCLOUD" == devCloudProperty -> DevCloudExecutor.execute(param)
+                "PUBLIC_DEVCLOUD" == jobPoolType -> DevCloudExecutor.execute(param)
                 "docker" == property -> CommonExecutor.execute(projectId, pipelineId, buildId, param)
+                "PUBLIC_BCS" == jobPoolType -> BcsExecutor.execute(param)
                 else -> ThirdPartExecutor.execute(param)
             }
             return Result(response)
@@ -40,13 +41,14 @@ open class DockerApi : BaseApi() {
 
     open fun dockerRunGetLog(projectId: String, pipelineId: String, buildId: String, param: DockerRunLogRequest): Result<DockerRunLogResponse> {
         try {
-            val devCloudProperty = System.getenv("devops.slave.environment")
+            val jobPoolType = System.getenv("JOB_POOL")
             val property = System.getenv("devops_slave_model")
             val newDevCloudProperty = System.getenv("DEVOPS_SLAVE_ENVIRONMENT")
 
             val response = when {
                 "pcg-devcloud" == newDevCloudProperty -> PcgDevCloudExecutor.getLogs(param)
-                "DevCloud" == devCloudProperty -> DevCloudExecutor.getLogs(param)
+                "PUBLIC_DEVCLOUD" == jobPoolType -> DevCloudExecutor.getLogs(param)
+                "PUBLIC_BCS" == jobPoolType -> BcsExecutor.getLogs(param)
                 "docker" == property -> CommonExecutor.getLogs(projectId, pipelineId, buildId, param)
                 else -> ThirdPartExecutor.getLogs(param)
             }
