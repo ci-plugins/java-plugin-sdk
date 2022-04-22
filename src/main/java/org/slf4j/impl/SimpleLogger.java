@@ -142,7 +142,7 @@ public class SimpleLogger extends MarkerIgnoringBase {
     private static boolean SHOW_THREAD_NAME = false;
     private static boolean SHOW_LOG_NAME = false;
     private static boolean SHOW_SHORT_LOG_NAME = false;
-    private static String LOG_FILE = "System.err";
+    private static String LOG_FILE = "System.out";
     private static PrintStream TARGET_STREAM = null;
     private static boolean LEVEL_IN_BRACKETS = false;
     private static String WARN_LEVEL_STRING = "WARN";
