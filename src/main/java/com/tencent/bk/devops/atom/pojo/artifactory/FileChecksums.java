@@ -5,10 +5,9 @@ import lombok.Data;
 @Data
 public class FileChecksums {
 
-    private  String sha256;/* compiled code */
+  private String sha256; /* compiled code */
 
-    private  String sha1;/* compiled code */
+  private String sha1; /* compiled code */
 
-    private  String md5;/* compiled code */
-
+  private String md5; /* compiled code */
 }

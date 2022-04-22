@@ -50,19 +50,21 @@ object BcsExecutor {
         val taskStatusFlag = param.extraOptions["taskStatusFlag"]
         if (taskStatusFlag.isNullOrBlank() || taskStatusFlag == DockerStatus.running) {
             val taskStatus = BcsBuildApi().getTask(taskId).data
-            if (taskStatus.status == "failed") {
-                return DockerRunLogResponse(
-                    status = DockerStatus.failure,
-                    message = "get task status fail",
-                    extraOptions = extraOptions
-                )
-            }
-            if (taskStatus.status != "succeeded") {
-                return DockerRunLogResponse(
-                    status = DockerStatus.running,
-                    message = "get task status...",
-                    extraOptions = extraOptions
-                )
+            taskStatus.let {
+                if (taskStatus!!.status == "failed") {
+                    return DockerRunLogResponse(
+                        status = DockerStatus.failure,
+                        message = "get task status fail",
+                        extraOptions = extraOptions
+                    )
+                }
+                if (taskStatus.status != "succeeded") {
+                    return DockerRunLogResponse(
+                        status = DockerStatus.running,
+                        message = "get task status...",
+                        extraOptions = extraOptions
+                    )
+                }
             }
         }
         extraOptions["taskStatusFlag"] = DockerStatus.success
@@ -72,7 +74,7 @@ object BcsExecutor {
         val jobName = param.extraOptions["bcsJobName"] ?: throw RuntimeException("bcsJobName is null")
         var jobStatusResp: DispatchBuildStatusResp? = null
         if (jobStatusFlag.isNullOrBlank() || jobStatusFlag == DockerStatus.running) {
-            jobStatusResp = BcsBuildApi().getJobStatus(jobName).data
+            jobStatusResp = BcsBuildApi().getJobStatus(jobName).data!!
             val jobStatus = jobStatusResp.status
             if ("failed" != jobStatus && "succeeded" != jobStatus && "running" != jobStatus) {
                 return DockerRunLogResponse(
@@ -88,7 +90,7 @@ object BcsExecutor {
         val startTimeStamp = extraOptions["startTimeStamp"]?.toInt() ?: (System.currentTimeMillis() / 1000).toInt()
         val logs = mutableListOf<String>()
 
-        val logResult = BcsBuildApi().getJobLogs(jobName, startTimeStamp).data
+        val logResult = BcsBuildApi().getJobLogs(jobName, startTimeStamp).data!!
 
         if ((logResult.log != null && logResult.log.isNotEmpty()) || logResult.errorMsg.isNullOrBlank()) {
             extraOptions["startTimeStamp"] = (startTimeStamp + param.timeGap).toString()
@@ -118,7 +120,7 @@ object BcsExecutor {
             logger.info("final job status url: $url")
             logger.info("final job status data: $jobStatusResp")
             Thread.sleep(6000)
-            val finalLogs = BcsBuildApi().getJobLogs(jobName, startTimeStamp + 6).data
+            val finalLogs = BcsBuildApi().getJobLogs(jobName, startTimeStamp + 6).data!!
             if (finalStatus.status == "failed") {
                 return DockerRunLogResponse(
                     log = logs.plus(finalLogs.errorMsg ?: ""),
