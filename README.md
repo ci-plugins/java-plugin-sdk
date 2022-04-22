@@ -1,5 +1,16 @@
 # 插件市场-插件开发 Java SDK（v1.1.1）
 
+
+使用方式（How to use)
+```xml
+
+        <dependency>
+            <groupId>com.tencent.bk.devops.atom</groupId>
+            <artifactId>java-atom-sdk</artifactId>
+            <version>${sdkVersion}</version>
+        </dependency>
+```
+
 ```
 适用JDK版本：建议1.8
 ```
