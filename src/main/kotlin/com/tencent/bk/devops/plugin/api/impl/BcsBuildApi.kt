@@ -29,7 +29,7 @@ class BcsBuildApi : BaseApi() {
 
         val request = buildPost(path, requestBody, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "bcs job失败")
-        logger.info("create job response: $responseContent")
+        logger.info("create bcs job response: $responseContent")
 
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchTaskResp?>>() {})
     }
@@ -38,7 +38,7 @@ class BcsBuildApi : BaseApi() {
         val path = "/dispatch-bcs/api/build/bcs/job/" + jobName + "/status"
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "获取job状态失败")
-        logger.info("get job status response: $responseContent")
+        logger.info("get bcs job status response: $responseContent")
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchBuildStatusResp>>() {})
     }
 
@@ -46,15 +46,15 @@ class BcsBuildApi : BaseApi() {
         val path = "/dispatch-bcs/api/build/bcs/job/" + jobName + "/logs?sinceTime=" + sinceTime
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "获取job日志失败")
-        logger.info("get job logs response: $responseContent")
+        logger.info("get bcs job logs response: $responseContent")
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchJobLogResp>>() {})
     }
 
     fun getTask(taskId: String): Result<DispatchBuildStatusResp> {
-        val path = "/dispatch-bcs/api/build/bcs/task/" + taskId
+        val path = "/dispatch-bcs/api/build/bcs/task/status?taskId=" + taskId
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
         val responseContent = request(request, "获取task信息失败")
-        logger.info("get task response: $responseContent")
+        logger.info("get bcs task response: $responseContent")
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchBuildStatusResp>>() {})
     }
 

@@ -10,11 +10,7 @@ import com.tencent.bk.devops.plugin.docker.pojo.bcs.DispatchJobReq
 import com.tencent.bk.devops.plugin.docker.pojo.bcs.DockerRegistry
 import com.tencent.bk.devops.plugin.docker.pojo.bcs.JobParam
 import com.tencent.bk.devops.plugin.docker.pojo.common.DockerStatus
-import com.tencent.bk.devops.plugin.docker.pojo.status.JobStatusResponse
-import com.tencent.bk.devops.plugin.docker.utils.DevCloudClient
 import com.tencent.bk.devops.plugin.docker.utils.EnvUtils
-import com.tencent.bk.devops.plugin.docker.utils.ParamUtils.beiJ2UTC
-import javafx.beans.property.IntegerPropertyBase
 import org.apache.commons.lang3.RandomUtils
 import org.apache.tools.ant.types.Commandline
 import org.slf4j.LoggerFactory
@@ -27,7 +23,7 @@ object BcsExecutor {
     private val logger = LoggerFactory.getLogger(BcsExecutor::class.java)
 
     fun execute(request: DockerRunRequest): DockerRunResponse {
-        val startTimeStamp = System.currentTimeMillis()
+        val startTimeStamp = System.currentTimeMillis() / 1000
         val jobRequest = getJobRequest(request)
         val task = BcsBuildApi().createJob(jobRequest).data
 
@@ -92,14 +88,14 @@ object BcsExecutor {
 
         val logResult = BcsBuildApi().getJobLogs(jobName, startTimeStamp).data!!
 
-        if ((logResult.log != null && logResult.log.isNotEmpty()) || logResult.errorMsg.isNullOrBlank()) {
+        if ((logResult.log != null && logResult.log.isNotEmpty()) || !logResult.errorMsg.isNullOrBlank()) {
             extraOptions["startTimeStamp"] = (startTimeStamp + param.timeGap).toString()
             logResult.log.let {
                 logs.addAll(logResult.log ?: emptyList())
             }
 
-            logResult.errorMsg.let {
-                logs.add(logResult.errorMsg!!)
+            logResult.errorMsg?.let {
+                logs.add(logResult.errorMsg)
             }
         }
 
@@ -116,8 +112,6 @@ object BcsExecutor {
         }*/
 
         if (finalStatus!!.status in listOf("failed", "succeeded")) {
-            val url = "/api/v2.1/job/$jobName/status"
-            logger.info("final job status url: $url")
             logger.info("final job status data: $jobStatusResp")
             Thread.sleep(6000)
             val finalLogs = BcsBuildApi().getJobLogs(jobName, startTimeStamp + 6).data!!

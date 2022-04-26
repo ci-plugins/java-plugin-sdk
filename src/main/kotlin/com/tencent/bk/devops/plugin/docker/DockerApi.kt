@@ -54,6 +54,7 @@ open class DockerApi : BaseApi() {
             }
             return Result(response)
         } catch (e: Exception) {
+            logger.error("Get docker logs error.", e)
             throw DockerRunLogException(e.message ?: "")
         }
     }
