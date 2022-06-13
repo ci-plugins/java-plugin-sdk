@@ -7,14 +7,13 @@ import lombok.Setter;
 @Setter
 public class OnsHostInfo {
 
-    private String ip; //IP地址
-    private int port; //端口号
+  private String ip; // IP地址
+  private int port; // 端口号
 
-    public OnsHostInfo() {
-    }
+  public OnsHostInfo() {}
 
-    public OnsHostInfo(String ip, int port) {
-        this.ip = ip;
-        this.port = port;
-    }
+  public OnsHostInfo(String ip, int port) {
+    this.ip = ip;
+    this.port = port;
+  }
 }

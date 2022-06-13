@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * "out_var_2": {
- * "type": "string",
- * "value": "xxxx"
- * }
+ * "out_var_2": { "type": "string", "value": "xxxx" }
  *
  * @version 1.0
  */
@@ -17,10 +14,10 @@ import lombok.Setter;
 @SuppressWarnings("all")
 public class StringData extends DataField {
 
-    public StringData(String value) {
-        super(DataType.string);
-        this.value = value;
-    }
+  public StringData(String value) {
+    super(DataType.string);
+    this.value = value;
+  }
 
-    private String value;
+  private String value;
 }

@@ -7,12 +7,10 @@ import lombok.Setter;
 @Setter
 public class QualityValue {
 
-    public QualityValue(String value) {
-        this.value = value;
-    }
+  public QualityValue(String value) {
+    this.value = value;
+  }
 
-    /**
-     * 数值
-     */
-    private String value;
+  /** 数值 */
+  private String value;
 }
