@@ -21,35 +21,62 @@ import lombok.Data;
 @Data
 public class AtomResult {
 
-  /** 执行结果 */
-  @JsonProperty("status")
-  private Status status = Status.success;
+    /**
+     * 执行结果
+     */
+    @JsonProperty("status")
+    private Status status = Status.success;
 
-  /** 错误信息 */
-  @JsonProperty("message")
-  private String message;
+    /**
+     * 错误信息
+     */
+    @JsonProperty("message")
+    private String message;
 
-  /** 类型，默认default */
-  @JsonProperty("type")
-  private String type = "default";
+    /**
+     * 类型，默认default
+     */
+    @JsonProperty("type")
+    private String type = "default";
 
-  /** 返回字段 */
-  @JsonProperty("data")
-  private Map<String, DataField> data = Maps.newHashMap();
+    /**
+     * 返回字段
+     */
+    @JsonProperty("data")
+    private Map<String, DataField> data = Maps.newHashMap();
 
-  /** 质量红线生成的数据 */
-  @JsonProperty("qualityData")
-  private Map<String, QualityValue> qualityData = Maps.newHashMap();
+    /**
+     * 质量红线生成的数据
+     */
+    @JsonProperty("qualityData")
+    private Map<String, QualityValue> qualityData = Maps.newHashMap();
 
-  /** 用于后台度量的错误码 */
-  @JsonProperty("errorType")
-  private Integer errorType;
+    /**
+     * 用于后台度量的错误码
+     */
+    @JsonProperty("errorType")
+    private Integer errorType;
 
-  /** 用于后台度量的错误码 */
-  @JsonProperty("errorCode")
-  private Integer errorCode;
+    /**
+     * 用于后台度量的错误码
+     */
+    @JsonProperty("errorCode")
+    private Integer errorCode;
 
-  /** 监控数据 */
-  @JsonProperty("monitorData")
-  private MonitorData monitorData;
+    /**
+     * 监控数据
+     */
+    @JsonProperty("monitorData")
+    private MonitorData monitorData;
+    /**
+     * 插件对接平台代码
+     */
+    @JsonProperty("platformCode")
+    private String platformCode;
+
+    /**
+     * 插件对接平台错误码
+     */
+    @JsonProperty("platformErrorCode")
+    private Integer platformErrorCode;
 }
