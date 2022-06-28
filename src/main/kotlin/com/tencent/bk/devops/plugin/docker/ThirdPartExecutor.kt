@@ -16,6 +16,7 @@ import java.io.File
 object ThirdPartExecutor {
 
     private val logger = LoggerFactory.getLogger(ThirdPartExecutor::class.java)
+    private val loginCounterMap = mutableMapOf<String, Int>()
 
     fun execute(param: DockerRunRequest): DockerRunResponse {
         with(param) {
@@ -144,13 +145,27 @@ object ThirdPartExecutor {
     private fun dockerLogin(param: DockerRunRequest) {
         if (param.dockerLoginUsername.isNullOrBlank()) return
 
+
         val username = param.dockerLoginUsername
         val password = param.dockerLoginPassword
         val loginHost = param.imageName.split("/").first()
-        // WARNING! Using --password via the CLI is insecure. Use --password-stdin.
-        val commandStr = "docker login $loginHost --username $username --password $password"
-        logger.info("[execute script]: " + String.format("docker login %s --username %s  --password ***", loginHost, username))
-        ScriptUtils.execute(commandStr, param.workspace)
+
+        val counter = loginCounterMap[loginHost]
+        if (counter == null) {
+            // WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+            val commandStr = "docker login $loginHost --username $username --password $password"
+            logger.info(
+                "[execute script]: " + String.format(
+                    "docker login %s --username %s  --password ***",
+                    loginHost,
+                    username
+                )
+            )
+            ScriptUtils.execute(commandStr, param.workspace)
+            loginCounterMap[loginHost] = 1
+        } else {
+            loginCounterMap[loginHost] = counter + 1
+        }
     }
 
     @Synchronized
@@ -158,8 +173,16 @@ object ThirdPartExecutor {
         if (param.dockerLoginUsername.isNullOrBlank()) return
 
         val loginHost = param.imageName.split("/").first()
-        val commandStr = "docker logout $loginHost"
-        logger.info("[execute script]: $commandStr")
-        ScriptUtils.execute(commandStr, param.workspace)
+
+        val counter = loginCounterMap[loginHost] ?: return
+
+        if (counter - 1 <= 0) {
+            val commandStr = "docker logout $loginHost"
+            logger.info("[execute script]: $commandStr")
+            ScriptUtils.execute(commandStr, param.workspace)
+            loginCounterMap.remove(loginHost)
+        } else {
+            loginCounterMap[loginHost] = counter - 1
+        }
     }
 }
