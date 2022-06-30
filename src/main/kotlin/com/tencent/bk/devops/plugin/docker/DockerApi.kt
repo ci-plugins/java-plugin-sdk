@@ -1,13 +1,13 @@
 package com.tencent.bk.devops.plugin.docker
 
 import com.tencent.bk.devops.atom.api.BaseApi
+import com.tencent.bk.devops.atom.pojo.Result
 import com.tencent.bk.devops.plugin.docker.exception.DockerRunException
 import com.tencent.bk.devops.plugin.docker.exception.DockerRunLogException
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunLogResponse
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunRequest
 import com.tencent.bk.devops.plugin.docker.pojo.DockerRunResponse
-import com.tencent.bk.devops.atom.pojo.Result
 import org.slf4j.LoggerFactory
 
 open class DockerApi : BaseApi() {
@@ -16,11 +16,16 @@ open class DockerApi : BaseApi() {
         private val logger = LoggerFactory.getLogger(DockerApi::class.java)
     }
 
+    /**
+     *  保持java abi兼容
+     */
+    @JvmOverloads
     fun dockerRunCommand(
         projectId: String,
         pipelineId: String,
         buildId: String,
-        param: DockerRunRequest
+        param: DockerRunRequest,
+        taskId: String? = null
     ): Result<DockerRunResponse> {
         try {
             val property = System.getenv("devops_slave_model")
@@ -30,14 +35,14 @@ open class DockerApi : BaseApi() {
 
             if (response == null) {
                 response = when {
-                    "docker" == property -> CommonExecutor.execute(projectId, pipelineId, buildId, param)
+                    "docker" == property -> CommonExecutor.execute(projectId, pipelineId, buildId, param, taskId)
                     "Kubernetes" == kubernetesEnv -> KubernetesExecutor.execute(param)
                     else -> ThirdPartExecutor.execute(param)
                 }
             }
             return Result(response)
-        } catch (e: Exception) {
-            throw DockerRunException(e.message ?: "")
+        } catch (ignore: Exception) {
+            throw DockerRunException(ignore.message ?: "")
         }
     }
 
@@ -71,8 +76,8 @@ open class DockerApi : BaseApi() {
             }
 
             return Result(response)
-        } catch (e: Exception) {
-            throw DockerRunLogException(e.message ?: "")
+        } catch (ignore: Exception) {
+            throw DockerRunLogException(ignore.message ?: "")
         }
     }
 

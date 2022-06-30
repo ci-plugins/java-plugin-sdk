@@ -38,7 +38,21 @@ object CommandLineUtils {
                 result.append(tmpLine).append("\n")
             }
         }
-        executor.streamHandler = PumpStreamHandler(outputStream)
+
+        val errorStream = object : LogOutputStream() {
+            override fun processLine(line: String?, level: Int) {
+                if (line == null) {
+                    return
+                }
+
+                val tmpLine = SensitiveLineParser.onParseLine(prefix + line)
+                if (print2Logger) {
+                    logger.error(tmpLine)
+                }
+                result.append(tmpLine).append("\n")
+            }
+        }
+        executor.streamHandler = PumpStreamHandler(outputStream, errorStream)
 
         try {
             val exitCode = executor.execute(cmdLine)
