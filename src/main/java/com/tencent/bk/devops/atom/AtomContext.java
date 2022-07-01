@@ -89,7 +89,10 @@ public class AtomContext<T extends AtomBaseParam> {
         String json =
             FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
         T param = JsonUtil.fromJson(json, paramClazz);
-        String atomCode = param.getAtomCode();
+        String atomCode = null;
+        if (param != null) {
+            atomCode = param.getAtomCode();
+        }
         if (atomCode == null || !atomCode.equals(System.getenv("BK_CI_ATOM_CODE"))) {
             // 本地测试环境不调蓝盾接口设置插件敏感信息
             return param;
