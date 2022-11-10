@@ -16,9 +16,9 @@ import org.apache.tools.ant.types.Commandline
 import org.slf4j.LoggerFactory
 
 object KubernetesExecutor {
-    private val VOLUME_SERVER = "volume_server"
-    private val VOLUME_PATH = "volume_path"
-    private val VOLUME_MOUNT_PATH = "volume_mount_path"
+    private const val VOLUME_SERVER = "volume_server"
+    private const val VOLUME_PATH = "volume_path"
+    private const val VOLUME_MOUNT_PATH = "volume_mount_path"
 
     private val logger = LoggerFactory.getLogger(KubernetesExecutor::class.java)
 
@@ -137,9 +137,14 @@ object KubernetesExecutor {
             // get job param
             val cmdTmp = mutableListOf<String>()
             command.forEach {
-                cmdTmp.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'").removeSuffix("\'"))
+                cmdTmp.add(it.removePrefix("\"").removeSuffix("\"").removePrefix("\'")
+                               .removeSuffix("\'"))
             }
-            val cmd = if (cmdTmp.size == 1) { Commandline.translateCommandline(cmdTmp.first()).toList() } else { cmdTmp }
+            val cmd = if (cmdTmp.size == 1) {
+                Commandline.translateCommandline(cmdTmp.first()).toList()
+            } else {
+                cmdTmp
+            }
             val jobParam = JobParam(
                 env = envMap,
                 command = cmd,

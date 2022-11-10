@@ -83,7 +83,8 @@ class KubernetesBuildApi : BaseApi() {
             return ""
         }
 
-        val inputMap: Map<String, Any> = JsonUtil.fromJson(inputJson, object : TypeReference<MutableMap<String, Any>>() {})
+        val inputMap: Map<String, Any> = JsonUtil.fromJson(inputJson,
+                                                           object : TypeReference<MutableMap<String, Any>>() {})
         return inputMap["pipeline.start.user.name"] as String
     }
 
