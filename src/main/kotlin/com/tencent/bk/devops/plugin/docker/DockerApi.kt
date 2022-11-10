@@ -29,12 +29,14 @@ open class DockerApi : BaseApi() {
     ): Result<DockerRunResponse> {
         try {
             val property = System.getenv("devops_slave_model")
+            val jobPoolType = System.getenv("JOB_POOL")
 
             var response = dockerRunCustomize(projectId, pipelineId, buildId, param)
 
             if (response == null) {
-                response = when (property) {
-                    "docker" -> CommonExecutor.execute(projectId, pipelineId, buildId, param, taskId)
+                response = when {
+                    "docker" == property -> CommonExecutor.execute(projectId, pipelineId, buildId, param, taskId)
+                    "KUBERNETES" == jobPoolType -> KubernetesExecutor.execute(param)
                     else -> ThirdPartExecutor.execute(param)
                 }
             }
@@ -61,12 +63,14 @@ open class DockerApi : BaseApi() {
     ): Result<DockerRunLogResponse> {
         try {
             val property = System.getenv("devops_slave_model")
+            val jobPoolType = System.getenv("JOB_POOL")
 
             var response = dockerRunGetLogCustomize(projectId, pipelineId, buildId, param)
 
             if (response == null) {
-                response = when (property) {
-                    "docker" -> CommonExecutor.getLogs(projectId, pipelineId, buildId, param)
+                response = when {
+                    "docker" == property -> CommonExecutor.getLogs(projectId, pipelineId, buildId, param)
+                    "KUBERNETES" == jobPoolType -> KubernetesExecutor.getLogs(param)
                     else -> ThirdPartExecutor.getLogs(param)
                 }
             }
