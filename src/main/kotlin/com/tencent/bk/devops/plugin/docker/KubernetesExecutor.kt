@@ -103,13 +103,6 @@ object KubernetesExecutor {
             jobStatusResp = KubernetesBuildApi().getJobStatus(jobName).data
         }
         val finalStatus = jobStatusResp
-/*        val podResults = finalStatus.data.pod_result
-        podResults?.forEach { ps ->
-            ps.events?.forEach { event ->
-                // add logs
-                logs.add(event.message)
-            }
-        }*/
 
         if (finalStatus!!.status in listOf("failed", "succeeded")) {
             logger.info("final job status data: $jobStatusResp")
