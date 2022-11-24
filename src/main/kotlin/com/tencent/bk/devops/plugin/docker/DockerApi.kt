@@ -42,6 +42,7 @@ open class DockerApi : BaseApi() {
             }
             return Result(response)
         } catch (ignore: Exception) {
+            logger.error("Failed to create job. ${param.imageName}", ignore)
             throw DockerRunException(ignore.message ?: "")
         }
     }
