@@ -52,7 +52,7 @@
         <lib.dozer.version>5.5.1</lib.dozer.version>
         <lib.log.version>1.7.21</lib.log.version>
         <lib.jackson.version>2.12.0</lib.jackson.version>
-        <lib.jackson.databind.version>2.13.4.1</lib.jackson.databind.version>
+        <lib.jackson.databind.version>2.13.4.2</lib.jackson.databind.version>
     </properties>
 
     <dependencies>
