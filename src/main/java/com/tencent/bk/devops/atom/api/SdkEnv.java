@@ -33,6 +33,7 @@ public class SdkEnv {
     private String gateway;
     private String buildId;
     private String vmSeqId;
+    private String fileGateway;
 
     private static SdkEnv instance;
 
@@ -101,5 +102,9 @@ public class SdkEnv {
 
     public static String getVmSeqId() {
         return instance.vmSeqId;
+    }
+
+    public static String getFileGateway() {
+        return instance.fileGateway;
     }
 }
