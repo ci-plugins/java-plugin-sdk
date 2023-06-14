@@ -46,7 +46,7 @@
         <!--项目版本 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- 依赖库/框架版本定义 -->
-        <lib.guava.version>30.1.1-jre</lib.guava.version>
+        <lib.guava.version>32.0.0-jre</lib.guava.version>
         <lib.commons.lang3.version>3.12.0</lib.commons.lang3.version>
         <lib.javasimon.version>3.5.2</lib.javasimon.version>
         <lib.dozer.version>5.5.1</lib.dozer.version>
