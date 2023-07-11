@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Maps;
 import com.tencent.bk.devops.atom.common.Status;
 import com.tencent.bk.devops.atom.pojo.quality.QualityValue;
+import com.tencent.bk.devops.atom.utils.I18nUtil;
+import com.tencent.bk.devops.atom.utils.MessageUtil;
+import com.tencent.bk.devops.plugin.pojo.ErrorType;
 import lombok.Data;
 
 import java.util.Map;
@@ -31,6 +34,7 @@ import java.util.Map;
  * }
  * }
  * }
+ *
  * @version 1.0
  */
 @Data
@@ -84,4 +88,19 @@ public class AtomResult {
     @JsonProperty("monitorData")
     private MonitorData monitorData;
 
+
+    /**
+     * 设置错误信息
+     *
+     * @param status    执行结果状态
+     * @param errorCode 错误码
+     * @param errorType 错误类型
+     * @param params    替换错误描述信息占位符的参数数组
+     */
+    public void setErrorInfo(Status status, Integer errorCode, ErrorType errorType, String[] params) {
+        this.status = status;
+        this.errorCode = errorCode;
+        this.errorType = errorType.getNum();
+        this.message = MessageUtil.getMessageByLocale(errorCode.toString(), I18nUtil.getLanguage(), params);
+    }
 }

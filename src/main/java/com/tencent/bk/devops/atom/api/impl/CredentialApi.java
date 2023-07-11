@@ -25,7 +25,7 @@ public class CredentialApi extends BaseApi {
         Request request = super.buildGet("/ticket/api/build/credentials/" + credentialId + "/detail");
         String responseContent = null;
         try {
-            responseContent = super.request(request,"获取凭证信息失败");
+            responseContent = super.request(request,"get credential fail!");
         } catch (IOException e) {
             logger.error("getCredential throw Exception", e);
         }

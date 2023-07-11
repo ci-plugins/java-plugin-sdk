@@ -6,7 +6,7 @@
 
     <groupId>com.tencent.devops.ci-plugins</groupId>
     <artifactId>java-plugin-sdk</artifactId>
-    <version>1.1.8</version>
+    <version>1.1.9</version>
 
     <inceptionYear>2018-2118</inceptionYear>
     <description>bk-ci pipeline plugins sdk for java</description>

@@ -40,6 +40,7 @@
 | v1.1.6 |   优化日志打印 |
 | v1.1.7 |   新增kubernetes构建资源相关api |
 | v1.1.8 |   增加fileGateway |
+| v1.1.9 | 插件支持国际化，增加MessageUtil、I18nUtil工具类，AtomResult类增加setErrorInfo方法 |
 
 [TOC]
 
@@ -131,6 +132,25 @@ java实体对象如下：
    }
   ```
 
+​      对外提供的方法如下：
+
+```
+/**
+ * 设置错误信息
+ *
+ * @param status 执行结果状态
+ * @param errorCode 错误码
+ * @param errorType 错误类型
+ * @param params 替换错误描述信息占位符的参数数组
+ */
+public void setErrorInfo(Status status, Integer errorCode, ErrorType errorType, String[] params) {
+  this.status = status;
+  this.errorCode = errorCode;
+  this.errorType = errorType.getNum();
+  this.message =
+      MessageUtil.getMessageByLocale(errorCode.toString(), I18nUtil.getLanguage(), params);
+}
+```
 
 
 ##### 3、AtomContext.java （流水线插件上下文类）
@@ -444,7 +464,84 @@ for (i in 1..100000000) {
 
 ```
 
+##### 8、支持插件国际化的工具类MessageUtil.java
 
+​     包含的主要方法如下：
+
+```
+  /**
+   * 根据语言环境获取对应的描述信息
+   *
+   * @param messageCode 消息标识
+   * @param language 语言信息
+   * @return 描述信息
+   */
+  public static String getMessageByLocale(String messageCode, String language);
+
+  /**
+   * 根据语言环境获取对应的描述信息
+   *
+   * @param messageCode 消息标识
+   * @param language 语言信息
+   * @param defaultMessage 默认信息
+   * @return 描述信息
+   */
+  public static String getMessageByLocale(String messageCode, String language, String defaultMessage); 
+	
+  /**
+   * 根据语言环境获取对应的描述信息
+   *
+   * @param messageCode 消息标识
+   * @param language 语言信息
+   * @param params 替换描述信息占位符的参数数组
+   * @return 描述信息
+   */
+  public static String getMessageByLocale(String messageCode, String language, String[] params);
+
+  /**
+   * 根据语言环境获取对应的描述信息
+   *
+   * @param messageCode 消息标识
+   * @param language 语言信息
+   * @param params 替换描述信息占位符的参数数组
+   * @param defaultMessage 默认信息
+   * @return 描述信息
+   */
+  public static String getMessageByLocale(String messageCode, String language, String[] params, String defaultMessage);
+
+  /**
+   * 根据语言环境获取对应的描述信息
+   *
+   * @param messageCode 消息标识
+   * @param language 语言信息
+   * @param params 替换描述信息占位符的参数数组
+   * @param baseName 基础资源名称
+   * @param defaultMessage 默认信息
+   * @return 描述信息
+   */
+  public static String getMessageByLocale(
+      String messageCode,
+      String language,
+      String[] params,
+      String baseName,
+      String defaultMessage
+      );
+
+```
+
+##### 9、支持插件国际化的工具类I18nUtil.java
+
+​     包含的主要方法如下：
+
+```
+  /**
+   * 获取插件执行时语言信息
+   *
+   * @return 插件执行时语言信息
+   */
+  public static String getLanguage();
+
+```
 
 
 ## 二、SDK提供的服务介绍

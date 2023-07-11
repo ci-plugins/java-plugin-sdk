@@ -29,7 +29,7 @@ class KubernetesBuildApi : BaseApi() {
         val requestBody = RequestBody.create(JSON_CONTENT_TYPE, JsonUtil.toJson(dispatchJobReq))
 
         val request = buildPost(path, requestBody, mutableMapOf("X-DEVOPS-UID" to getUserId()))
-        val responseContent = request(request, "kubernetes job失败")
+        val responseContent = request(request, "kubernetes job fail")
         logger.debug("create kubernetes job response: $responseContent")
 
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchTaskResp?>>() {})
@@ -38,7 +38,7 @@ class KubernetesBuildApi : BaseApi() {
     fun getJobStatus(jobName: String): Result<DispatchBuildStatusResp> {
         val path = "/dispatch-kubernetes/api/build/job/" + jobName + "/status"
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
-        val responseContent = request(request, "获取job状态失败")
+        val responseContent = request(request, "failed to get job status")
         logger.debug("get kubernetes job status response: $responseContent")
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchBuildStatusResp>>() {})
     }
@@ -46,7 +46,7 @@ class KubernetesBuildApi : BaseApi() {
     fun getJobLogs(jobName: String, sinceTime: Int): Result<DispatchJobLogResp> {
         val path = "/dispatch-kubernetes/api/build/job/" + jobName + "/logs?sinceTime=" + sinceTime
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
-        val responseContent = request(request, "获取job日志失败")
+        val responseContent = request(request, "failed to get job log")
         logger.debug("get kubernetes job logs response: $responseContent")
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchJobLogResp>>() {})
     }
@@ -54,7 +54,7 @@ class KubernetesBuildApi : BaseApi() {
     fun getTask(taskId: String): Result<DispatchBuildStatusResp> {
         val path = "/dispatch-kubernetes/api/build/task/status?taskId=" + taskId
         val request = buildGet(path, mutableMapOf("X-DEVOPS-UID" to getUserId()))
-        val responseContent = request(request, "获取task信息失败")
+        val responseContent = request(request, "get task info fail")
         logger.debug("get kubernetes task response: $responseContent")
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchBuildStatusResp>>() {})
     }
@@ -65,7 +65,7 @@ class KubernetesBuildApi : BaseApi() {
         val requestBody = RequestBody.create(JSON_CONTENT_TYPE, JsonUtil.toJson(dispatchBuildImageReq))
 
         val request = buildPost(path, requestBody, mutableMapOf("X-DEVOPS-UID" to getUserId()))
-        val responseContent = request(request, "kubernetes docker build失败")
+        val responseContent = request(request, "kubernetes docker build fail")
         logger.debug("docker build response: $responseContent")
 
         return JsonUtil.fromJson(responseContent, object : TypeReference<Result<DispatchTaskResp?>>() {})

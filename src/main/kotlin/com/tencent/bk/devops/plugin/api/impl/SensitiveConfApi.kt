@@ -16,7 +16,7 @@ class SensitiveConfApi : BaseApi() {
     fun getAtomSensitiveConf(atomCode: String): Result<List<SensitiveConfResp>?> {
         val path = "/store/api/build/store/sensitiveConf/types/ATOM/codes/$atomCode"
         val request = buildGet(path)
-        val responseContent = retryRequest(request, "获取插件私有配置失败")
+        val responseContent = retryRequest(request, "failed to get plugin private configuration!")
         return JsonUtil.to(responseContent, object : TypeReference<Result<List<SensitiveConfResp>?>>() {})
     }
 }
