@@ -40,6 +40,7 @@
 | v1.1.6 |   优化日志打印 |
 | v1.1.7 |   新增kubernetes构建资源相关api |
 | v1.1.8 |   增加fileGateway |
+| v1.1.9 |   插件支持国际化，增加MessageUtil、I18nUtil工具类，AtomResult类增加setErrorInfo方法 |
 
 [TOC]
 
@@ -130,7 +131,23 @@ java实体对象如下：
     "emailTitle": "" # 邮件标题
    }
   ```
+对外提供的方法如下：
 
+/**
+ * 设置错误信息
+ *
+ * @param status 执行结果状态
+ * @param errorCode 错误码
+ * @param errorType 错误类型
+ * @param params 替换错误描述信息占位符的参数数组
+ */
+public void setErrorInfo(Status status, Integer errorCode, ErrorType errorType, String[] params) {
+  this.status = status;
+  this.errorCode = errorCode;
+  this.errorType = errorType.getNum();
+  this.message =
+      MessageUtil.getMessageByLocale(errorCode.toString(), I18nUtil.getLanguage(), params);
+}
 
 
 ##### 3、AtomContext.java （流水线插件上下文类）
