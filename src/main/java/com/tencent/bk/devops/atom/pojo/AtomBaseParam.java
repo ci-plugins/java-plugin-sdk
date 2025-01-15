@@ -100,4 +100,7 @@ public class AtomBaseParam {
 
     /** 插件后置动作标识 */
     private String postEntryParam = System.getProperty("postEntryParam");
+
+    /** 插件后置动作父任务id */
+    private String parentTaskId;
 }
