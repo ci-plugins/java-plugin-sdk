@@ -19,28 +19,28 @@
 
 **文档修改记录：**
 
-|   版本   | 修改内容 |
-|:------:| :------: |
-| v1.0.0 |   新建   |
-| v1.0.1 |   jackson由2.9.10.3升级到2.9.10.4   |
-| v1.0.2 |   AtomContext参数解析由String对象改成Object对象   |
-| v1.0.3 |   JsonUtil转换支持kotlin |
-| v1.0.4 |   增加Docker相关api |
-| v1.0.5 |   更新jackson到2.12.0 |
-| v1.0.6 |   兼容gateway网关地址带协议头情况 |
-| v1.0.7 |   guava由19.0升级到30.1.1-jre，okhttp由3.12.0升级到4.9.1，ant由1.10.9升级到1.10.10 |
-| v1.0.8 |   增加一些工具类，增加一些docker相关代码 |
-| v1.0.9 |   ReportData 增加指定发送邮件的参数功能 |
-| v1.1.0 |   命令行工具日志流统一为标准输出流 |
-| v1.1.1 |   规范dockerRun日志输出 |
-| v1.1.2 |   修复Java市场插件默认输出至错误流 |
-| v1.1.3 |   获取插件私有配置优化 |
-| v1.1.4 |   升级jackson开源组件漏洞版本 |
-| v1.1.5 |   新增kubernetes构建资源相关api |
-| v1.1.6 |   优化日志打印 |
-| v1.1.7 |   新增kubernetes构建资源相关api |
-| v1.1.8 |   增加fileGateway |
-| v1.1.9 | 插件支持国际化，增加MessageUtil、I18nUtil工具类，AtomResult类增加setErrorInfo方法 |
+|   版本   |                                         修改内容                                         |
+|:------:|:------------------------------------------------------------------------------------:|
+| v1.0.0 |                                          新建                                          |
+| v1.0.1 |                             jackson由2.9.10.3升级到2.9.10.4                              |
+| v1.0.2 |                          AtomContext参数解析由String对象改成Object对象                          |
+| v1.0.3 |                                  JsonUtil转换支持kotlin                                  |
+| v1.0.4 |                                    增加Docker相关api                                     |
+| v1.0.5 |                                   更新jackson到2.12.0                                   |
+| v1.0.6 |                                 兼容gateway网关地址带协议头情况                                  |
+| v1.0.7 |          guava由19.0升级到30.1.1-jre，okhttp由3.12.0升级到4.9.1，ant由1.10.9升级到1.10.10          |
+| v1.0.8 |                                增加一些工具类，增加一些docker相关代码                                |
+| v1.0.9 |                               ReportData 增加指定发送邮件的参数功能                               |
+| v1.1.0 |                                   命令行工具日志流统一为标准输出流                                   |
+| v1.1.1 |                                   规范dockerRun日志输出                                    |
+| v1.1.2 |                                  修复Java市场插件默认输出至错误流                                  |
+| v1.1.3 |                                      获取插件私有配置优化                                      |
+| v1.1.4 |                                  升级jackson开源组件漏洞版本                                   |
+| v1.1.5 |                                新增kubernetes构建资源相关api                                 |
+| v1.1.6 |                                        优化日志打印                                        |
+| v1.1.7 |                                新增kubernetes构建资源相关api                                 |
+| v1.1.8 |                                    增加fileGateway                                     |
+| v1.1.9 | 插件支持国际化，增加MessageUtil、I18nUtil工具类，AtomResult类增加setErrorInfo方法,Post action 中支持获取父任务ID |
 
 [TOC]
 
