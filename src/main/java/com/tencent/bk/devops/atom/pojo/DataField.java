@@ -17,8 +17,20 @@ public abstract class DataField {
         this.type = type;
     }
 
+
+    public DataField(DataType type, boolean isSensitive) {
+        this.type = type;
+        this.isSensitive = isSensitive;
+    }
+
     /**
      * 类型
      */
     private DataType type;
+
+
+    /**
+     * 是否属于敏感字段
+     */
+    private boolean isSensitive = false;
 }
