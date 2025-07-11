@@ -41,6 +41,7 @@
 | v1.1.7 |   新增kubernetes构建资源相关api |
 | v1.1.8 |   增加fileGateway |
 | v1.1.9 | 插件支持国际化，增加MessageUtil、I18nUtil工具类，AtomResult类增加setErrorInfo方法 |
+| v1.2.0 |  DataField类新增isSensitive属性，插件输出将支持屏蔽指定敏感字段 |
 
 [TOC]
 
