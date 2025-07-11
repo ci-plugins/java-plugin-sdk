@@ -17,12 +17,6 @@ public abstract class DataField {
         this.type = type;
     }
 
-
-    public DataField(DataType type, boolean isSensitive) {
-        this.type = type;
-        this.isSensitive = isSensitive;
-    }
-
     /**
      * 类型
      */
