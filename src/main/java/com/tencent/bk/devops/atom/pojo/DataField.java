@@ -1,7 +1,8 @@
 package com.tencent.bk.devops.atom.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tencent.bk.devops.atom.common.DataType;
-import lombok.Getter;
 import lombok.Setter;
 
 /**
@@ -9,7 +10,6 @@ import lombok.Setter;
  * @version 1.0
  */
 @Setter
-@Getter
 @SuppressWarnings("all")
 public abstract class DataField {
 
@@ -21,4 +21,19 @@ public abstract class DataField {
      * 类型
      */
     private DataType type;
+
+    /**
+     * 是否属于敏感字段
+     */
+    @JsonProperty("isSensitive")
+    private boolean isSensitive = false;
+
+    public DataType getType() {
+        return type;
+    }
+
+    @JsonIgnore
+    public boolean isSensitive() {
+        return isSensitive;
+    }
 }
