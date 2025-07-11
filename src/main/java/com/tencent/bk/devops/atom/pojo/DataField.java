@@ -27,6 +27,5 @@ public abstract class DataField {
     /**
      * 是否属于敏感字段
      */
-    @JsonProperty("isSensitive")
-    private boolean isSensitive = false;
+    private boolean sensitive = false;
 }
