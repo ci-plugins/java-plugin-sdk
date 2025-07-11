@@ -1,5 +1,6 @@
 package com.tencent.bk.devops.atom.pojo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.tencent.bk.devops.atom.common.DataType;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,5 +27,6 @@ public abstract class DataField {
     /**
      * 是否属于敏感字段
      */
+    @JsonProperty("isSensitive")
     private boolean isSensitive = false;
 }
