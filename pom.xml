@@ -325,7 +325,7 @@
                 <repository>
                     <id>ossrh</id>
                     <name>Nexus Release Repository</name>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                    <url>https://ossrh-staging-api.central.sonatype.com/service/local/</url>
                 </repository>
             </distributionManagement>
         </profile>
