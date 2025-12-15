@@ -223,25 +223,16 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
+                <version>1.7.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <nexusUrl>https://ossrh-staging-api.central.sonatype.com/</nexusUrl>
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>Github ci-plugins java-sdk-plugin Maven Packages</name>
-            <url>https://maven.pkg.github.com/ci-plugins/java-plugin-sdk</url>
-        </repository>
-    </distributionManagement>
 
     <profiles>
         <profile>
@@ -293,7 +284,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
+                        <version>3.1.0</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
@@ -320,11 +311,12 @@
                 <snapshotRepository>
                     <id>ossrh</id>
                     <name>Sonatype Nexus Snapshots</name>
-                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+                    <url>https://ossrh-staging-api.central.sonatype.com/service/local/repositories/snapshots/content/</url>
                 </snapshotRepository>
                 <repository>
                     <id>ossrh</id>
                     <name>Nexus Release Repository</name>
+                    <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
                 </repository>
             </distributionManagement>
         </profile>

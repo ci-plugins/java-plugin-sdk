@@ -16,9 +16,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Java and Maven
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: '17'
+          distribution: 'temurin'
+          maven-version: '3.8.8'
+          cache: 'maven'
 
       - name: Release Maven package
         uses: samuelmeuli/action-maven-publish@v1
@@ -27,3 +30,5 @@ jobs:
           gpg_passphrase: ${{ secrets.SIGNING_PASSWORD }}
           nexus_username: ${{ secrets.SONATYPE_USERNAME }}
           nexus_password: ${{ secrets.SONATYPE_PASSWORD }}
+          server_id: ossrh
+          nexus_url: https://ossrh-staging-api.central.sonatype.com/
