@@ -25,5 +25,7 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.SIGNING_KEY }}
           gpg_passphrase: ${{ secrets.SIGNING_PASSWORD }}
-          nexus_username: ${{ secrets.SONATYPE_USERNAME }}
-          nexus_password: ${{ secrets.SONATYPE_PASSWORD }}
+          maven_settings_username: ${{ secrets.SONATYPE_USERNAME }}
+          maven_settings_password: ${{ secrets.SONATYPE_PASSWORD }}
+          # 可选：明确指定服务器ID，确保匹配
+          maven_server_id: ossrh
