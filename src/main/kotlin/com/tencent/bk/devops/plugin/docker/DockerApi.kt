@@ -37,6 +37,7 @@ open class DockerApi : BaseApi() {
                 response = when {
                     "docker" == property -> CommonExecutor.execute(projectId, pipelineId, buildId, param, taskId)
                     "KUBERNETES" == jobPoolType -> KubernetesExecutor.execute(param)
+                    "PUBLIC_DEVCLOUD" == jobPoolType -> DevCloudExecutor.execute(param)
                     else -> ThirdPartExecutor.execute(param)
                 }
             }
@@ -72,6 +73,7 @@ open class DockerApi : BaseApi() {
                 response = when {
                     "docker" == property -> CommonExecutor.getLogs(projectId, pipelineId, buildId, param)
                     "KUBERNETES" == jobPoolType -> KubernetesExecutor.getLogs(param)
+                    "PUBLIC_DEVCLOUD" == jobPoolType -> DevCloudExecutor.getLogs(param)
                     else -> ThirdPartExecutor.getLogs(param)
                 }
             }
