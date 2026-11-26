@@ -1,12 +1,12 @@
 package com.tencent.bk.devops.atom.api;
 
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 import com.tencent.bk.devops.atom.common.Constants;
 import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +69,7 @@ public class SdkEnv {
         String sdkFile = ".sdk.json";
         File file = new File(dataDir + "/" + sdkFile);
         try {
-            String json = FileUtils.readFileToString(file, Charset.defaultCharset());
+            String json = Files.asCharSource(file, Charset.defaultCharset()).read();
             instance = JsonUtil.fromJson(json, SdkEnv.class);
         } finally {
             boolean flag = file.delete(); //读取完后删除文件

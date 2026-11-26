@@ -1,18 +1,20 @@
 package com.tencent.bk.devops.atom;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.io.Files;
 import com.tencent.bk.devops.atom.pojo.AtomBaseParam;
 import com.tencent.bk.devops.atom.pojo.AtomResult;
 import com.tencent.bk.devops.atom.utils.http.SdkUtils;
 import com.tencent.bk.devops.atom.utils.json.JsonUtil;
 import com.tencent.bk.devops.plugin.api.impl.SensitiveConfApi;
 import com.tencent.bk.devops.plugin.pojo.atom.SensitiveConfResp;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class AtomContext<T extends AtomBaseParam> {
 
     private AtomResult result;
 
-    private static final String ATOM_FILE_ENCODING = "UTF-8";
+    private static final Charset ATOM_FILE_ENCODING = StandardCharsets.UTF_8;
 
     private static final Logger logger = LoggerFactory.getLogger(AtomContext.class);
 
@@ -87,7 +89,7 @@ public class AtomContext<T extends AtomBaseParam> {
 
     private T readParam(Class<T> paramClazz) throws IOException {
         String json =
-            FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
+            Files.asCharSource(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING).read();
         T param = JsonUtil.fromJson(json, paramClazz);
         String atomCode = null;
         if (param != null) {
@@ -114,12 +116,14 @@ public class AtomContext<T extends AtomBaseParam> {
 
     public Map<String, Object> getAllParameters() throws IOException {
         String json =
-            FileUtils.readFileToString(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING);
+            Files.asCharSource(new File(dataDir + "/" + inputFile), ATOM_FILE_ENCODING).read();
         return JsonUtil.fromJson(json, new TypeReference<Map<String, Object>>() {});
     }
 
     void persistent() throws IOException {
         String json = JsonUtil.toJson(result);
-        FileUtils.write(new File(dataDir + "/" + outputFile), json, ATOM_FILE_ENCODING);
+        File file = new File(dataDir + "/" + outputFile);
+        Files.createParentDirs(file);
+        Files.asCharSink(file, ATOM_FILE_ENCODING).write(json == null ? "" : json);
     }
 }

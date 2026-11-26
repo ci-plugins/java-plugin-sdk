@@ -1,6 +1,7 @@
 package com.tencent.bk.devops.plugin.api.impl
 
 import com.fasterxml.jackson.core.type.TypeReference
+import com.google.common.io.Files
 import com.tencent.bk.devops.atom.api.BaseApi
 import com.tencent.bk.devops.atom.utils.http.SdkUtils
 import com.tencent.bk.devops.atom.utils.json.JsonUtil
@@ -12,7 +13,6 @@ import com.tencent.bk.devops.plugin.pojo.kubernetes.DispatchJobReq
 import com.tencent.bk.devops.plugin.pojo.kubernetes.DispatchTaskResp
 import com.tencent.bk.devops.plugin.pojo.Result
 import okhttp3.RequestBody
-import org.apache.commons.io.FileUtils
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
@@ -74,10 +74,10 @@ class KubernetesBuildApi : BaseApi() {
     private fun getUserId(): String {
         val inputJson: String?
         try {
-            inputJson = FileUtils.readFileToString(
+            inputJson = Files.asCharSource(
                 File(SdkUtils.getDataDir() + "/" + SdkUtils.getInputFile()),
                 Charset.defaultCharset()
-            )
+            ).read()
         } catch (e: IOException) {
             logger.error("parse inputJson throw Exception", e)
             return ""
